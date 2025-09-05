@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An account of my research internship at the Design and Innovation Center, Panjab University, focusing on solar panel efficiency.">
+    <meta name="keywords" content="Internship, Research, Panjab University, Solar Panels, Arduino, Innovation">
+    <meta name="author" content="Anshul Singh">
+    <title>Research Intern @ DIC, Panjab University - Anshul Singh</title>
+
+    <!-- Google Fonts: Lora for body, Lato for headings -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /*
+        * Modern, Minimalist Blog Style (Consistent with previous post)
+        */
+
+        body {
+            font-family: 'Lora', serif;
+            font-size: 18px;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            background-color: #fcfcfc;
+            color: #333;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 720px; /* Optimal width for readability */
+            margin: 0 auto;
+            padding: 80px 20px;
+        }
+
+        /* --- Navigation --- */
+        .home-link {
+            display: block;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 30px 20px 0;
+            text-decoration: none;
+            color: #888;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .home-link:hover {
+            color: #347ab6;
+        }
+
+        /* --- Article Header --- */
+        .article-header {
+            text-align: left;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-family: 'Lato', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #222;
+            line-height: 1.2;
+            margin: 0 0 15px 0;
+        }
+
+        .subtitle {
+            font-family: 'Lora', serif;
+            font-size: 1.3rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .meta {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 20px;
+        }
+
+        /* --- Article Content --- */
+        .article-content h2 {
+            font-family: 'Lato', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #222;
+            margin-top: 60px;
+            margin-bottom: 20px;
+        }
+
+        .article-content p {
+            margin-bottom: 25px;
+        }
+
+        .article-content strong {
+            font-weight: 600;
+            color: #111;
+        }
+
+        .article-content a {
+            color: #347ab6;
+            text-decoration: none;
+            border-bottom: 1px solid #cce0f1;
+            transition: all 0.2s ease;
+        }
+
+        .article-content a:hover {
+            background-color: #f0f7ff;
+            border-bottom-color: #347ab6;
+        }
+        
+        /* --- Media Elements --- */
+        figure {
+            margin: 50px 0;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        figcaption {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #888;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* --- Blockquote Styling --- */
+        blockquote {
+            border-left: 3px solid #347ab6; /* Use the accent color */
+            padding-left: 25px;
+            margin: 50px 0;
+            font-style: italic;
+            color: #555;
+            font-size: 1.1rem;
+        }
+        
+        blockquote footer {
+            font-style: normal;
+            margin-top: 10px;
+            font-weight: 400;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        blockquote footer::before {
+            content: "— ";
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            body {
+                font-size: 17px;
+            }
+            .container {
+                padding: 50px 20px;
+            }
+            h1 {
+                font-size: 2.5rem;
+            }
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            .article-content h2 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    
+    <a href="index.html" class="home-link">&larr; Back to Home</a>
+    
+    <main class="container">
+        <header class="article-header">
+            <h1>Improving efficiency of Solar Cells</h1>
+            <p class="subtitle">Experience at the Design and Innovation Center.</p>
+            <p class="meta">By Anshul Singh / March 2022</p>
+        </header>
+
+        <article class="article-content">
+            <section>
+                <p>This post recounts my first research internship experience at the Design and Innovation Center (DIC) at Panjab University. The DIC is one of twenty such centers established by the Indian government to foster a culture of innovation. I first became aware of this opportunity through a senior at my IEEE Student Branch, which I was a member of at the time.</p>
+                <figure>
+                    <center><img src="/Blogs/project2/dic.jpeg" alt="DIC LOGO"></center>
+                    <figcaption>Logo: Design and Innovation Center, Panjab Univerisity</figcaption>
+                </figure>
+                <p>
+                    I worked on a project related to maintaining the efficiency of solar panels, particularly during the intense heat of summer. The problem is that after reaching a specific temperature, the efficiency of solar panels in producing energy begins to decrease. For instance, if a solar panel has a temperature coefficient of -0.38% per degree Celsius, its efficiency will drop by 0.38% for every degree above 25°C. Conversely, for every degree below 25°C, its efficiency increases by the same amount. This means that cooler, sunny weather is actually the optimal condition.
+                </p>
+                <p>
+                    My project, therefore, involved developing a cooling mechanism so that solar panels could maintain an optimum temperature and produce energy more efficiently. During the internship, I devised and implemented a water-based cooling mechanism, established an Arduino microcontroller-based system to regulate the panel temperature using control algorithms, and successfully constructed a functional small-scale prototype to validate the effectiveness of the entire system.
+                </p>
+                <figure>
+                    <img src="/Blogs/project2/dig.jpeg" alt="Circuit Design of Cooling Mechanism">
+                    <figcaption>The circuit design for the cooling mechanism.</figcaption>
+                </figure>
+            </section>
+            
+            <section>
+                <p>Working on this project taught me a valuable lesson. I used to think that I needed to know everything before starting something new. However, I've learned that it's all about learning *while* working. You don't need to be an expert to begin; you can simply start and learn as you go. This is a principle I will carry with me for a lifetime. I also had the amazing opportunity to showcase my project at the 'All India DIC MEET' in Delhi, presenting to students and professors from all over the country.</p>
+                <figure>
+                    <img src="/Blogs/project2/DIC2.jpeg" alt="All India DIC Meet in Delhi">
+                    <figcaption>Presenting at the All India DIC Meet 2023, Delhi.</figcaption>
+                </figure>
+            </section>
+
+            <section>
+                <h2>How I Got the Internship</h2>
+                <p>As a fresher, I didn't have much experience. I had explored a few technologies, but I was eager to work on a real project. I approached a senior who was already engaged in a project at DIC and expressed my interest. He posed some technical questions and asked if I knew how to program an Arduino. Knowing nothing about it, I admitted my lack of knowledge but emphasized my willingness to learn quickly if given the chance.</p>
+                <p>He gave me one week to learn Arduino and basic circuit design and to propose a solution to a problem statement. I successfully accomplished the task, which secured me my first internship. This taught me that joining communities and clubs is a fantastic way to connect with like-minded individuals. You not only learn from them but also get opportunities to collaborate with brilliant minds.</p>
+                <p>The biggest lesson was this: don't hesitate to try, even if you lack confidence. At worst, you won't succeed. Just give it a try and don't dwell on the outcome.</p>
+                
+                <blockquote>
+                    <p>You have the right to perform your prescribed duty, but you are not entitled to the fruits of action.</p>
+                    <footer>Krishna, Bhagavad Gita</footer>
+                </blockquote>
+
+                <p>I look forward to applying these lessons in future endeavors! For now, adios!</p>
+            </section>
+        </article>
+    </main>
+</body>
+</html>

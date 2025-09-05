@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anshul Singh | My Reading Collection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #2c3e50;
+        }
+        .intro {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            font-size: 1.1em;
+            color: #555;
+        }
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .category-btn {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .category-btn:hover, .category-btn.active {
+            background-color: #3498db;
+            color: #fff;
+            border-color: #3498db;
+        }
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 30px;
+        }
+        .book-card {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .book-cover {
+            height: 240px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .book-cover img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: cover;
+        }
+        .book-info {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .book-title {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        .book-author {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        .book-note {
+            font-size: 0.85em;
+            color: #555;
+            margin-top: auto;
+            font-style: italic;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+            color: #3498db;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .book-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 20px;
+            }
+            .book-cover {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>My Reading Collection</h1>
+    
+<p class="intro">
+    <strong>"Not all readers are leaders, but all leaders are readers." — Harry S. Truman</strong><br>
+    Here’s a collection of books I’ve read recently.
+</p>
+    
+    
+    <div class="book-grid">
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/order_of_time.jpg" alt="The Order of Time">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">The Order of Time</h3>
+                <p class="book-author">Carlo Rovelli</p>
+            </div>
+        </div>
+        
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/hbt.jpg" alt="How I Built This">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">How I Built This</h3>
+                <p class="book-author">Guy Raz</p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/indis.jpg" alt="Indistractable">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">Indistractable</h3>
+                <p class="book-author">Nir Eyal</p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/six_extinct.jpg" alt="The Sixth Extinction: An Unnatural History">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">The Sixth Extinction: An Unnatural History</h3>
+                <p class="book-author">Elizabeth Kolbert </p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/BKS.jpg" alt="The Body Keeps the Score: Brain, Mind, and Body in the Healing of Trauma ">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">The Body Keeps the Score</h3>
+                <p class="book-author">Bessel van der Kolk </p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/thaphyp.jpg" alt="The Happiness Hypothesis">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">The Happiness Hypothesis</h3>
+                <p class="book-author">Jonathan Haidt </p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/IWTY.jpg" alt="I Will Teach You to Be Rich">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">I Will Teach You to Be Rich</h3>
+                <p class="book-author">Ramit Sethi </p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/limit.jpg" alt="Limitless">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">Limitless</h3>
+                <p class="book-author">Jim Kwik</p>
+            </div>
+        </div>
+
+
+
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/htych.jpg" alt="How to Change Your Mind">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">How to Change Your Mind</h3>
+                <p class="book-author">Michael Pollan</p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/TS.jpg" alt="Talking to Strangers">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">Talking to Strangers</h3>
+                <p class="book-author">Malcolm Gladwell</p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/UA.jpg" alt="Unwinding Anxiety">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">Unwinding Anxiety</h3>
+                <p class="book-author">Judson Brewer</p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/ADHD.jpg" alt="ADHD 2.0:">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">ADHD 2.0:</h3>
+                <p class="book-author">Edward M. Hallowell, John J. Ratey</p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/IKG.jpg" alt="IKIGAI">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">Ikigai</h3>
+                <p class="book-author">Héctor García</p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/tartw.jpg" alt="Limitless">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">The Art Of War</h3>
+                <p class="book-author">Sun Tzu</p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/thois.jpg" alt="The Obstacle is the Way">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">The Obstacle is the Way</h3>
+                <p class="book-author">Ryan Holiday</p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="images/books_img/how-to-talk-to-anyone.png" alt="How To Talk To Anyone">
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">How To Talk To Anyone</h3>
+                <p class="book-author">Leil Lowndes</p>
+            </div>
+        </div>
+        
+    </div>
+    
+    <a href="https://pranaval.github.io/" class="back-link">← Back to Homepage</a>
+
+    <script>
+        // Simple filter functionality (would need to be expanded for real implementation)
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Toggle active class
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // In a real implementation, you would filter the books here
+                // This is just a placeholder for the visual demo
+                console.log('Filter by: ' + this.textContent);
+            });
+        });
+    </script>
+</body>
+</html>

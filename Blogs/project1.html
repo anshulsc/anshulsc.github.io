@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An overview of my machine learning research internship at IIT Roorkee, focusing on fault detection in induction motors.">
+    <meta name="keywords" content="Internship, Machine Learning, IIT Roorkee, Signal Processing, Fault Detection, Vibration Analysis">
+    <meta name="author" content="Anshul Singh">
+    <title>ML Internship at IIT Roorkee - Anshul Singh</title>
+
+    <!-- Google Fonts: Lora for body, Lato for headings -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /*
+        * Modern, Minimalist Blog Style
+        */
+
+        body {
+            font-family: 'Lora', serif;
+            font-size: 18px;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            background-color: #fcfcfc;
+            color: #333;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 720px; /* Optimal width for readability */
+            margin: 0 auto;
+            padding: 80px 20px;
+        }
+
+        /* --- Navigation --- */
+        .home-link {
+            display: block;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 30px 20px 0;
+            text-decoration: none;
+            color: #888;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .home-link:hover {
+            color: #347ab6;
+        }
+
+        /* --- Article Header --- */
+        .article-header {
+            text-align: left;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-family: 'Lato', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #222;
+            line-height: 1.2;
+            margin: 0 0 15px 0;
+        }
+
+        .subtitle {
+            font-family: 'Lora', serif;
+            font-size: 1.3rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .meta {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 20px;
+        }
+
+        /* --- Article Content --- */
+        .article-content h2 {
+            font-family: 'Lato', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #222;
+            margin-top: 60px;
+            margin-bottom: 20px;
+        }
+
+        .article-content p {
+            margin-bottom: 25px;
+        }
+
+        .article-content strong {
+            font-weight: 600;
+            color: #111;
+        }
+
+        .article-content a {
+            color: #347ab6;
+            text-decoration: none;
+            border-bottom: 1px solid #cce0f1;
+            transition: all 0.2s ease;
+        }
+
+        .article-content a:hover {
+            background-color: #f0f7ff;
+            border-bottom-color: #347ab6;
+        }
+        
+        /* --- Media Elements --- */
+        figure {
+            margin: 50px 0;
+        }
+
+        img, .video-container {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        figcaption {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #888;
+            text-align: center;
+            font-style: italic;
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px; /* Match image radius */
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            body {
+                font-size: 17px;
+            }
+            .container {
+                padding: 50px 20px;
+            }
+            h1 {
+                font-size: 2.5rem;
+            }
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            .article-content h2 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    
+    <a href="index.html" class="home-link">&larr; Back to Home</a>
+    
+    <main class="container">
+        <header class="article-header">
+            <h1>A Dive into Machine Learning for Predictive Maintenance</h1>
+            <p class="subtitle">Notes from my research internship on fault detection in induction motors at IIT Roorkee.</p>
+            <p class="meta">By Anshul Singh / Summer 2023</p>
+        </header>
+
+        <article class="article-content">
+            <section id="introduction">
+                <p>
+                    This past summer, I had the incredible opportunity to work as a Machine Learning Research Intern at the Indian Institute of Technology, Roorkee. Under the guidance of <strong>Professor R. S. Anand</strong>, I contributed to a project focused on the Health Condition Monitoring of Ball Bearings using Vibration Signals. My role involved a deep dive into signal processing, vibrational data analysis, and the implementation of robust machine learning pipelines.
+                </p>
+                <figure>
+                    <img src="https://iitr.ac.in/Institute/About%20the%20Institute/assets/23c657f2efda7731a3c1990b25f318fa2eb1332208f97ab9cc2a7eac70ab5a76_121004011141_iitroorkee.jpg" alt="IIT Roorkee Campus">
+                    <figcaption>The beautiful campus of the Indian Institute of Technology, Roorkee.</figcaption>
+                </figure> 
+            </section>
+
+            <section id="challenge">
+                <h2>The Challenge: Listening to Machines</h2>
+                <p>
+                    The core problem we addressed was the significant impact that faults in ball bearings can have on an induction motor's health and longevity. Identifying and differentiating these faults—such as tiny cracks in the outer ring—is crucial for predictive maintenance and preventing catastrophic motor failure. We hypothesized that different faults would produce unique vibration signal signatures, almost like a fingerprint, making them distinguishable through machine learning.
+                </p>
+                <figure>
+                    <img src="/Blogs/project1/motors.jpeg" alt="Induction Motor and Ball Bearing">
+                    <figcaption>(a) The induction motor setup used for data collection, (b) A typical ball bearing.</figcaption>
+                </figure> 
+            </section>
+
+            <section id="approach">
+                <h2>Our Methodology</h2>
+                <p>
+                    We structured our approach into a systematic, three-phase workflow. The first phase involved <strong>collecting and preprocessing</strong> the raw vibration data, where we focused on normalizing the signals to a common scale and segmenting them into manageable frames. Next, in the <strong>feature extraction</strong> phase, I derived around 14 key statistical features from both the time and frequency domains of the signals, aiming to capture the unique characteristics of different fault conditions. Finally, the third phase was dedicated to <strong>modeling and analysis</strong>, where we trained various machine learning models on the extracted features and rigorously analyzed their performance.
+                </p>
+            </section>
+
+            <section id="results">
+                <h2>Key Achievements and Results</h2>
+                <p>
+                    Our rigorous methodology yielded highly successful results. We were not only able to successfully interpret the distinct profiles of different faults using our extracted features, but we also identified the most effective techniques for our problem. Through experimentation, the <strong>Genetic Algorithm</strong> proved to be the most effective feature selection method, while <strong>Random Forest</strong> was the best-performing classifier. This combination led us to our final high-performance model, which achieved an impressive accuracy of <strong>97%</strong>. To make this research more accessible, we also developed a web-based application for signal analysis and model training, allowing users to interact with our findings in a practical way.
+                </p>
+            </section>
+
+            <section id="walkthrough">
+                <h2>Project Walkthrough</h2>
+                <p>
+                    I created a short video that walks through the web application we built, demonstrating its capabilities for signal analysis and fault detection. You can see how raw signal data can be uploaded, processed, and classified in near real-time.
+                </p>
+                <div class="video-container">
+                    <iframe 
+                        src="https://www.youtube.com/embed/cTa_5LXZgpk" 
+                        title="YouTube video player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <figcaption><a href="https://youtu.be/cTa_5LXZgpk" target="_blank">Watch the full walkthrough on YouTube.</a></figcaption>
+            </section>
+            
+            <section id="conclusion">
+                <h2>Conclusion</h2>
+                <p>
+                    This internship was a valuable experience in applying theoretical machine learning concepts to a tangible engineering problem. Our research successfully demonstrated that a combination of advanced signal processing, strategic feature extraction, and machine learning is a powerful approach for health condition monitoring in industrial machinery. It provides a robust foundation for building the next generation of predictive maintenance systems.
+                </p>
+            </section>
+        </article>
+    </main>
+
+</body>
+</html>
