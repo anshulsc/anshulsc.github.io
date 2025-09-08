@@ -1,472 +1,272 @@
-<!DOCTYPE HTML>
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
   <title>Anshul Singh</title>
-  
   <meta name="author" content="Anshul Singh">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+  <link rel="stylesheet" href="stylesheet.css">
   <link rel="icon" type="image/png" href="images/tornot.png">
   <style>
-    html {
-            scroll-behavior: smooth;
-        }
-        #widget-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-        }
-        .timeline {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        } 
+    html { scroll-behavior: smooth; }
 
-        .timeline li {
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-        }
-        .timeline li div:first-child {
-        min-width: 100px;
-        }
-        
-        .scrollable-news {
-          max-height: 400px; /* Adjust the maximum height as needed */
-          overflow-y: scroll;
-        }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #fafafa;
+      color: #222;
+    }
 
-        #blogs {
-          margin-top: 40px;
-          padding: 30px;
-          background-color: #f7f7f7;
-          border-radius: 10px;
-        }
-        
-        #blogs h2 {
-          font-size: 2em;
-          color: #333;
-          margin-bottom: 20px;
-        }
-        
-        .blog-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 20px;
-          justify-content: space-between;
-        }
-        
-        .blog-entry {
-          display: flex;
-          flex-direction: column;
-          width: calc(33.33% - 20px); /* Adjust this for more or fewer columns */
-          background-color: white;
-          border: 1px solid #ddd;
-          border-radius: 10px;
-          overflow: hidden;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .blog-image {
-          width: 100%;
-          height: 180px;
-          object-fit: cover;
-        }
-        
-        .blog-content {
-          padding: 15px;
-          text-align: left;
-        }
-        
-        .blog-content h3 {
-          font-size: 1.5em;
-          margin: 0 0 10px;
-        }
-        
-        .blog-content h3 a {
-          text-decoration: none;
-          color: #0073e6;
-        }
-        
-        .blog-content h3 a:hover {
-          text-decoration: underline;
-        }
-        
-        .blog-content p {
-          font-size: 1em;
-          color: #555;
-        }
-        
-        .read-more {
-          margin-top: 10px;
-          font-size: 0.9em;
-          color: #0073e6;
-          text-decoration: none;
-          font-weight: bold;
-        }
-        
-        .read-more:hover {
-          text-decoration: underline;
-        }
-        
-        @media (max-width: 1024px) {
-          .blog-entry {
-            width: calc(50% - 20px); /* 2 columns on smaller screens */
-          }
-        }
-        
-        @media (max-width: 768px) {
-          .blog-entry {
-            width: 100%; /* Full width on mobile */
-          }
-        }
-        section {
-          padding: 50px 20px;
+    table {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      border: 0;
+      border-spacing: 0;
+    }
+
+    td {
+      padding: 0;
+    }
+
+    name {
+      font-size: 2.2rem;
+      font-weight: 700;
+    }
+
+    a {
+      color: #0057c3;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    h2 {
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      text-align: center;
+    }
+
+    /* --- Reflections (Projects) --- */
+    .section-heading {
+      font-size: 2rem;
+      margin-bottom: 30px;
+      color: #111;
+    }
+
+    .project-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+    }
+
+    .project-card {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 25px 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .project-logo {
+      width: 100%;
+      height: 140px;
+      object-fit: contain;
+      margin-bottom: 15px;
+    }
+
+    .project-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .project-links a {
+      font-size: 1rem;
+      color: #0057c3;
+      font-weight: 500;
+    }
+
+    /* --- Footer --- */
+    #footer {
+      margin-top: 60px;
+      padding: 30px 0;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    #clustrmaps-widget {
+      margin: 10px auto 20px;
+      max-width: 300px;
+    }
+
+    /* --- Responsive tweaks --- */
+    @media (max-width: 768px) {
+      name {
+        font-size: 1.8rem;
       }
-
-/* Optional: Style the scrollbar for better visibility */
-.project-grid::-webkit-scrollbar {
-  height: 8px;
-}
-
-.project-grid::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.project-grid::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 10px;
-}
-
-.project-grid::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Wrapper Container */
-.project-container {
-  max-width: 800px; /* Adjust this value to control the width */
-  margin: 0 auto; /* Center the container horizontally */
-  padding: 0 20px; /* Optional: Add padding to the sides */
-}
-
-/* Grid Layout */
-.project-grid {
-  display: flex;
-  gap: 20px; /* Reduce the gap */
-  justify-content: center; /* Center items */
-  align-items: start; /* Align items properly */
-  padding: 10px; /* Add padding for spacing */
-}
-
-/* Project Card */
-.project-card {
-  text-align: center;
-  text-align: center;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 20px 15px; /* Slight padding to maintain balance */
-  background-color: #fff;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.project-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-/* Project Image */
-.project-logo {
-  width: 100%; /* Allow the image to take full card width */
-  max-height: 130px; /* Slightly increase height */
-  object-fit: cover; /* Ensures image fits nicely */
-  border-radius: 8px; /* Optional: Add rounded corners to the image */
-  margin-bottom: 15px;
-}
-
-/* Project Title */
-.project-title {
-  font-size: 22px; /* Increase font size slightly */
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-/* Links for Blog and Code */
-.project-links {
-  margin-top: 15px;
-}
-
-.project-links a {
-  text-decoration: none;
-  font-size: 17px; /* Slightly increase text size */
-  color: #007bff;
-  margin-right: 10px;
-  transition: color 0.3s;
-}
-
-.project-links a:hover {
-  color: #0056b3;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .project-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Smaller cards on mobile */
-    gap: 10px; /* Reduce the gap for small screens */
-    overflow-x: auto; /* Allow horizontal scrolling */
-    padding-bottom: 10px; /* Add space for scrollbar */
-  }
-
-  .project-card {
-    height: auto; /* Allow height to adjust */
-    padding: 15px 10px; /* Reduce padding for small screens */
-  }
-
-  .project-logo {
-    max-height: 100px; /* Reduce image height for small screens */
-  }
-
-  .project-title {
-    font-size: 18px; /* Reduce font size for small screens */
-  }
-
-  .project-links a {
-    font-size: 14px; /* Reduce link font size for small screens */
-  }
-}
-
-/* Section Heading */
-.section-heading {
-  font-size: 32px;
-  text-align: center;
-  padding: 20px;
-  color: #333;
-}
-
-    </style>
+      .project-grid {
+        grid-template-columns: 1fr;
+      }
+      #footer {
+        padding: 20px 10px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-    <tr style="padding:0px">
-      <td style="padding:0px">
-        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-          <tr style="padding:0px">
-            <td style="padding:2.5%;width:63%;vertical-align:middle">
-              <p style="text-align:center">
-                <name>Anshul Singh</name>
-              </p>
-              <p>I am a <strong>Research Associate at the <a href="https://www.iisc.ac.in/">IACV Lab, IISc Bangalore</a></strong>, advised by <strong><a href="https://scholar.google.co.in/citations?user=Rscf2pYAAAAJ&hl=en">Prof. Soma Biswas</a></strong>. My research centers on Large Language Models, with a particular focus on multimodal systems, visual reasoning, and document understanding. My work explores how to enhance the reasoning capabilities of language and vision models. Specifically, I have worked on:</p>
-              <ul>
-                <li>Multimodal fake news detection using <strong> Active Learning</strong></li>
-                <li>Multimodal reasoning for multi-tabular data using Vision-Language Models</li>
-                <li><strong>Multilingual alignment</strong> for low-resource Indic languages</li>
-                <li> Vision Transformers and Signal analysis for fault detection and vocal pattern recognition</li>
-              </ul>
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <table>
+            <tbody>
+              <tr>
+                <td style="padding:2.5%;width:63%;vertical-align:middle">
+                  <p style="text-align:center"><name>Anshul Singh</name></p>
+                  <p>I am a <strong>Research Associate at the <a href="https://www.iisc.ac.in/">IACV Lab, IISc Bangalore</a></strong>, advised by <strong><a href="https://scholar.google.co.in/citations?user=Rscf2pYAAAAJ&hl=en">Prof. Soma Biswas</a></strong>. My research centers on Large Language Models, with a particular focus on multimodal systems, visual reasoning, and document understanding. My work explores how to enhance the reasoning capabilities of language and vision models. Specifically, I have worked on:</p>
+                  <ul>
+                    <li>Multimodal fake news detection using <strong>Active Learning</strong></li>
+                    <li>Multimodal reasoning for multi-tabular data using Vision-Language Models</li>
+                    <li><strong>Multilingual alignment</strong> for low-resource Indic languages</li>
+                    <li>Vision Transformers and Signal analysis for fault detection and vocal pattern recognition</li>
+                  </ul>
+                  <p>Previously, I was a research intern at the <strong>LT Research Group, <a href="https://www.uni-hamburg.de/">University of Hamburg</a></strong>, with <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html">Prof. Chris Biemann</a> and Jan Strich, and a <strong><a href="https://www.mitacs.ca/en/programs/globalink/globalink-research-internship">MITACS Globalink Research Intern</a></strong> at <a href="https://www.dal.ca/">Dalhousie University</a>. I completed my Bachelor of Engineering in Information Technology at <a href="https://puchd.ac.in/">Panjab University</a>. During my undergraduate studies, I also worked as a machine learning research intern at <a href="https://www.iitr.ac.in/">IIT Roorkee</a> and served as the ML/AI Lead at Google Developer Student Clubs.</p>
+                  <p><strong>Research Interests:</strong> Multimodal and Multilingual Reasoning | Vision-Language Models | Interpretability of LLMs | Information Retrieval</p>
+                  <p><strong>Hobbies:</strong> Outside of research, I enjoy traveling, reading, writing blogs, minimalist living, and tinkering with small experiments. I'm always happy to connect for a discussion or collaboration!</p>
+                  <p style="text-align:center">
+                    [<a href="mailto:anshulsinghchambial@gmail.com">Email</a> / 
+                    <a href="data/my_CV.pdf">CV</a> / 
+                    <a href="https://github.com/anshulsc">Github</a> / 
+                    <a href="https://twitter.com/anshulsc">Twitter</a> / 
+                    <a href="https://scholar.google.com/citations?hl=en&user=5vI_nOwAAAAJ">Google Scholar</a> / 
+                    <a href="https://www.linkedin.com/in/anshulsc/">Linkedin</a> / 
+                    <a href="https://blogs.anshulsc.live/">Blogs</a>]
+                  </p>
+                </td>
+                <td style="padding:2.5%;width:40%;max-width:40%">
+                  <a href="images/prof.png"><img style="width:100%;max-width:100%" alt="profile photo" src="images/prof.png"></a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-              <p>Previously, I was a research intern at the <strong>LT Research Group, <a href="https://www.uni-hamburg.de/">University of Hamburg</a></strong>, with <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html">Prof. Chris Biemann</a> and Jan Strich, and a <strong><a href="https://www.mitacs.ca/en/programs/globalink/globalink-research-internship">MITACS Globalink Research Intern</a></strong> at <a href="https://www.dal.ca/">Dalhousie University</a>. I completed my Bachelor of Engineering in Information Technology at <a href="https://puchd.ac.in/">Panjab University</a>. During my undergraduate studies, I also worked as a machine learining research intern at <a href="https://www.iitr.ac.in/">IIT Roorkee</a> and served as the ML/AI Lead at Google Developer Student Clubs.</p>
+          <h2>Experience & Education</h2>
+          <table class="about-edu" width="100%">
+            <tr>
+              <td align="center" width="14%"><a href="https://iisc.ac.in/"><img src="images/iisc.jpg" alt="IISc" width="50%"></a></td>
+              <td align="center" width="14%"><a href="https://www.uni-hamburg.de/en.html"><img src="images/UHH.svg" alt="UHamburg" width="50%"></a></td>
+              <td align="center" width="14%"><a href="https://www.dal.ca/"><img src="images/dal.jpeg" alt="Dalhousie" width="50%"></a></td>
+            </tr>
 
-              <p><strong>Research Interests:</strong>  Multimodal and Multilingual Reasoning | Vision-Language Models | Interpretability of LLMs| Information Retrieval</p>
+            <tr>
+              <td align="center">Research Associate<br><b>IISc, Bangalore</b><br>Aug 2025 – Present</td>
+              <td align="center">Research Intern<br><b>LT Group, UHH</b><br>Jan 2025 – May 2025</td>
+              <td align="center">Undergrad Researcher<br><b>Dalhousie University, Halifax</b><br>Oct 2024 - April 2025</td>
+            </tr>
 
-              <p><strong>Hobbies:</strong> Outside of research, I enjoy traveling, reading, writing blogs, minimalist living, and tinkering with small experiments. I'm always happy to connect for a discussion or collaboration!</p>
+            <tr>
+              <td align="center" width="14%"><a href="https://www.mitacs.ca/"><img src="images/mitacs.jpeg" alt="mitacs" width="50%"></a></td>
+              <td align="center" width="14%"><a href="https://www.iitr.ac.in/"><img src="images/IITR.svg" alt="IITR" width="50%"></a></td>
+              <td align="center" width="14%"><a href="https://puchd.ac.in/"><img src="images/panjab.png" alt="PU" width="50%"></a></td>
+            </tr>
 
-<!-- <p style="color: #d9534f; font-weight: bold;">I’m currently on the job market and open to full-time positions. I’m also happy to collaborate—feel free to reach out!</p>               -->
+            <tr>
+              <td align="center">Research Intern<br><b>MITACS, Canada</b><br>June 2024 – Sep 2024</td>
+              <td align="center">Machine Learning Research Intern<br><b>IIT, Roorkee</b><br>June 2023 – July 2023</td>
+              <td align="center">B.E Information Technology<br><b>Panjab University</b><br>Sep 2021 – Present</td>
+            </tr>
+          </table>
 
-              <p style="text-align:center">
-                    [
-                <a href="mailto:anshulsinghchambial@gmail.com">Email</a> &nbsp/&nbsp
-                <a href="data/my_CV.pdf">CV</a> &nbsp/&nbsp
-                <a href="https://github.com/anshulsc">Github</a> &nbsp/&nbsp
-                <a href="https://twitter.com/anshulsc">Twitter</a> &nbsp/&nbsp
-                <a href="https://scholar.google.com/citations?hl=en&user=5vI_nOwAAAAJ">Google Scholar</a> &nbsp/&nbsp
-                <a href="https://www.linkedin.com/in/anshulsc/">Linkedin</a>&nbsp/&nbsp
-                <a href="https://blogs.anshulsc.live/">Blogs</a>
-]
-              </p>
-            </td>
-            <td style="padding:2.5%;width:40%;max-width:40%">
-              <a href="images/prof.png"><img style="width:100%;max-width:100%" alt="profile photo" src="images/prof.png" class="hoverZoomLink"></a>
-            </td>
-          </tr>
-        </tbody></table>
-       <h2>Experience & Education</h2>
+          <h2>News</h2>
+          <div class="scrollable-news" style="max-height:400px;overflow-y:auto;padding-right:8px;">
+            <ul class="timeline" style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+              <li style="display:flex;gap:12px;"><div><b>Aug 2025</b>:</div><div><b>Paper</b> - Our paper <a href="https://arxiv.org/abs/2506.11684">MTabVQA: Evaluating Multi-Tabular Reasoning of Language Models in Visual Space</a> is accepted at EMNLP 2025 (Findings).</div></li>
+              <li style="display:flex;gap:12px;"><div><b>Aug 2025</b>:</div><div><b>Position</b> - Started working as Research Associate at <a href="https://sites.google.com/iisc.ac.in/somabiswas/iacv-lab-iisc">IACV Lab</a>, IISc Bangalore.</div></li>
+              <li style="display:flex;gap:12px;"><div><b>May 2025</b>:</div><div><b>Paper</b> - Our new preprint, <a href="https://arxiv.org/abs/2506.11684">MTabVQA: Evaluating Multi-Tabular Reasoning of Language Models in Visual Space</a>, is now available on ArXiv.</div></li>
+              <li style="display:flex;gap:12px;"><div><b>Jan 2025</b>:</div><div><b>Position</b> - Started a research internship at <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">Language Technology Group</a>, University of Hamburg, Germany.</div></li>
+              <li style="display:flex;gap:12px;"><div><b>Oct 2024</b>:</div><div><b>Position</b> - Started working as undergraduate researcher at <a href="https://web.cs.dal.ca/~tushar/smart/">SMART Lab</a>, Dalhousie University.</div></li>
+              <li style="display:flex;gap:12px;"><div><b>July 2024</b>:</div><div><b>Position</b> - Selected for <a href="https://www.mitacs.ca/our-programs/globalink-research-internship-students/">Mitacs Globalink Research Internship</a> at Dalhousie University, Nova Scotia, Canada.</div></li>
+              <li style="display:flex;gap:12px;"><div><b>Nov 2023</b>:</div><div><b>Paper</b> - Our work <a href="https://ieeexplore.ieee.org/document/10306428">Comparative Analysis of State-of-the-Art Attack Detection Models</a> was accepted at 14th International Conference on Computing Communication and Networking Technologies (ICCCNT).</div></li>
+              <li style="display:flex;gap:12px;"><div><b>June 2023</b>:</div><div><b>Position</b> - Started a Machine Learning Research Intern at <a href="https://www.iitr.ac.in/">Virtual Labs, IIT Roorkee</a>.</div></li>
+              <li style="display:flex;gap:12px;"><div><b>March 2022</b>:</div><div><b>Position</b> - Started working as Project Intern at Design & Innovation Centre, Panjab University.</div></li>
+            </ul>
+          </div>
 
-        <table class="about-edu" width="100%">
-        
-          <!--────────── LINE 1 · LOGOS ──────────-->
-          <tr>
-            <td align="center" width="14%"><a href="https://iisc.ac.in/"><img     src="images/iisc.jpg" alt="IISc" width="50%"></a></td>
-            <td align="center" width="14%"><a href="https://www.uni-hamburg.de/en.html"><img  src="images/UHH.svg"     alt="UHamburg"  width="50%"></a></td>
-            <td align="center" width="14%"><a href="https://www.dal.ca/"><img src="images/dal.jpeg"        alt="Dalhousie"   width="50%"></a></td>
-          </tr>
-        
-          <!--────────── LINE 1 · TEXT ──────────-->
-          <tr>
-            <td align="center">Research Associate<br><b>IISc, Bangalore</b><br>Aug 2025 – Present</td>
-            <td align="center">Research Intern<br><b>LT Group, UHH</b><br>Jan 2025 – May 2025</td>
-            <td align="center">Undergrad Researcher<br><b>Dalhousie University, Halifax</b><br>Oct 2024 - April 2025 </td>
-          </tr>
-          <br>
-          <!--────────── LINE 2 · LOGOS ──────────-->
-          <tr>
-            <td align="center" width="14%"><a href="https://www.mitacs.ca/"><img src="images/mitacs.jpeg" alt="mitacs" width="50%"></a></td>
-            <td align="center" width="14%"><a href="https://www.iitr.ac.in/"><img src="images/IITR.svg" alt="IITR"width="50%"></a></td>
-            <td align="center" width="14%"><a href="https://puchd.ac.in/"><img src="images/panjab.png" alt="PU"width="50%"></a></td>
-          </tr>
-        
-          <!--────────── LINE 2 · TEXT ──────────-->
-          <tr>
-            <td align="center">Research Intern<br><b>MITACS, Canada</b><br>June 2024 – Sep 2024</td>
-            <td align="center">Machine Learning Research Intern<br><b>IIT, Roorkee</b><br>June 2023 – July 2023</td>
-            <td align="center">B.E Information Technology <br><b>Panjab University</b><br>Sep 2021 – Present </td>
-          </tr>
-        
-        </table>
-        <h2>News</h2>
-        <div class="scrollable-news">
-        <ul class="timeline">
-          <li>
-            <div><b>Aug 2025</b>:</div>
-            <div><b>Paper</b> - Our paper  <a href="https://arxiv.org/abs/2506.11684">MTabVQA: Evaluating Multi-Tabular Reasoning of Language Models in Visual Space</a> is accepted at EMNLP 2025 (Findings)</a>.</div>
-          </li>
-          <li>
-            <div><b>Aug 2025</b>:</div>
-            <div><b>Position</b> - Started working as Research Associate at <a href="https://sites.google.com/iisc.ac.in/somabiswas/iacv-lab-iisc"> IACV Lab</a>, IISc Bangalore.</div>
-          </li>
-          <li>
-            <div><b>May 2025</b>:</div>
-            <div><b>Paper</b> - Our new preprint, <a href="https://arxiv.org/abs/2506.11684">MTabVQA: Evaluating Multi-Tabular Reasoning of Language Models in Visual Space</a>, is now available on ArXiv.</div>
-          </li>
-          <li>
-            <div><b>Jan 2025</b>:</div>
-            <div><b>Position</b> -  Started a research internship at <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html"> Language Technology Group</a>, University of Hamburg, Germany</b>.</div>
-          </li>
-          <li>
-            <div><b>Oct 2024</b>:</div>
-            <div><b>Position</b> - Started working as undergraduate researcher at <a href="https://web.cs.dal.ca/~tushar/smart/"> SMART Lab</a>, Dalhousie University.</div>
-          </li>
-          <li>
-            <div><b>July 2024</b>:</div>
-            <div><b>Position</b> - Selected for <a href="https://www.mitacs.ca/our-programs/globalink-research-internship-students/">Mitacs Globalink Research Internship</a> at Dalhousie University, Nova Scotia, Canada.</div>
-          </li>
-          <li>
-            <div><b>Nov 2023</b>:</div>
-            <div><b>Paper</b> - Our work <a href="https://ieeexplore.ieee.org/document/10306428"> Comparative Analysis of State-of-the-Art Attack Detection Models </a> was accepted at 14th International Conference on Computing Communication and Networking Technologies (ICCCNT) .</div>
-          </li>
-          <li>
-            <div><b>June 2023</b>:</div>
-            <div><b>Position</b> - Started a Machine Learning Research Internat <a href="https://www.iitr.ac.in/"> Virtual Labs, IIT Roorkee</a>.</div>
-          </li>
-          <li>
-            <div><b>March 2022</b>:</div>
-            <div><b>Position</b> - Started working as Project Intern at Design & Innovation Centre, Panjab University.</div>
-          </li>
-        </ul>
-      </div>
-            <!--<h2>Research 	&#129302;</h2>-->
-        <h2>Research</h2>
-        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+          <h2>Research</h2>
+          <table style="width:100%;border:0;border-spacing:0;">
+            <tbody>
+              <tr bgcolor="#CBC3E3">
+                <td style="padding:20px;width:25%;vertical-align:middle"><img src="images/mtabvqa.png" alt="mtabvqa" width="100%"></td>
+                <td style="padding:20px;width:75%;vertical-align:middle">
+                  <a href="https://supernova-event.ai/"><strong>MTabVQA: Evaluating Multi-Tabular Reasoning of Language Models in Visual Space</strong></a><br>
+                  <strong>Anshul Singh</strong>, <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html">Chris Biemann</a>, Jan Strich<br>
+                  <em>Empirical Methods of Natural Language Processing (EMNLP), 2025 Findings</em><br>
+                  <a href="https://arxiv.org/abs/2506.11684">Paper</a> / <a href="https://huggingface.co/mtabvqa">Dataset</a>
+                  <p>In this work, we address a critical gap in Vision-Language Model (VLM) evaluation by introducing MTabVQA, a novel benchmark for multi-tabular visual question answering. Our benchmark comprises 3,745 complex question-answer pairs that require multi-hop reasoning across several visually rendered table images, simulating real-world documents. We benchmark state-of-the-art VLMs, revealing significant limitations in their ability to reason over complex visual data. To address this, we release MTabVQA-Instruct, a large-scale instruction-tuning dataset. Our experiments demonstrate that fine-tuning with our dataset substantially improves VLM performance, bridging the gap between existing benchmarks that rely on single or non-visual tables.</p>
+                </td>
+              </tr>
+              <tr bgcolor="#CBC3E3">
+                <td style="padding:20px;width:25%;vertical-align:middle"><img src="images/cot.jpeg" alt="IoT Intrusion Detection Analysis" width="100%"></td>
+                <td style="padding:20px;width:75%;vertical-align:middle">
+                  <a href="https://doi.org/10.1109/ICCCNT56998.2023.10306428"><strong>Comparative Analysis of State-of-the-Art Attack Detection Models</strong></a><br>
+                  Priyanka Kumari, Veenu Mangat, and <strong>Anshul Singh</strong><br>
+                  <em>14th International Conference on Computing Communication and Networking Technologies (ICCCNT), 2023</em><br>
+                  <a href="https://doi.org/10.1109/ICCCNT56998.2023.10306428">Paper</a>
+                  <p>In this work, we address the growing security challenges in IoT networks by conducting a comprehensive comparative analysis of machine learning classifiers for intrusion detection. We evaluated five distinct models on two real-world IoT network traffic datasets to identify the most effective algorithms for detecting malicious activity. Our findings show that tree-based models, specifically Random Forest and Decision Trees, deliver outstanding performance, achieving accuracies exceeding 99%. This research provides a clear benchmark and practical guidance for developing robust and high-performance security systems to protect vulnerable IoT environments.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-          <tr onmouseout="nightsight_stop()" onmouseover="nightsight_start()" bgcolor="#CBC3E3">
-            <td style="padding:20px;width:25%;vertical-align:middle">
-              <img src="images/mtabvqa.png" alt="mtabvqa" style="border-style: none" width="350">
-            </td>
-            <td style="padding:20px;width:75%;vertical-align:middle">
-              <a href="https://supernova-event.ai/">
-                <papertitle>MTabVQA: Evaluating Multi-Tabular Reasoning of Language Models in Visual Space</papertitle>
-              </a>
-              <br>
-              <strong>Anshul Singh</strong>,
-              <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html">Chris Biemann</a>,
-              Jan Strich
-              <br><br>
-              <em> Emperical Methods of Natural Language Prcoessing (EMNLP), 2025 Findings</em>. 
-              <br><br>
-              
-              <a href="https://arxiv.org/abs/2506.11684">Paper</a> /
-              <a href="https://huggingface.co/mtabvqa">Dataset</a>
-               
-              <br>
-              <p>
-                In this work, we address a critical gap in Vision-Language Model (VLM) evaluation by introducing MTabVQA, a novel benchmark for multi-tabular visual question answering. Our benchmark comprises 3,745 complex question-answer pairs that require multi-hop reasoning across several visually rendered table images, simulating real-world documents. We benchmark state-of-the-art VLMs, revealing significant limitations in their ability to reason over complex visual data. To address this, we release MTabVQA-Instruct, a large-scale instruction-tuning dataset. Our experiments demonstrate that fine-tuning with our dataset substantially improves VLM performance, bridging the gap between existing benchmarks that rely on single or non-visual tables.
-            </td>
-          </tr>
+          <!-- Reflections / Projects -->
+          <section>
+            <h2 class="section-heading">Reflections</h2>
+            <div class="project-container">
+              <div class="project-grid">
+                <div class="project-card">
+                  <img src="Blogs/project2/dic.jpeg" alt="DIC" class="project-logo">
+                  <div class="project-title">My DIC Journey</div>
+                  <div class="project-links"><a href="Blogs/dic-research.html" target="_blank">thoughts</a></div>
+                </div>
+                <div class="project-card">
+                  <img src="images/IITR.svg" alt="IITR" class="project-logo">
+                  <div class="project-title">Research at IIT</div>
+                  <div class="project-links"><a href="Blogs/iit-research.html" target="_blank">thoughts</a></div>
+                </div>
+              </div>
+            </div>
+          </section>
 
-          <tr onmouseout="nightsight_stop()" onmouseover="nightsight_start()" bgcolor="#CBC3E3">
-            <td style="padding:20px;width:25%;vertical-align:middle">
-              <!-- Add a figure from your paper, like a confusion matrix or model diagram -->
-              <img src="images/cot.jpeg" alt="IoT Intrusion Detection Analysis" style="border-style: none" width="350">
-            </td>
-            <td style="padding:20px;width:75%;vertical-align:middle">
-              <a href="https://doi.org/10.1109/ICCCNT56998.2023.10306428">
-                <papertitle>Comparative Analysis of State-of-the-Art Attack Detection Models</papertitle>
-              </a>
-              <br>
-              Priyanka Kumari, Veenu Mangat, and <strong>Anshul Singh</strong>
-              <br><br>
-              <em>14th International Conference on Computing Communication and Networking Technologies (ICCCNT), 2023</em>. 
-              <br><br>
-              
-              <a href="https://doi.org/10.1109/ICCCNT56998.2023.10306428">Paper</a>
-              <!-- Add links to code/webpage if available -->
-               
-              <br>
-              <p>
-                In this work, we address the growing security challenges in IoT networks by conducting a comprehensive comparative analysis of machine learning classifiers for intrusion detection. We evaluated five distinct models on two real-world IoT network traffic datasets to identify the most effective algorithms for detecting malicious activity. Our findings show that tree-based models, specifically Random Forest and Decision Trees, deliver outstanding performance, achieving accuracies exceeding 99%. This research provides a clear benchmark and practical guidance for developing robust and high-performance security systems to protect vulnerable IoT environments.
-              </p>
-            </td>
-          </tr>
-               
-
-
-
-          
-        </tbody></table>
-
-      </td>
-    </tr>
+        </td>
+      </tr>
+    </tbody>
   </table>
 
-<!-- Add this after your Research section -->
-<section>
-  <h2 class="section-heading">Reflections</h2>
-  <div class="project-container"></div>  
-  <div class="project-grid">
-    <div class="project-card">
-      <img src="Blogs/project2/dic.jpeg" alt="DIC" class="project-logo">
-      <div class="project-title">My DIC Journey</div>
-      <div class="project-links">
-        <a href="Blogs/dic-research.html" target="_blank">thoughts</a> 
-      </div>
+  <!-- Footer -->
+  <div id="footer">
+    <div id="clustrmaps-widget">
+      <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=300&t=tt&d=ODPcbudMEnNNGCw42b6i2skAv6rmQ2zrbfq00FLAg44&co=242628&cmn=9e3fdb&ct=edeaea'></script>
     </div>
-    <div class="project-card">
-      <img src="images/IITR.svg" alt="Diffusion Models" class="project-logo">
-      <div class="project-title">Research at IIT</div>
-      <div class="project-links">
-        <a href="Blogs/iit-research.html" target="_blank">thoughts</a> 
-       
-      </div>
-    </div>
-    <!-- Add more project cards as needed -->
+    <p>&copy; Anshul Singh | Last update: Sep. 08, 2025</p>
   </div>
-  </div>
-</section>
-    
-    <!-- Add more project cards as needed -->
-</section>
-
-<div style="text-align: center;">
-    <div style="display: inline-block; margin-top: 40px;">
-        <table class="analytics">
-            <tr>
-              <script type="text/javascript" id="clstr_globe" src="//clustrmaps.com/globe.js?d=ODPcbudMEnNNGCw42b6i2skAv6rmQ2zrbfq00FLAg44"></script>
-            </tr>
-        </table>
-    </div>
-</div>abl>
-</div>
-  
- </body>
-
+</body>
 </html>
