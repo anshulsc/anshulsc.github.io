@@ -1,0 +1,487 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #222;
+    --text-muted: #666;
+    --accent-color: #6e46be;
+    /* Purple from index.html */
+    --accent-hover: #b088f9;
+    /* Hover from index.html */
+    --border-color: #e0e0e0;
+    --font-main: Verdana, Geneva, sans-serif;
+    /* Consistent with index.html */
+    --font-heading: Verdana, Geneva, sans-serif;
+    /* Consistent with index.html */
+    --font-mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.5;
+    /* Consistent with index.html */
+    margin: 0;
+    padding: 0;
+    font-weight: 400;
+    font-size: 0.8rem;
+    /* Adjusted slightly for readability */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+/* Headings - Simple and clean */
+h1,
+h2 {
+    font-family: var(--font-main);
+    font-weight: 700;
+    /* Match index.html bold headings */
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.3;
+    color: #111;
+    letter-spacing: normal;
+}
+
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-main);
+    font-weight: 700;
+    /* Match index.html bold headings */
+    margin-top: 1.8em;
+    margin-bottom: 0.6em;
+    line-height: 1.3;
+    color: #111;
+    letter-spacing: -0.01em;
+}
+
+h1 {
+    font-size: 1.75rem;
+}
+
+h2 {
+    font-size: 1.35rem;
+    /* Technical subheadings */
+    border-bottom: 1px solid #eee;
+    /* Underscore for sections */
+    padding-bottom: 0.3em;
+}
+
+h3 {
+    font-size: 1.1rem;
+}
+
+/* Text justification */
+/* Text justification - Scoped to content only */
+p {
+    margin-bottom: 1.2em;
+}
+
+.article-content p {
+    text-align: justify;
+}
+
+/* Layout */
+/* Layout: Matching index.html's table structure width */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px 40px 20px;
+    /* Slight horizontal padding adjustment */
+    position: relative;
+    min-height: 100vh;
+}
+
+/* Header: Simplified to match index.html plain aesthetics */
+.site-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 40px;
+    padding-top: 40px;
+    border-bottom: none;
+}
+
+.site-logo {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+}
+
+.nav-links a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--accent-color);
+}
+
+/* Blog Index */
+/* Blog Intro */
+.blog-intro {
+    text-align: center;
+    margin-bottom: 60px;
+    position: relative;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Blog Title matching <name> tag in index.html */
+.blog-intro h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: inline-block;
+    color: #000;
+}
+
+.blog-intro p {
+    font-size: 1rem;
+    color: #444;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.scribble-svg {
+    position: absolute;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.15;
+    /* Very subtle light shade */
+    color: var(--accent-color);
+    /* Match theme color */
+    filter: grayscale(20%);
+    /* Slightly muted */
+    max-width: 250px;
+}
+
+.scribble-svg {
+    position: absolute;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.15;
+    /* Very subtle light shade */
+    color: var(--accent-color);
+    /* Match theme color */
+    filter: grayscale(20%);
+    /* Slightly muted */
+    max-width: 250px;
+}
+
+.scribble-inline {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.6;
+    /* Slightly more visible for functional scribbles */
+    color: var(--accent-color);
+    z-index: 0;
+}
+
+/* Centered Search */
+.search-container {
+    margin: 0 auto 40px auto;
+    max-width: 500px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 0;
+    /* Vertical padding only */
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    background: transparent;
+    font-family: inherit;
+    font-size: 1.1rem;
+    box-sizing: border-box;
+    text-align: center;
+    transition: border-color 0.2s;
+    border-radius: 0;
+}
+
+.search-input:focus {
+    outline: none;
+    border-bottom-color: var(--accent-color);
+}
+
+.search-input::placeholder {
+    color: #999;
+    font-size: 1rem;
+    font-style: italic;
+}
+
+.filter-bar {
+    margin-bottom: 60px;
+    text-align: center;
+    /* Center filters */
+}
+
+.filter-btn {
+    background: none;
+    border: none;
+    margin-right: 15px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 0;
+}
+
+.filter-btn.active {
+    color: var(--accent-color);
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+/* Article List */
+.article-list {
+    display: grid;
+    gap: 40px;
+}
+
+.article-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 20px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.article-card:hover {
+    background: white;
+    border-color: var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transform: translateY(-2px);
+}
+
+.article-card h2 {
+    margin-top: 8px;
+    margin-bottom: 12px;
+    font-size: 1.4rem;
+    color: var(--accent-color);
+    font-weight: 700;
+}
+
+.article-card p.excerpt {
+    color: #444;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+.tags .tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    /* Adjusted for smaller body font */
+    background: #f0f0f0;
+    /* Slightly darker than f7f7f7 for contrast */
+    padding: 3px 8px;
+    border-radius: 3px;
+    /* Rectangular with slight curve */
+    margin-right: 6px;
+    color: #333;
+    border: 1px solid #e0e0e0;
+    /* Adding validation border back for technical feel */
+    letter-spacing: 0.02em;
+    transition: background 0.15s;
+}
+
+.tags .tag:hover {
+    background: #e0e0e0;
+    color: #000;
+}
+
+/* Single Article */
+.article-header-single {
+    text-align: center;
+    margin-bottom: 50px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 40px;
+}
+
+.breadcrumb {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+}
+
+.article-header-single h1 {
+    font-size: 1.8rem;
+    /* Slightly smaller than 2rem to match Index styles */
+    margin-bottom: 15px;
+    color: #111;
+    font-weight: 700;
+}
+
+.article-meta-bar {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.article-content {
+    font-size: 1.05rem;
+    /* Optimal reading size */
+    max-width: 100%;
+}
+
+.article-content p {
+    margin-bottom: 1.8em;
+}
+
+/* Drop cap / First paragraph styling optionally */
+.article-content>p:first-of-type {
+    font-size: 1.15rem;
+    color: #222;
+}
+
+.article-content ul,
+.article-content ol {
+    margin-bottom: 1.5em;
+    padding-left: 20px;
+}
+
+.article-content li {
+    margin-bottom: 0.5em;
+}
+
+.article-content a {
+    color: var(--accent-color);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--accent-color);
+}
+
+.article-content a:hover {
+    border-bottom-style: solid;
+}
+
+figure {
+    margin: 30px 0;
+    text-align: center;
+}
+
+figure img {
+    max-width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+figcaption {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-style: italic;
+    text-align: center;
+}
+
+/* Code blocks */
+pre {
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+    font-size: 0.85rem;
+    margin-bottom: 1.5em;
+}
+
+blockquote {
+    border-left: 3px solid var(--accent-color);
+    margin: 1.5em 0;
+    padding-left: 20px;
+    font-style: italic;
+    color: #555;
+}
+
+/* Scribbles Background */
+.bg-scribble {
+    position: absolute;
+    opacity: 0.08;
+    /* Very subtle */
+    pointer-events: none;
+    z-index: -1;
+    color: #444;
+}
+
+/* Specific Positions for standard layout - can be overridden in style attribute */
+.math-eq-1 {
+    top: 100px;
+    left: -50px;
+    width: 200px;
+    transform: rotate(-10deg);
+}
+
+.math-eq-2 {
+    top: 300px;
+    right: -60px;
+    width: 150px;
+    transform: rotate(15deg);
+}
+
+.math-eq-3 {
+    bottom: 200px;
+    left: -40px;
+    width: 250px;
+    transform: rotate(5deg);
+}
+
+.math-eq-4 {
+    top: 600px;
+    right: -30px;
+    width: 80px;
+    transform: rotate(-5deg);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    .article-card {
+        padding: 0;
+        border: none;
+    }
+
+    .article-card:hover {
+        background: none;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .bg-scribble {
+        display: none;
+        /* Hide scribbles on mobile to avoid clutter */
+    }
+}

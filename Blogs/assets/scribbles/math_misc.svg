@@ -1,0 +1,14 @@
+<svg width="150" height="200" viewBox="0 0 150 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Matrix -->
+  <path d="M20 20 L10 20 L10 70 L20 70" stroke="#6e46be" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+  <path d="M130 20 L140 20 L140 70 L130 70" stroke="#6e46be" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+  <circle cx="40" cy="35" r="2" fill="#6e46be" opacity="0.4"/> <circle cx="75" cy="35" r="2" fill="#6e46be" opacity="0.4"/> <circle cx="110" cy="35" r="2" fill="#6e46be" opacity="0.4"/>
+  <circle cx="40" cy="55" r="2" fill="#6e46be" opacity="0.4"/> <circle cx="75" cy="55" r="2" fill="#6e46be" opacity="0.4"/> <circle cx="110" cy="55" r="2" fill="#6e46be" opacity="0.4"/>
+
+  <!-- Nabla / Gradient -->
+  <path d="M40 120 L75 120 L57.5 150 Z" stroke="#6e46be" stroke-width="2" stroke-linejoin="round" opacity="0.5"/>
+  <text x="90" y="140" font-family="serif" font-size="24" fill="#6e46be" opacity="0.5">∇θ J</text>
+
+  <!-- Infinity -->
+  <path d="M50 180 C 30 180, 30 160, 50 160 C 70 160, 80 180, 100 180 C 120 180, 120 160, 100 160 C 80 160, 70 180, 50 180 Z" stroke="#6e46be" stroke-width="2" opacity="0.4"/>
+</svg>

@@ -1,0 +1,221 @@
+---
+layout: post
+title: Distributed Data Parallelism - Training Across Multiple GPUs
+date:   2024-05-13 12:57:49 +0000
+categories: jekyll update
+excerpt: my notes on distributed data parallelism(DDP)
+mathjax: true
+---
+
+These notes are mostly for myself to come back and revise these topics, but if they help someone else, I'll be really happy.
+
+Training large models used to test my patience. I'd watch my machine for hours, making sure it didn't idle out, wishing I could just throw more GPUs at the problem. Eventually, I decided to figure out distributed training.
+
+I expected it to be complicated - lots of low-level GPU programming and networking knowledge. Turns out, you don't need to understand all that to get started. The abstractions PyTorch provides are pretty good.
+
+## Why Bother with Distributed Training?
+
+The obvious answer: it's faster. But there's more to it. As models get bigger, they often don't fit on a single GPU anymore. You need to spread the work across multiple devices just to train at all.
+
+This is where Distributed Data Parallel (DDP) comes in.
+
+## How DDP Works
+
+In regular single-GPU training, the process is straightforward. Your model sits on one GPU. A data loader feeds it batches. Forward pass, compute loss, backward pass, update parameters. Simple.
+
+DDP extends this across multiple GPUs by launching one process per GPU. Each process gets its own copy of the model and optimizer. The trick is keeping all these copies synchronized.
+
+<div class="imgcap">
+<img src="/assets/ddp/ddp.jpeg" width="500" style="border: none;">
+<figcaption>Figure 1: Process : DDP </figcaption>
+</div>
+
+Here's what happens during training:
+
+Each GPU works on different data - that's where the "data parallel" part comes from. A distributed sampler paired with your data loader makes sure each GPU gets unique batches.
+
+All processes run their forward and backward passes independently. Since they're seeing different data, they compute different gradients.
+
+If you just ran the optimizer now, each GPU would update its parameters differently. You'd end up with different models on each device. Not what we want.
+
+So before the optimizer step, DDP synchronizes gradients across all GPUs using a bucketed all-reduce algorithm. This aggregation happens while the backward pass is still running - DDP doesn't wait for all gradients before starting communication. This overlap keeps GPUs busy and avoids idle time.
+
+After synchronization, all model replicas have the same gradients. Running the optimizer now updates all parameters to the same values. After each epoch, all models stay in sync.
+
+## Moving from Single GPU to DDP
+
+Let me show you what changes when you go from single GPU to DDP. The core structure stays the same - it's mostly about adding a few initialization steps and wrapping your model.
+
+Here's a basic single-GPU training setup:
+
+```python
+import torch 
+import torch.nn.functional as F
+from torch.utils.data import Dataset, DataLoader
+
+class CustomDataset(Dataset):
+    def __init__(self, size):
+        self.size = size
+        self.data = [(torch.rand(20), torch.rand(1)) for _ in range(size)]
+
+    def __len__(self):
+        return self.size
+    
+    def __getitem__(self, index):
+        return self.data[index]
+    
+class Trainer:
+    def __init__(self, model, train_data, optimizer, gpu_id, save_every):
+        self.gpu_id = gpu_id
+        self.model = model.to(self.gpu_id)
+        self.train_data = train_data
+        self.optimizer = optimizer
+        self.save_every = save_every
+
+    def _run_batch(self, source, targets):
+        self.optimizer.zero_grad()
+        output = self.model(source)
+        loss = F.cross_entropy(output, targets)
+        loss.backward()
+        self.optimizer.step()
+
+    def _run_epoch(self, epoch):
+        batch_size = len(next(iter(self.train_data))[0])
+        print(f"[GPU{self.gpu_id}] Epoch {epoch} | Batchsize: {batch_size} | Steps: {len(self.train_data)}")
+        for source, targets in self.train_data:
+            source = source.to(self.gpu_id)
+            targets = targets.to(self.gpu_id)
+            self._run_batch(source, targets)
+
+    def _save_checkpoint(self, epoch):
+        checkpoint = self.model.state_dict()
+        PATH = "checkpoint.pt"
+        torch.save(checkpoint, PATH)
+        print(f"Epoch {epoch} | Training snapshot saved at {PATH}")
+
+    def train(self, max_epochs):
+        for epoch in range(max_epochs):
+            self._run_epoch(epoch)
+            if epoch % self.save_every == 0:
+                self._save_checkpoint(epoch)
+
+def load_train_objs():
+    model = torch.nn.Sequential(
+        torch.nn.Linear(20, 64),
+        torch.nn.ReLU(),
+        torch.nn.Linear(64, 1)
+    )
+    train_data = DataLoader(CustomDataset(100), batch_size=10, shuffle=True)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    return model, train_data, optimizer
+
+def main(save_every, total_epochs):
+    model, train_data, optimizer = load_train_objs()
+    trainer = Trainer(model, train_data, optimizer, 0, save_every)
+    trainer.train(total_epochs)
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description='Simple distributed training job')
+    parser.add_argument('total_epochs', type=int, help='Total epochs to train the model')
+    parser.add_argument('save_every', type=int, help='How often to save a snapshot')
+    parser.add_argument('--batch_size', default=32, type=int, help='Input batch size on each device (default: 32)')
+    args = parser.parse_args()
+    
+    device = 0  # shorthand for cuda:0
+    main(device, args.total_epochs, args.save_every, args.batch_size)
+```
+
+Nothing fancy - a Trainer class, a dataset, some helper functions.
+
+## Converting to DDP
+
+First, you need to set up a process group. This lets all your GPU processes discover and talk to each other.
+
+```python
+from torch.distributed import init_process_group, destroy_process_group
+
+def initialize_process_group(world_size, rank):
+    os.environ["MASTER_ADDR"] = "localhost"  # IP of the master node
+    os.environ["MASTER_PORT"] = "12355"      # Port for coordination
+
+    init_process_group(backend="nccl", rank=rank, world_size=world_size)
+    torch.cuda.set_device(rank)
+```
+
+`world_size` is the total number of processes (usually one per GPU). `rank` is a unique ID for each process, starting from 0.
+
+`MASTER_ADDR` and `MASTER_PORT` tell processes how to find each other. For single-machine training, localhost works fine. For multi-node setups, you'd use the IP of your master node.
+
+The `nccl` backend is optimized for NVIDIA GPUs and handles the gradient synchronization.
+
+Next, update your Trainer to wrap the model with DDP:
+
+```python
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+class Trainer:
+    def __init__(self,
+                 model: torch.nn.Module,
+                 train_data: DataLoader,
+                 optimizer,
+                 rank: int,
+                 save_every: int) -> None:
+
+        self.rank = rank
+        self.model = DDP(model.to(rank), device_ids=[rank])
+        self.train_data = train_data
+        self.optimizer = optimizer
+        self.save_every = save_every
+
+    def _save_checkpoint(self, epoch):
+        checkpoint = self.model.module.state_dict()  # Note: .module to access wrapped model
+        PATH = f"checkpoint_rank{self.rank}.pt"
+        torch.save(checkpoint, PATH)
+        print(f"Epoch {epoch} | Training snapshot saved at {PATH}")
+```
+
+The key change is wrapping your model with `DDP`. When saving checkpoints, you need to access `model.module.state_dict()` because DDP wraps your original model.
+
+For data loading, use a DistributedSampler to ensure each GPU gets different data:
+
+```python
+def prepare_dataloader(dataset, batch_size):
+    sampler = torch.utils.data.distributed.DistributedSampler(dataset)
+    return DataLoader(dataset, batch_size=batch_size, sampler=sampler, shuffle=False)
+```
+
+Note `shuffle=False` - the sampler handles shuffling now.
+
+Finally, update your main function to initialize and clean up the process group:
+
+```python
+def main(rank: int, world_size: int, save_every: int, total_epochs: int):
+    initialize_process_group(rank, world_size)
+    model, train_data, optimizer = load_train_objs()
+    train_data = prepare_dataloader(train_data, batch_size=10)
+    trainer = Trainer(model, train_data, optimizer, rank, save_every)
+    trainer.train(total_epochs)
+    destroy_process_group()
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description='simple distributed training job')
+    parser.add_argument('total_epochs', type=int, help='Total epochs to train the model')
+    parser.add_argument('save_every', type=int, help='How often to save a snapshot')
+    parser.add_argument('--batch_size', default=32, type=int, help='Input batch size on each device (default: 32)')
+    args = parser.parse_args()
+    
+    world_size = torch.cuda.device_count()
+    mp.spawn(main, args=(world_size, args.save_every, args.total_epochs, args.batch_size), nprocs=world_size)
+```
+
+`torch.multiprocessing.spawn` launches one process per GPU. Each process runs `main` with its own rank.
+
+## That's It
+
+The changes are minimal. Initialize a process group, wrap your model with DDP, use a distributed sampler, and spawn one process per GPU. PyTorch handles the rest - gradient synchronization, communication, all of it.
+
+This same pattern scales from a single machine with multiple GPUs to multiple machines. You just change `MASTER_ADDR` to point to your actual master node and make sure your networking is set up properly.
+
+---

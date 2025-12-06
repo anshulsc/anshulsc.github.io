@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writings & Research - Anshul Singh</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="research-style.css">
+
+
+</head>
+
+<body>
+
+    <div class="container">
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../index.html">Home</a> /
+                <a href="blog-index.html" class="active"
+                    style="font-weight:bold; color:#111; text-decoration:none; cursor:default;">Writing</a> /
+                <a href="https://twitter.com/anshulsc">Twitter</a> /
+                <a href="https://github.com/anshulsc">Github</a>]
+            </p>
+        </header>
+
+        <!-- Background Scribbles -->
+        <!-- Gaussian - Top Left Extreme -->
+        <img src="assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+
+        <!-- LLM Architecture - Top Right Extreme -->
+        <img src="assets/scribbles/llm_arch.svg" class="scribble-svg"
+            style="top:150px; right:-240px; width:180px; opacity:0.1;">
+
+        <!-- Math Misc - Middle Left Extreme -->
+        <img src="assets/scribbles/math_misc.svg" class="scribble-svg" style="top:500px; left:-220px; width:160px;">
+
+
+
+        <main>
+            <section class="blog-intro">
+                <h1>
+                    Writing & Research
+                    <!-- Underline Scribble -->
+                    <img src="assets/scribbles/underline_wavy.svg" class="scribble-inline"
+                        style="bottom: -15px; left: 50%; transform: translateX(-50%); width: 180px;">
+                </h1>
+
+                <p>Notes on my experiences, life, and sometimes machine learning.</p>
+            </section>
+
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search for ...">
+            </div>
+
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="experience">Experience</button>
+                <button class="filter-btn" data-filter="research">Research</button>
+                <button class="filter-btn" data-filter="engineering">Engineering</button>
+            </div>
+
+            <div class="article-list" id="articleList">
+
+                <div class="article-list" id="articleList" style="max-width: 800px; margin: 0 auto;">
+
+                    <!-- Article 1: Federated Learning -->
+                    <div class="article-item"
+                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
+                        data-category="research machine-learning distributed-systems">
+                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">July 2024 • Distributed
+                            Systems</div>
+                        <a href="fl.html" class="article-title"
+                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">Training
+                            Models Across Multiple Machines - The Federated Learning Way</a>
+                        <p class="article-excerpt"
+                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
+                            Notes on Distributed Training: Building a federated learning system from scratch using gRPC
+                            and Protocol Buffers.
+                        </p>
+                        <div class="tags">
+                            <span class="tag">Research</span>
+                            <span class="tag">Machine Learning</span>
+                            <span class="tag">Distributed Systems</span>
+                        </div>
+                    </div>
+
+                    <!-- Article 2: Distributed Data Parallelism -->
+                    <div class="article-item"
+                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
+                        data-category="research machine-learning distributed-systems">
+                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">May 2024 • Distributed
+                            Systems</div>
+                        <a href="ddp.html" class="article-title"
+                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">Distributed
+                            Data Parallelism - Training Across Multiple GPUs</a>
+                        <p class="article-excerpt"
+                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
+                            My notes on distributed data parallelism (DDP) and how to scale training across multiple
+                            GPUs.
+                        </p>
+                        <div class="tags">
+                            <span class="tag">Research</span>
+                            <span class="tag">Distributed Systems</span>
+                            <span class="tag">PyTorch</span>
+                        </div>
+                    </div>
+
+                    <!-- Article 2 -->
+                    <div class="article-item"
+                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
+                        data-category="research experience machine-learning">
+                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">Summer 2023 • IIT Roorkee
+                        </div>
+                        <a href="iit-research.html" class="article-title"
+                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">Fault
+                            Detection in Induction Motors</a>
+                        <p class="article-excerpt"
+                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
+                            An overview of my machine learning research internship at IIT Roorkee, exploring how signal
+                            processing and ML can predict machinery failure.
+                        </p>
+                        <div class="tags">
+                            <span class="tag">Experience</span>
+                            <span class="tag">Machine Learning</span>
+                        </div>
+                    </div>
+
+                    <!-- Article 3 -->
+                    <div class="article-item"
+                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
+                        data-category="research experience engineering">
+                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">March 2022 • Panjab University
+                        </div>
+                        <a href="dic-research.html" class="article-title"
+                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">Improving
+                            Solar Cell Efficiency</a>
+                        <p class="article-excerpt"
+                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
+                            Building a water-based cooling mechanism for solar panels at the Design and Innovation
+                            Center.
+                        </p>
+                        <div class="tags">
+                            <span class="tag">Experience</span>
+                            <span class="tag">Embedded Systems</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="noResults"
+                    style="display: none; text-align: center; color: var(--text-muted); margin-top: 40px;">
+                    No articles found matching your search.
+                </div>
+
+        </main>
+
+        <footer
+            style="margin-top: 100px; padding-top: 40px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+            &copy; 2024 Anshul Singh.
+        </footer>
+    </div>
+
+    <script>
+        // Search, Filter, and Tag Logic
+        const searchInput = document.getElementById('searchInput');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const articles = document.querySelectorAll('.article-item');
+        const noResults = document.getElementById('noResults');
+        const tags = document.querySelectorAll('.tag');
+
+        function filterArticles() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const activeFilterBtn = document.querySelector('.filter-btn.active');
+            const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : 'all';
+            let visibleCount = 0;
+
+            articles.forEach(article => {
+                const title = article.querySelector('.article-title').textContent.toLowerCase();
+                const excerpt = article.querySelector('.article-excerpt').textContent.toLowerCase();
+                const category = article.dataset.category;
+
+                // Also check if tags match the search term
+                const articleTags = Array.from(article.querySelectorAll('.tag'))
+                    .map(tag => tag.textContent.toLowerCase());
+                const tagsMatchSearch = articleTags.some(t => t.includes(searchTerm));
+
+                const matchesSearch = title.includes(searchTerm) || excerpt.includes(searchTerm) || tagsMatchSearch; // Added tags search
+                const matchesFilter = activeFilter === 'all' || category.includes(activeFilter);
+
+                if (matchesSearch && matchesFilter) {
+                    article.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    article.style.display = 'none';
+                }
+            });
+
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+
+        searchInput.addEventListener('input', filterArticles);
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                filterArticles();
+            });
+        });
+
+        // Tag Click Functionality
+        tags.forEach(tag => { // Add this block
+            tag.style.cursor = 'pointer'; // Make it look clickable
+            tag.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent bubbling if needed
+                const tagText = tag.textContent;
+                searchInput.value = tagText; // Set search input
+                filterArticles(); // Trigger filter
+
+                // Optional: Scroll to search input to show context
+                searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                searchInput.focus();
+            });
+        });
+    </script>
+</body>
+
+</html>
