@@ -22,7 +22,6 @@
     <link rel="stylesheet" href="research-style.css">
 
     <style>
-        /* Specific overrides for markdown content */
         .markdown-body img {
             max-width: 100%;
             display: block;
@@ -108,7 +107,6 @@
         </main>
     </div>
 
-    <!-- Hidden Markdown Content -->
     <script id="raw-markdown" type="text/template">
 What if you could train a machine learning model on thousands of devices without ever collecting their data in one place? That's the core idea behind Federated Learning (FL). Instead of moving data to the model, we move the model to the data.
 
@@ -291,14 +289,8 @@ The system I've described here - with gRPC handling communication, Protocol Buff
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const rawMarkdown = document.getElementById('raw-markdown').innerHTML;
-
-            // Fix image paths: replace /assets/fl/ with fl/ (relative path)
             const processedMarkdown = rawMarkdown.replace(/\/assets\/fl\//g, 'fl/');
-
-            // Render Markdown first
             document.getElementById('content-target').innerHTML = marked.parse(processedMarkdown);
-
-            // Then apply syntax highlighting
             hljs.highlightAll();
         });
     </script>
