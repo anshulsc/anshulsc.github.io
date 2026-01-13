@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://anshulsc.github.io/sitemap.xml
