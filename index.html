@@ -123,18 +123,224 @@
       max-width: 300px;
     }
 
+    /* --- Experience Grid --- */
+    .exp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px 16px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .exp-card {
+      text-align: center;
+    }
+
+    .exp-card img {
+      width: 88px;
+      height: 88px;
+      object-fit: contain;
+      margin-bottom: 8px;
+    }
+
+    .exp-card .exp-role {
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .exp-card .exp-org {
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .exp-card .exp-date {
+      font-size: 12px;
+      color: #666;
+    }
+
     /* --- Responsive tweaks --- */
     @media (max-width: 768px) {
-      name {
-        font-size: 1.8rem;
+
+      /* --- General mobile spacing --- */
+      body {
+        font-size: 15px;
       }
 
+      table {
+        width: 100% !important;
+      }
+
+      name {
+        font-size: 1.6rem;
+      }
+
+      h2 {
+        font-size: 1.4rem;
+        margin-top: 30px;
+        margin-bottom: 14px;
+      }
+
+      /* --- Hero section: stack photo on top, text below --- */
+      table table tbody tr:first-child {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+      }
+
+      table table tbody tr:first-child>td {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 10px 16px !important;
+        text-align: center;
+      }
+
+      table table tbody tr:first-child>td:last-child {
+        display: flex;
+        justify-content: center;
+        padding-bottom: 0 !important;
+      }
+
+      table table tbody tr:first-child>td:last-child img {
+        width: 160px !important;
+        max-width: 160px !important;
+        border-radius: 50%;
+      }
+
+      table table tbody tr:first-child>td:first-child p,
+      table table tbody tr:first-child>td:first-child ul {
+        text-align: left;
+      }
+
+      table table tbody tr:first-child>td:first-child p:first-child {
+        text-align: center;
+      }
+
+      table table tbody tr:first-child>td:first-child p:last-child {
+        text-align: center;
+      }
+
+      /* --- Experience Grid: 2 columns on mobile --- */
+      .exp-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px 12px;
+        padding: 0 12px;
+      }
+
+      .exp-card img {
+        width: 44px;
+        height: 44px;
+      }
+
+      .exp-card .exp-role {
+        font-size: 12px;
+      }
+
+      .exp-card .exp-org {
+        font-size: 12px;
+      }
+
+      .exp-card .exp-date {
+        font-size: 11px;
+      }
+
+      /* --- Research papers: stack image on top, description below --- */
+      .research-table tr[bgcolor] {
+        display: flex !important;
+        flex-direction: column !important;
+      }
+
+      .research-table tr[bgcolor]>td {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 14px 16px !important;
+        display: block !important;
+      }
+
+      .research-table tr[bgcolor]>td:first-child {
+        text-align: center;
+        padding-bottom: 0 !important;
+      }
+
+      .research-table tr[bgcolor]>td:first-child img {
+        width: 70% !important;
+        max-width: 280px;
+        border-radius: 8px;
+      }
+
+      .research-table tr[bgcolor]>td:last-child {
+        text-align: left;
+      }
+
+      /* --- News section --- */
+      .scrollable-news {
+        max-height: 350px !important;
+        padding-right: 4px !important;
+      }
+
+      .scrollable-news li {
+        flex-direction: column !important;
+        gap: 4px !important;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #eee;
+      }
+
+      /* --- Reflections cards --- */
       .project-grid {
         grid-template-columns: 1fr;
       }
 
+      .project-card {
+        padding: 18px 14px;
+      }
+
+      .project-logo {
+        height: 110px;
+      }
+
+      .project-container {
+        padding: 0 10px;
+      }
+
+      /* --- Footer --- */
       #footer {
         padding: 20px 10px;
+        margin-top: 30px;
+      }
+
+      #clustrmaps-widget {
+        max-width: 240px;
+      }
+
+      /* --- Social icons row --- */
+      .social-icon {
+        font-size: 22px;
+        margin: 0 6px;
+      }
+    }
+
+    /* --- Extra small devices (below 400px) --- */
+    @media (max-width: 400px) {
+      name {
+        font-size: 1.4rem;
+      }
+
+      body,
+      td,
+      th,
+      tr,
+      p,
+      a {
+        font-size: 13px;
+      }
+
+      strong {
+        font-size: 13px;
+      }
+
+      table table tbody tr:first-child>td:last-child img {
+        width: 130px !important;
+        max-width: 130px !important;
       }
     }
   </style>
@@ -206,46 +412,56 @@
           </table>
 
           <h2>Experience & Education</h2>
-          <table class="about-edu" width="100%">
-            <tr>
-              <td align="center" width="14%"><a href="https://iisc.ac.in/"><img src="images/iisc.jpg" alt="IISc"
-                    width="50%"></a></td>
-              <td align="center" width="14%"><a href="https://www.uni-hamburg.de/en.html"><img src="images/UHH.svg"
-                    alt="UHamburg" width="50%"></a></td>
-              <td align="center" width="14%"><a href="https://www.dal.ca/"><img src="images/dal.jpeg" alt="Dalhousie"
-                    width="50%"></a></td>
-            </tr>
-
-            <tr>
-              <td align="center" style="padding-bottom: 40px;">Research Associate<br><b>IISc, Bangalore</b><br>Aug 2025
-                – Present</td>
-              <td align="center" style="padding-bottom: 40px;">Research Intern<br><b>LT Group, UHH</b><br>Jan 2025 – May
-                2025</td>
-              <td align="center" style="padding-bottom: 40px;">Undergrad Researcher<br><b>Dalhousie University,
-                  Halifax</b><br>Oct 2024 - April 2025</td>
-            </tr>
-
-            <tr>
-              <td align="center" width="14%"><a href="https://www.mitacs.ca/"><img src="images/mitacs.jpeg" alt="mitacs"
-                    width="50%"></a></td>
-              <td align="center" width="14%"><a href="https://www.iitr.ac.in/"><img src="images/IITR.svg" alt="IITR"
-                    width="50%"></a></td>
-              <td align="center" width="14%"><a href="https://puchd.ac.in/"><img src="images/panjab.png" alt="PU"
-                    width="50%"></a></td>
-            </tr>
-
-            <tr>
-              <td align="center">Research Intern<br><b>MITACS, Canada</b><br>June 2024 – Sep 2024</td>
-              <td align="center">Machine Learning Research Intern<br><b>IIT, Roorkee</b><br>June 2023 – July 2023</td>
-              <td align="center">B.E Information Technology<br><b>Panjab University</b><br>Sep 2021 – June 2025</td>
-            </tr>
-          </table>
+          <div class="exp-grid">
+            <div class="exp-card">
+              <a href="https://iisc.ac.in/"><img src="images/iisc.jpg" alt="IISc"></a>
+              <div class="exp-role">Research Associate</div>
+              <div class="exp-org">IISc, Bangalore</div>
+              <div class="exp-date">Aug 2025 – Present</div>
+            </div>
+            <div class="exp-card">
+              <a href="https://www.uni-hamburg.de/en.html"><img src="images/UHH.svg" alt="UHamburg"></a>
+              <div class="exp-role">Research Intern</div>
+              <div class="exp-org">LT Group, UHH</div>
+              <div class="exp-date">Jan 2025 – May 2025</div>
+            </div>
+            <div class="exp-card">
+              <a href="https://www.dal.ca/"><img src="images/dal.jpeg" alt="Dalhousie"></a>
+              <div class="exp-role">Undergrad Researcher</div>
+              <div class="exp-org">Dalhousie University, Halifax</div>
+              <div class="exp-date">Oct 2024 – April 2025</div>
+            </div>
+            <div class="exp-card">
+              <a href="https://www.mitacs.ca/"><img src="images/mitacs.jpeg" alt="mitacs"></a>
+              <div class="exp-role">Research Intern</div>
+              <div class="exp-org">MITACS, Canada</div>
+              <div class="exp-date">June 2024 – Sep 2024</div>
+            </div>
+            <div class="exp-card">
+              <a href="https://www.iitr.ac.in/"><img src="images/IITR.svg" alt="IITR"></a>
+              <div class="exp-role">ML Research Intern</div>
+              <div class="exp-org">IIT, Roorkee</div>
+              <div class="exp-date">June 2023 – July 2023</div>
+            </div>
+            <div class="exp-card">
+              <a href="https://puchd.ac.in/"><img src="images/panjab.png" alt="PU"></a>
+              <div class="exp-role">B.E Information Technology</div>
+              <div class="exp-org">Panjab University</div>
+              <div class="exp-date">Sep 2021 – June 2025</div>
+            </div>
+          </div>
 
 
           <h2>News</h2>
           <div class="scrollable-news" style="max-height:400px;overflow-y:auto;padding-right:8px;">
             <ul class="timeline"
               style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+              <li style="display:flex;gap:12px;">
+                <div style="white-space:nowrap;"><b>Feb 2026</b>:</div>
+                <div><b>Paper</b> - Our paper <a href="https://arxiv.org/abs/2512.05959">M4-RAG: A Massive-Scale
+                    Multilingual Multi-Cultural Multimodal RAG</a> is accepted at CVPR
+                  2026! 🎉</div>
+              </li>
               <li style="display:flex;gap:12px;">
                 <div style="white-space:nowrap;"><b>Nov 2025</b>:</div>
                 <div><b>Paper</b> - Our paper <a
@@ -307,7 +523,7 @@
           </div>
 
           <h2>Research</h2>
-          <table style="width:100%;border:0;border-spacing:0;">
+          <table class="research-table" style="width:100%;border:0;border-spacing:0;">
             <tbody>
               <!-- <tr bgcolor="#cac4db">
                 <td style="padding:20px;width:25%;vertical-align:middle"><img src="images/mtabvqa.png" alt="mtabvqa"
@@ -332,7 +548,8 @@
                 <td style="padding:20px;width:25%;vertical-align:middle"><img src="images/mtabvqa.png" alt="mtabvqa"
                     width="100%"></td>
                 <td style="padding:20px;width:75%;vertical-align:middle">
-                  <a href="https://aclanthology.org/2025.findings-emnlp.1083/"><strong>MTabVQA: Evaluating Multi-Tabular Reasoning of Language
+                  <a href="https://aclanthology.org/2025.findings-emnlp.1083/"><strong>MTabVQA: Evaluating Multi-Tabular
+                      Reasoning of Language
                       Models in Visual Space</strong></a><br>
                   <strong>Anshul Singh</strong>, <a
                     href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html">Chris Biemann</a>, Jan
@@ -418,7 +635,8 @@
   <!-- Footer -->
   <div id="footer">
     <div id="clustrmaps-widget">
-      <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=080808&w=a&t=tt&d=iFeF0gE4QbivZPJ9TeW5eL8hzUnQag5q7A5a23CLQFU&co=ffffff&ct=808080&cmo=3acc3a&cmn=ff5353'></script>
+      <script type='text/javascript' id='clustrmaps'
+        src='//cdn.clustrmaps.com/map_v2.js?cl=080808&w=a&t=tt&d=iFeF0gE4QbivZPJ9TeW5eL8hzUnQag5q7A5a23CLQFU&co=ffffff&ct=808080&cmo=3acc3a&cmn=ff5353'></script>
     </div>
     <p>&copy; Anshul Singh | Last update: Dec. 03, 2025</p>
   </div>
