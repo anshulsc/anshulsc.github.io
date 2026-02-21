@@ -165,10 +165,16 @@
       /* --- General mobile spacing --- */
       body {
         font-size: 15px;
+        -webkit-text-size-adjust: 100%;
       }
 
       table {
         width: 100% !important;
+      }
+
+      /* Outer wrapper: give breathing room from screen edges */
+      body>table>tbody>tr>td {
+        padding: 0 16px !important;
       }
 
       name {
@@ -191,7 +197,7 @@
       table table tbody tr:first-child>td {
         width: 100% !important;
         max-width: 100% !important;
-        padding: 10px 16px !important;
+        padding: 10px 8px !important;
         text-align: center;
       }
 
@@ -224,7 +230,7 @@
       .exp-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 16px 12px;
-        padding: 0 12px;
+        padding: 0 20px;
       }
 
       .exp-card img {
@@ -253,7 +259,7 @@
       .research-table tr[bgcolor]>td {
         width: 100% !important;
         max-width: 100% !important;
-        padding: 14px 16px !important;
+        padding: 14px 20px !important;
         display: block !important;
       }
 
@@ -275,7 +281,8 @@
       /* --- News section --- */
       .scrollable-news {
         max-height: 350px !important;
-        padding-right: 4px !important;
+        padding: 0 16px 0 4px !important;
+        -webkit-overflow-scrolling: touch;
       }
 
       .scrollable-news li {
@@ -283,6 +290,7 @@
         gap: 4px !important;
         padding-bottom: 12px;
         border-bottom: 1px solid #eee;
+        line-height: 1.55;
       }
 
       /* --- Reflections cards --- */
@@ -299,12 +307,12 @@
       }
 
       .project-container {
-        padding: 0 10px;
+        padding: 0 20px;
       }
 
       /* --- Footer --- */
       #footer {
-        padding: 20px 10px;
+        padding: 20px 20px;
         margin-top: 30px;
       }
 
