@@ -65,6 +65,117 @@
       text-align: center;
     }
 
+    /* --- News & Highlights Section --- */
+    .news-section {
+      max-width: 1140px;
+      margin: 0 auto 20px;
+      padding: 0 20px;
+    }
+
+    .news-heading {
+      font-size: 1.8rem;
+      color: #222;
+      margin: 40px 0 14px;
+      text-align: center;
+    }
+
+    .news-card {
+      padding: 8px 0 0;
+      margin-top: 4px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .news-card::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .news-card::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .news-card::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 8px;
+    }
+
+    .news-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .news-item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 5px 0;
+    }
+
+    .news-date {
+      width: 76px;
+      min-width: 76px;
+      font-size: 0.78rem;
+      color: #999;
+      white-space: nowrap;
+      font-weight: 400;
+      flex-shrink: 0;
+    }
+
+    .news-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      font-weight: 700;
+      width: 62px;
+      min-width: 62px;
+      padding: 2px 0;
+      border-radius: 999px;
+      text-transform: capitalize;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .news-badge.paper {
+      background: rgba(59, 130, 246, 0.12);
+      color: #2563eb;
+    }
+
+    .news-badge.position {
+      background: rgba(16, 185, 129, 0.12);
+      color: #059669;
+    }
+
+    .news-badge.intern {
+      background: rgba(245, 158, 11, 0.12);
+      color: #d97706;
+    }
+
+    .news-badge.award {
+      background: rgba(168, 85, 247, 0.12);
+      color: #7c3aed;
+    }
+
+    .news-desc {
+      font-size: 0.82rem;
+      color: #444;
+      line-height: 1.5;
+      font-weight: 400;
+      flex: 1;
+    }
+
+    .news-desc a {
+      color: #6e46be;
+      font-weight: 500;
+    }
+
+    .news-desc a:hover {
+      color: #b088f9;
+    }
+
     /* --- Reflections (Projects) --- */
     .section-heading {
       font-size: 2rem;
@@ -318,18 +429,27 @@
       }
 
       /* --- News section --- */
-      .scrollable-news {
-        max-height: 350px !important;
-        padding: 0 16px 0 4px !important;
-        -webkit-overflow-scrolling: touch;
+      .news-section {
+        padding: 0 16px;
       }
 
-      .scrollable-news li {
-        flex-direction: column !important;
-        gap: 4px !important;
-        padding-bottom: 12px;
-        border-bottom: 1px solid #eee;
-        line-height: 1.55;
+      .news-card {
+        max-height: 320px;
+      }
+
+      .news-item {
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 8px 0;
+      }
+
+      .news-date {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+
+      .news-badge {
+        font-size: 0.6rem;
       }
 
       /* --- Reflections cards --- */
@@ -499,78 +619,72 @@
           </div>
 
 
-          <h2>News</h2>
-          <div class="scrollable-news" style="max-height:400px;overflow-y:auto;padding-right:8px;">
-            <ul class="timeline"
-              style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
-              <li style="display:flex;gap:12px;">
-                <div style="white-space:nowrap;"><b>March 2026</b>:</div>
-                <div><b>Paper</b> - Our paper <a href="data/paper_hybridnet_preprint.pdf">HybridNet: Efficient Multimodal Fake News Detection</a> is accepted to PP-MisDet@CVPR 2026! 🎉</div>
-              </li>
-              <li style="display:flex;gap:12px;">
-                <div style="white-space:nowrap;"><b>Feb 2026</b>:</div>
-                <div><b>Paper</b> - Our paper <a href="https://arxiv.org/abs/2512.05959">M4-RAG: A Massive-Scale
-                    Multilingual Multi-Cultural Multimodal RAG</a> is accepted at CVPR
-                  2026! 🎉</div>
-              </li>
-              <li style="display:flex;gap:12px;">
-                <div style="white-space:nowrap;"><b>Nov 2025</b>:</div>
-                <div><b>Paper</b> - Our paper <a
-                    href="https://openreview.net/forum?id=20wKerGfSD&referrer=%5Bthe%20profile%20of%20Anshul%20Singh%5D(%2Fprofile%3Fid%3D~Anshul_Singh1)#discussion">Lost
-                    in Translation and Noise: A Deep Dive into Failure-Mode of VLLMs on Real-World Tables</a> is
-                  accepted at EurIPS Workshop on AI for Tabular Data. <b>(Oral 🎉)</b></div>
-              </li>
-              <li style="display:flex;gap:12px;">
-                <div style="white-space:nowrap;"><b>Aug 2025</b>:</div>
-                <div><b>Paper</b> - Our paper <a href="https://arxiv.org/abs/2506.11684">MTabVQA: Evaluating
-                    Multi-Tabular Reasoning of Language Models in Visual Space</a> is accepted at EMNLP 2025 (Findings).
-                </div>
-              </li>
-              <li style="display:flex;gap:12px;">
-                <div style="white-space:nowrap;"><b>Aug 2025</b>:</div>
-                <div><b>Position</b> - Started working as Research Associate at <a
-                    href="https://sites.google.com/iisc.ac.in/somabiswas/iacv-lab-iisc">IACV Lab</a>, IISc Bangalore.
-                </div>
-              </li>
-              <li style="display:flex;gap:12px;">
-                <div style="white-space:nowrap;"><b>May 2025</b>:</div>
-                <div><b>Paper</b> - Our new preprint, <a href="https://arxiv.org/abs/2506.11684">MTabVQA: Evaluating
-                    Multi-Tabular Reasoning of Language Models in Visual Space</a>, is now available on ArXiv.</div>
-              </li>
-              <li style="display:flex;gap:12px;">
-                <div style="white-space:nowrap;"><b>Jan 2025</b>:</div>
-                <div><b>Position</b> - Started a research internship at <a
-                    href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">Language Technology Group</a>,
-                  University of Hamburg, Germany.</div>
-              </li>
-              <li style="display:flex;gap:12px;">
-                <div style="white-space:nowrap;"><b>Oct 2024</b>:</div>
-                <div><b>Position</b> - Started working as undergraduate researcher at <a
-                    href="https://web.cs.dal.ca/~tushar/smart/">SMART Lab</a>, Dalhousie University.</div>
-              </li>
-              <li style="display:flex;gap:12px;">
-                <div style="white-space:nowrap;"><b>July 2024</b>:</div>
-                <div><b>Position</b> - Selected for <a
-                    href="https://www.mitacs.ca/our-programs/globalink-research-internship-students/">Mitacs Globalink
-                    Research Internship</a> at Dalhousie University, Nova Scotia, Canada.</div>
-              </li>
-              <li style="display:flex;gap:12px;">
-                <div style="white-space:nowrap;"><b>Nov 2023</b>:</div>
-                <div><b>Paper</b> - Our work <a href="https://ieeexplore.ieee.org/document/10306428">Comparative
-                    Analysis of State-of-the-Art Attack Detection Models</a> was accepted at 14th International
-                  Conference on Computing Communication and Networking Technologies (ICCCNT).</div>
-              </li>
-              <li style="display:flex;gap:12px;">
-                <div style="white-space:nowrap;"><b>June 2023</b>:</div>
-                <div><b>Position</b> - Started a Machine Learning Research Intern at <a
-                    href="https://www.iitr.ac.in/">Virtual Labs, IIT Roorkee</a>.</div>
-              </li>
-              <li style="display:flex;gap:12px;">
-                <div style="white-space:nowrap;"><b>March 2022</b>:</div>
-                <div><b>Position</b> - Started working as Project Intern at Design & Innovation Centre, Panjab
-                  University.</div>
-              </li>
-            </ul>
+          <div class="news-section">
+            <h2 class="news-heading">News & Highlights</h2>
+            <div class="news-card">
+              <ul class="news-list">
+                <li class="news-item">
+                  <span class="news-date">Mar 2026</span>
+                  <span class="news-badge paper">Paper</span>
+                  <span class="news-desc">Our paper <a href="data/paper_hybridnet_preprint.pdf">HybridNet: Efficient Multimodal Fake News Detection</a> is accepted to PP-MisDet@CVPR 2026! 🎉</span>
+                </li>
+                <li class="news-item">
+                  <span class="news-date">Feb 2026</span>
+                  <span class="news-badge paper">Paper</span>
+                  <span class="news-desc">Our paper <a href="https://arxiv.org/abs/2512.05959">M4-RAG: A Massive-Scale Multilingual Multi-Cultural Multimodal RAG</a> is accepted at CVPR 2026! 🎉</span>
+                </li>
+                <li class="news-item">
+                  <span class="news-date">Nov 2025</span>
+                  <span class="news-badge paper">Paper</span>
+                  <span class="news-desc">Our paper <a href="https://openreview.net/forum?id=20wKerGfSD&referrer=%5Bthe%20profile%20of%20Anshul%20Singh%5D(%2Fprofile%3Fid%3D~Anshul_Singh1)#discussion">Lost in Translation and Noise: A Deep Dive into Failure-Mode of VLLMs on Real-World Tables</a> is accepted at NeurIPS Workshop on AI for Tabular Data. <strong>(Oral 🎉)</strong></span>
+                </li>
+                <li class="news-item">
+                  <span class="news-date">Aug 2025</span>
+                  <span class="news-badge paper">Paper</span>
+                  <span class="news-desc">Our paper <a href="https://arxiv.org/abs/2506.11684">MTabVQA: Evaluating Multi-Tabular Reasoning of Language Models in Visual Space</a> is accepted at EMNLP 2025 (Findings).</span>
+                </li>
+                <li class="news-item">
+                  <span class="news-date">Aug 2025</span>
+                  <span class="news-badge position">Position</span>
+                  <span class="news-desc">Started working as Research Associate at <a href="https://sites.google.com/iisc.ac.in/somabiswas/iacv-lab-iisc">IACV Lab</a>, IISc Bangalore.</span>
+                </li>
+                <li class="news-item">
+                  <span class="news-date">May 2025</span>
+                  <span class="news-badge paper">Paper</span>
+                  <span class="news-desc">Our new preprint, <a href="https://arxiv.org/abs/2506.11684">MTabVQA: Evaluating Multi-Tabular Reasoning of Language Models in Visual Space</a>, is now available on ArXiv.</span>
+                </li>
+                <li class="news-item">
+                  <span class="news-date">Jan 2025</span>
+                  <span class="news-badge intern">Intern</span>
+                  <span class="news-desc">Started a research internship at <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">Language Technology Group</a>, University of Hamburg, Germany.</span>
+                </li>
+                <li class="news-item">
+                  <span class="news-date">Oct 2024</span>
+                  <span class="news-badge position">Position</span>
+                  <span class="news-desc">Started working as undergraduate researcher at <a href="https://web.cs.dal.ca/~tushar/smart/">SMART Lab</a>, Dalhousie University.</span>
+                </li>
+                <li class="news-item">
+                  <span class="news-date">Jul 2024</span>
+                  <span class="news-badge intern">Intern</span>
+                  <span class="news-desc">Selected for <a href="https://www.mitacs.ca/our-programs/globalink-research-internship-students/">Mitacs Globalink Research Internship</a> at Dalhousie University, Nova Scotia, Canada.</span>
+                </li>
+                <li class="news-item">
+                  <span class="news-date">Nov 2023</span>
+                  <span class="news-badge paper">Paper</span>
+                  <span class="news-desc">Our work <a href="https://ieeexplore.ieee.org/document/10306428">Comparative Analysis of State-of-the-Art Attack Detection Models</a> was accepted at 14th International Conference on Computing Communication and Networking Technologies (ICCCNT).</span>
+                </li>
+                <li class="news-item">
+                  <span class="news-date">Jun 2023</span>
+                  <span class="news-badge intern">Intern</span>
+                  <span class="news-desc">Started a Machine Learning Research Intern at <a href="https://www.iitr.ac.in/">Virtual Labs, IIT Roorkee</a>.</span>
+                </li>
+                <li class="news-item">
+                  <span class="news-date">Mar 2022</span>
+                  <span class="news-badge position">Position</span>
+                  <span class="news-desc">Started working as Project Intern at Design & Innovation Centre, Panjab University.</span>
+                </li>
+              </ul>
+            </div>
           </div>
 
           <h2>Research</h2>
