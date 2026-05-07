@@ -510,6 +510,47 @@
         max-width: 130px !important;
       }
     }
+
+    /* --- Hidden gallery button on profile photo --- */
+    .profile-photo-wrap {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .gallery-peek {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      pointer-events: none;
+      text-decoration: none;
+    }
+
+    .profile-photo-wrap:hover .gallery-peek {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .gallery-peek:hover {
+      background: rgba(110, 70, 190, 0.6);
+      color: #fff;
+      text-decoration: none;
+    }
   </style>
 </head>
 
@@ -571,8 +612,11 @@
                   </p>
                 </td>
                 <td style="padding:2.5%;width:40%;max-width:40%">
-                  <a href="gallery.html" title="Gallery"><img style="width:100%;max-width:100%" alt="profile photo"
-                      src="images/prof3.png"></a>
+                  <div class="profile-photo-wrap">
+                    <a href="gallery.html" title="Gallery"><img style="width:100%;max-width:100%" alt="profile photo"
+                        src="images/prof3.png"></a>
+                    <a href="gallery.html" class="gallery-peek">📷 Gallery</a>
+                  </div>
                 </td>
               </tr>
             </tbody>
