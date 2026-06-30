@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 0 660 350" width="100%" height="100%">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <style>
+    .cell { fill: #ffffff; stroke: #e0e0e0; stroke-width: 1.5; rx: 8px; filter: url(#shadow); }
+    .cell-accent { fill: #fcfaff; stroke: #6e46be; stroke-width: 2.5; rx: 8px; filter: url(#shadow); }
+    .text-title { font-family: 'Inter', system-ui, sans-serif; font-size: 15px; font-weight: 600; fill: #111111; }
+    .text-body { font-family: 'Inter', system-ui, sans-serif; font-size: 12px; fill: #555555; }
+    .text-header { font-family: 'Inter', system-ui, sans-serif; font-size: 13px; font-weight: 600; fill: #666666; }
+    .axis-line { stroke: #cccccc; stroke-width: 1.5; }
+  </style>
+
+  <!-- Headers -->
+  <text x="210" y="40" text-anchor="middle" class="text-header">No Bootstrapping (Full Return)</text>
+  <text x="440" y="40" text-anchor="middle" class="text-header">Bootstrapping (Estimate Future)</text>
+  
+  <text x="80" y="130" text-anchor="end" class="text-header">No Sampling</text>
+  <text x="80" y="150" text-anchor="end" class="text-body">(Exact Expectation)</text>
+
+  <text x="80" y="250" text-anchor="end" class="text-header">Sampling</text>
+  <text x="80" y="270" text-anchor="end" class="text-body">(Model-Free/Experience)</text>
+
+  <!-- Grid Lines -->
+  <line x1="90" y1="60" x2="550" y2="60" class="axis-line" />
+  <line x1="90" y1="60" x2="90" y2="310" class="axis-line" />
+  <line x1="320" y1="60" x2="320" y2="310" class="axis-line" stroke-dasharray="3,3" />
+  <line x1="90" y1="185" x2="550" y2="185" class="axis-line" stroke-dasharray="3,3" />
+
+  <!-- Quadrants -->
+  <!-- Top Left: empty -->
+  <rect x="110" y="80" width="200" height="90" class="cell" />
+  <text x="210" y="125" text-anchor="middle" class="text-body" fill="#999">N/A (Analytic returns</text>
+  <text x="210" y="145" text-anchor="middle" class="text-body" fill="#999">without model - impossible)</text>
+
+  <!-- Top Right: DP -->
+  <rect x="340" y="80" width="200" height="90" class="cell" />
+  <text x="440" y="120" text-anchor="middle" class="text-title">Dynamic Programming</text>
+  <text x="440" y="145" text-anchor="middle" class="text-body">Uses exact model, updates via expectation</text>
+
+  <!-- Bottom Left: MC -->
+  <rect x="110" y="200" width="200" height="90" class="cell" />
+  <text x="210" y="240" text-anchor="middle" class="text-title">Monte Carlo</text>
+  <text x="210" y="265" text-anchor="middle" class="text-body">Learns from experience, waits for episode end</text>
+
+  <!-- Bottom Right: TD (Accent) -->
+  <rect x="340" y="200" width="200" height="90" class="cell-accent" />
+  <text x="440" y="240" text-anchor="middle" class="text-title" fill="#6e46be">Temporal Difference</text>
+  <text x="440" y="265" text-anchor="middle" class="text-body" fill="#555">Model-free learning, updates step-by-step</text>
+</svg>

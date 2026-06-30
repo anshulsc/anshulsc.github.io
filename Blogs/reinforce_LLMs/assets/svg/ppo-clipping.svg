@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="100%" height="100%">
+  <style>
+    .axis { stroke: #cccccc; stroke-width: 1.5; }
+    .grid { stroke: #eeeeee; stroke-width: 1; stroke-dasharray: 2,2; }
+    .curve { fill: none; stroke: #6e46be; stroke-width: 3; }
+    .clipped-curve { fill: none; stroke: #a3a3a3; stroke-width: 2.5; stroke-dasharray: 4,4; }
+    .text-main { font-family: 'Inter', system-ui, sans-serif; font-size: 12px; fill: #111111; font-weight: 600; }
+    .text-sub { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; fill: #666666; }
+    .text-title { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; fill: #111111; font-weight: 600; }
+  </style>
+
+  <!-- Title/Labels -->
+  <text x="150" y="30" text-anchor="middle" class="text-title">Advantage Positive (A &gt; 0)</text>
+  <text x="450" y="30" text-anchor="middle" class="text-title">Advantage Negative (A &lt; 0)</text>
+
+  <!-- ================= LEFT GRAPH (A > 0) ================= -->
+  <!-- Origin at (50, 220). Width=220, Height=160 -->
+  <!-- Grid Lines -->
+  <line x1="150" y1="60" x2="150" y2="230" class="grid" /> <!-- r = 1 -->
+  <line x1="190" y1="60" x2="190" y2="230" class="grid" /> <!-- r = 1+epsilon -->
+  <line x1="50" y1="140" x2="250" y2="140" class="grid" /> <!-- L = (1+epsilon)*A -->
+
+  <!-- Axes -->
+  <line x1="50" y1="220" x2="250" y2="220" class="axis" /> <!-- X axis -->
+  <line x1="50" y1="60" x2="50" y2="230" class="axis" />  <!-- Y axis -->
+
+  <!-- Curves -->
+  <!-- Unclipped linear curve: extends from (50, 220) to (230, 100) -->
+  <path d="M 50 220 L 150 170 L 190 150 L 230 130" class="clipped-curve" />
+  <!-- Clipped curve: extends from (50, 220) to (190, 150) and then flat to (250, 150) -->
+  <path d="M 50 220 L 150 170 L 190 150 L 250 150" class="curve" />
+
+  <!-- Labels -->
+  <text x="250" y="235" text-anchor="end" class="text-sub">ratio r_t</text>
+  <text x="55" y="70" text-anchor="start" class="text-sub">Surrogate Loss</text>
+  <text x="150" y="235" text-anchor="middle" class="text-sub">1.0</text>
+  <text x="190" y="235" text-anchor="middle" class="text-sub">1+ε</text>
+  <text x="40" y="145" text-anchor="end" class="text-sub">(1+ε)A</text>
+
+  <!-- ================= RIGHT GRAPH (A < 0) ================= -->
+  <!-- Origin at (350, 140). Width=220, Height=160 -->
+  <!-- Grid Lines -->
+  <line x1="450" y1="60" x2="450" y2="230" class="grid" /> <!-- r = 1 -->
+  <line x1="410" y1="60" x2="410" y2="230" class="grid" /> <!-- r = 1-epsilon -->
+  <line x1="350" y1="180" x2="550" y2="180" class="grid" /> <!-- L = (1-epsilon)*A -->
+
+  <!-- Axes -->
+  <line x1="350" y1="140" x2="550" y2="140" class="axis" /> <!-- X axis -->
+  <line x1="350" y1="60" x2="350" y2="230" class="axis" />  <!-- Y axis -->
+
+  <!-- Curves -->
+  <!-- Unclipped: goes down linearly -->
+  <path d="M 350 100 L 410 124 L 450 140 L 530 172" class="clipped-curve" />
+  <!-- Clipped: goes down to 1-epsilon (410, 124) then is flat for smaller r_t (actually it clips from 1-epsilon to 0) -->
+  <!-- Note: for A < 0, as r_t decreases below 1-epsilon, the loss is clipped at (1-epsilon)*A. So it is flat from 0 to 410, then increases linearly for r_t > 1-epsilon -->
+  <path d="M 350 180 L 410 180 L 450 164 L 530 132" class="curve" />
+
+  <!-- Labels -->
+  <text x="550" y="155" text-anchor="end" class="text-sub">ratio r_t</text>
+  <text x="355" y="70" text-anchor="start" class="text-sub">Surrogate Loss</text>
+  <text x="450" y="155" text-anchor="middle" class="text-sub">1.0</text>
+  <text x="410" y="155" text-anchor="middle" class="text-sub">1-ε</text>
+  <text x="340" y="185" text-anchor="end" class="text-sub">(1-ε)A</text>
+</svg>

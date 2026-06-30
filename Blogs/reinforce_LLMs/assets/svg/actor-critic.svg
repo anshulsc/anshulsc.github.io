@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" width="100%" height="100%">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 2 L 10 5 L 0 8 z" fill="#6e46be" />
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <style>
+    .box { fill: #ffffff; stroke: #e0e0e0; stroke-width: 2; rx: 10px; filter: url(#shadow); }
+    .box-accent { fill: #fcfaff; stroke: #6e46be; stroke-width: 2.5; rx: 10px; filter: url(#shadow); }
+    .text-title { font-family: 'Inter', system-ui, sans-serif; font-size: 15px; font-weight: 600; fill: #111111; }
+    .text-body { font-family: 'Inter', system-ui, sans-serif; font-size: 12px; fill: #555555; }
+    .text-trans { font-family: 'Inter', system-ui, sans-serif; font-size: 12px; fill: #6e46be; font-weight: 600; }
+    .arrow-line { fill: none; stroke: #6e46be; stroke-width: 1.5; marker-end: url(#arrow); }
+  </style>
+
+  <!-- Environment Box (Top) -->
+  <rect x="200" y="30" width="200" height="80" class="box" />
+  <text x="300" y="65" text-anchor="middle" class="text-title">Environment</text>
+  <text x="300" y="85" text-anchor="middle" class="text-body">Transitions state, yields rewards</text>
+
+  <!-- Actor Box (Bottom Left) -->
+  <rect x="70" y="210" width="180" height="90" class="box-accent" />
+  <text x="160" y="245" text-anchor="middle" class="text-title">Actor (Policy)</text>
+  <text x="160" y="265" text-anchor="middle" class="text-body">Selects Action A_t</text>
+  <text x="160" y="280" text-anchor="middle" class="text-body">Updates policy weight θ</text>
+
+  <!-- Critic Box (Bottom Right) -->
+  <rect x="350" y="210" width="180" height="90" class="box" />
+  <text x="440" y="245" text-anchor="middle" class="text-title">Critic (Value Function)</text>
+  <text x="440" y="265" text-anchor="middle" class="text-body">Evaluates Action (V)</text>
+  <text x="440" y="280" text-anchor="middle" class="text-body">Updates value weight w</text>
+
+  <!-- Connectors -->
+  <!-- 1. Environment -> Actor: State S_t -->
+  <path d="M 230 110 L 230 150 Q 230 170 180 170 L 160 170 L 160 210" class="arrow-line" />
+  <text x="150" y="160" text-anchor="end" class="text-trans">State S_t</text>
+
+  <!-- 2. Environment -> Critic: State S_t & Reward R_t -->
+  <path d="M 370 110 L 370 150 Q 370 170 420 170 L 440 170 L 440 210" class="arrow-line" />
+  <text x="450" y="160" text-anchor="start" class="text-trans">State S_t, Reward R_t</text>
+
+  <!-- 3. Actor -> Environment: Action A_t -->
+  <path d="M 100 210 L 100 150 Q 100 90 200 80" class="arrow-line" />
+  <text x="90" y="130" text-anchor="end" class="text-trans">Action A_t</text>
+
+  <!-- 4. Critic -> Actor: TD Error delta_t -->
+  <path d="M 350 255 L 250 255" class="arrow-line" />
+  <text x="300" y="245" text-anchor="middle" class="text-trans">TD Error (δ_t)</text>
+</svg>

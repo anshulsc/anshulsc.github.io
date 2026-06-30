@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 420" width="100%" height="100%">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 2 L 10 5 L 0 8 z" fill="#6e46be" />
+    </marker>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <style>
+    .node { fill: #ffffff; stroke: #b5b5b5; stroke-width: 1.5; rx: 6px; filter: url(#shadow); }
+    .node-accent { fill: #fcfaff; stroke: #6e46be; stroke-width: 2; rx: 6px; filter: url(#shadow); }
+    .text-title { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-weight: 600; fill: #111111; }
+    .text-body { font-family: system-ui, -apple-system, sans-serif; font-size: 9px; fill: #555555; }
+    .line { fill: none; stroke: #6e46be; stroke-width: 1.5; marker-end: url(#arrow); }
+    .tree-branch { fill: none; stroke: #b5b5b5; stroke-width: 1.5; }
+  </style>
+
+  <!-- Row 0: Bellman Equations (Root) -->
+  <rect x="375" y="20" width="200" height="50" class="node-accent" />
+  <text x="475" y="40" text-anchor="middle" class="text-title">Bellman Equations</text>
+  <text x="475" y="58" text-anchor="middle" class="text-body">The recursive foundation of RL</text>
+
+  <!-- Main Splits: Left (Value-Based) vs Right (Policy-Based) -->
+  <!-- Left path to DP and Model-free -->
+  <path d="M 375 45 L 115 45 L 115 90" class="line" />
+  <!-- Right path to Policy Gradients -->
+  <path d="M 575 45 L 710 45 L 710 90" class="line" />
+
+  <!-- LEFT BRANCH: VALUE-BASED & MODEL-BASED -->
+  <!-- Row 1 Left: Dynamic Programming (Model-Based) -->
+  <rect x="40" y="90" width="150" height="50" class="node" />
+  <text x="115" y="112" text-anchor="middle" class="text-title">Dynamic Programming</text>
+  <text x="115" y="128" text-anchor="middle" class="text-body">Model-Based (Offline solver)</text>
+
+  <!-- Model-Free splits from Bellman -->
+  <path d="M 475 70 L 475 140 L 360 140" class="tree-branch" />
+  <path d="M 360 140 L 280 140 L 280 170" class="tree-branch" />
+  <path d="M 360 140 L 440 140 L 440 170" class="tree-branch" />
+
+  <!-- Monte Carlo -->
+  <rect x="210" y="170" width="140" height="50" class="node" />
+  <text x="280" y="192" text-anchor="middle" class="text-title">Monte Carlo</text>
+  <text x="280" y="208" text-anchor="middle" class="text-body">Experience-based (episodic)</text>
+
+  <!-- Temporal Difference -->
+  <rect x="370" y="170" width="140" height="50" class="node" />
+  <text x="440" y="192" text-anchor="middle" class="text-title">Temporal Difference</text>
+  <text x="440" y="208" text-anchor="middle" class="text-body">Bootstrapping (step-level)</text>
+
+  <!-- TD splits to SARSA & Q-learning -->
+  <path d="M 440 220 L 440 245" class="tree-branch" />
+  <path d="M 440 245 L 355 245 L 355 255" class="tree-branch" />
+  <path d="M 440 245 L 485 245 L 485 255" class="tree-branch" />
+
+  <!-- SARSA -->
+  <rect x="300" y="255" width="110" height="45" class="node" />
+  <text x="355" y="275" text-anchor="middle" class="text-title">SARSA</text>
+  <text x="355" y="289" text-anchor="middle" class="text-body">On-policy TD Control</text>
+
+  <!-- Q-Learning -->
+  <rect x="430" y="255" width="110" height="45" class="node" />
+  <text x="485" y="275" text-anchor="middle" class="text-title">Q-Learning</text>
+  <text x="485" y="289" text-anchor="middle" class="text-body">Off-policy TD Control</text>
+
+
+  <!-- RIGHT BRANCH: POLICY-BASED -->
+  <!-- Row 1 Right: Policy Gradients -->
+  <rect x="620" y="90" width="180" height="50" class="node-accent" />
+  <text x="710" y="112" text-anchor="middle" class="text-title">Policy Gradients</text>
+  <text x="710" y="128" text-anchor="middle" class="text-body">Optimize π_θ(a|s) directly</text>
+
+  <!-- Policy Gradients split to REINFORCE & Actor-Critic -->
+  <path d="M 710 140 L 710 170" class="tree-branch" />
+  <path d="M 710 170 L 635 170 L 635 180" class="tree-branch" />
+  <path d="M 710 170 L 765 170 L 765 180" class="tree-branch" />
+
+  <!-- REINFORCE -->
+  <rect x="580" y="180" width="110" height="45" class="node" />
+  <text x="635" y="200" text-anchor="middle" class="text-title">REINFORCE</text>
+  <text x="635" y="214" text-anchor="middle" class="text-body">MC Policy Gradient</text>
+
+  <!-- Actor-Critic -->
+  <rect x="710" y="180" width="110" height="45" class="node" />
+  <text x="765" y="200" text-anchor="middle" class="text-title">Actor-Critic</text>
+  <text x="765" y="214" text-anchor="middle" class="text-body">TD Policy Gradient</text>
+
+  <!-- Advanced PG Methods: TRPO -> PPO -> GRPO -->
+  <path d="M 710 140 L 710 260" class="tree-branch" />
+  <path d="M 710 260 L 630 260 L 630 275" class="tree-branch" />
+  <path d="M 710 260 L 750 260 L 750 275" class="tree-branch" />
+
+  <!-- TRPO -->
+  <rect x="580" y="275" width="100" height="45" class="node" />
+  <text x="630" y="295" text-anchor="middle" class="text-title">TRPO</text>
+  <text x="630" y="309" text-anchor="middle" class="text-body">KL Constraint</text>
+
+  <path d="M 680 297 L 700 297" class="line" />
+
+  <!-- PPO -->
+  <rect x="700" y="275" width="100" height="45" class="node-accent" />
+  <text x="750" y="295" text-anchor="middle" class="text-title">PPO</text>
+  <text x="750" y="309" text-anchor="middle" class="text-body">Clipped Objective</text>
+
+  <!-- GRPO (placed below PPO for clean layout) -->
+  <path d="M 750 320 L 750 345" class="line" />
+
+  <!-- GRPO -->
+  <rect x="700" y="345" width="100" height="45" class="node-accent" />
+  <text x="750" y="365" text-anchor="middle" class="text-title">GRPO</text>
+  <text x="750" y="379" text-anchor="middle" class="text-body">No Critic (Group Rel.)</text>
+</svg>

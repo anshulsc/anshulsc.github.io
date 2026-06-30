@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Chapter 2: The multi-arm bandit problem, exploration vs exploitation, ε-greedy algorithm, and the 10-armed testbed with Python implementation.">
+    <meta name="keywords"
+        content="Multi-Arm Bandit, Exploration Exploitation, Epsilon Greedy, Reinforcement Learning, Action-Value Methods">
+    <meta name="author" content="Anshul Singh">
+    <title>Ch 2: Bandits & The Exploration Problem — RL Notes</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="rl-notes-style.css">
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:700px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">RL Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Chapter 2 of 7</div>
+                <h1>Bandits & The Exploration Problem</h1>
+                <div class="chapter-meta">
+                    <span>June 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">10 min read</span>
+                    <span class="dot">●</span>
+                    <span>Foundations</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target"></article>
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <a href="ch-01.html" class="nav-prev">
+                    <div class="nav-label">← Previous Chapter</div>
+                    <div class="nav-title">The RL Problem</div>
+                </a>
+                <a href="ch-03.html" class="nav-next">
+                    <div class="nav-label">Next Chapter →</div>
+                    <div class="nav-title">MDPs, Value Functions & Bellman Equations</div>
+                </a>
+            </div>
+        </main>
+
+        <footer style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2024 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*In Chapter 1 we saw the tic-tac-toe agent choose between exploitation (greedy move) and exploration (random move). That tension deserves its own study. The multi-arm bandit strips away states, transitions, and long-term planning — leaving only the purest form of the exploration-exploitation dilemma. Understanding it here makes everything from ε-greedy SARSA (→ Ch.5, §3) to PPO's entropy bonus (→ Ch.6, §8) click.*
+
+---
+
+## 1. Defining the Bandit Problem
+
+### The One-Armed Bandit
+The term "one-armed bandit" = a slot machine. Pull the lever, maybe get a payout, probably lose money. Called a "bandit" because the statistics are designed to rob you over time.
+
+### The Multi-Arm Bandit ($k$-Armed Bandit)
+Now imagine $k$ different levers, each with its own unknown reward distribution.
+
+* **The Setup**: You stand before $k$ levers. Each has a stationary probability distribution of rewards.
+* **The Core Problem**: You don't know the underlying distributions.
+* **The Goal**: Maximize total expected reward over $T$ time steps.
+
+---
+
+## 2. Action-Value Methods
+
+### Mathematical Definitions
+Let $a$ denote pulling a specific lever.
+
+* **True Value** ($q_*(a)$): The actual expected reward — an objective, hidden property:
+  $$q_*(a) = \mathbb{E}[R_t \mid A_t = a]$$
+
+* **Estimated Value** ($Q_t(a)$): Our estimate at time step $t$. We want $Q_t(a) \approx q_*(a)$.
+
+### The Sample-Average Method
+Average the rewards actually received when action $a$ was selected:
+
+$$Q_t(a) = \frac{\sum_{i=1}^{t-1} R_i \cdot \mathbb{I}(A_i = a)}{\sum_{i=1}^{t-1} \mathbb{I}(A_i = a)}$$
+
+Where $\mathbb{I}(\text{predicate})$ = 1 if true, 0 otherwise. The denominator = $N_t(a)$ (times action $a$ was chosen before time $t$).
+
+If $N_t(a) = 0$, define $Q_t(a)$ = some default (e.g., $0$).
+
+By the **Law of Large Numbers**: as $N_t(a) \to \infty$, the estimate converges to truth:
+$$\lim_{N_t(a) \to \infty} Q_t(a) = q_*(a)$$
+
+---
+
+## 3. The Exploration vs. Exploitation Dilemma
+
+Imagine a 4-armed bandit where your current estimates are:
+
+| Action ($a$) | Estimated Value ($Q_t(a)$) |
+|---|---|
+| Action 1 | $Q_t(1) = 1.5$ |
+| Action 2 | $Q_t(2) = 3.0$ |
+| Action 3 | $Q_t(3) = 2.5$ |
+| Action 4 | $Q_t(4) = 2.0$ |
+
+### Exploitation (Greedy Choice)
+* Pick **Action 2** ($Q_t(2) = 3.0$).
+* Maximizes immediate reward using current knowledge.
+* Risk: what if Action 3 actually has true value $q_*(3) = 5.0$, but a poor initial sample made its estimate $2.5$?
+
+### Exploration (Non-Greedy Choice)
+* Pick Action 1, 3, or 4.
+* Sacrifices immediate reward to gather information.
+* Enables discovery of better options → potentially higher long-term cumulative rewards.
+
+This is the same tension from tic-tac-toe (→ Ch.1, §6), but isolated to its purest form.
+
+---
+
+## 4. The ε-Greedy Algorithm
+
+The simplest strategy to balance exploration and exploitation:
+
+### The Rule
+* With probability $\epsilon$ (small, e.g. $0.01$ or $0.1$): select an action **at random** from all $k$ actions with equal probability.
+* With probability $1 - \epsilon$: select the **greedy action** $A_t = \operatorname{argmax}_a Q_t(a)$.
+
+### Impact of ε
+* **$\epsilon = 0$ (Purely Greedy)**: Always exploits. Susceptible to local optima.
+* **$\epsilon = 0.1$**: ~90 greedy steps per 100. Learns quickly but wastes 10% of steps exploring even after values are well-estimated.
+* **$\epsilon = 0.01$**: Slower to find the best action, but once found, exploits it 99% of the time → higher long-run performance.
+
+This exact same ε-greedy strategy reappears in Monte Carlo control (→ Ch.5, §1), SARSA (→ Ch.5, §3), and semi-gradient SARSA (→ Ch.5, §4).
+
+<div id="bandit-simulator"></div>
+
+---
+
+## 5. Case Study: 10-Armed Testbed
+
+### Simulation Design
+* **Arms ($k$)**: $10$
+* **True Values**: $q_*(a) \sim \mathcal{N}(0, 1)$ for each arm
+* **Reward Generation**: $R_t \sim \mathcal{N}(q_*(A_t), 1)$ — true value plus noise
+
+Because of noise, the agent can't identify the best arm from a single pull — it must observe multiple samples.
+
+### Python Implementation
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Configuration
+n_bandits = 10         # Number of arms (k)
+n_steps = 1000         # Number of plays per run
+n_tasks = 2000         # Independent runs to average over
+epsilons = [0, 0.1, 0.01]
+
+# Results storage
+average_rewards = np.zeros((n_steps, len(epsilons)))
+
+for i, epsilon in enumerate(epsilons):
+    print(f"Running simulation for epsilon = {epsilon}...")
+    task_rewards = np.zeros((n_tasks, n_steps))
+    
+    for task in range(n_tasks):
+        # 1. Initialize true values q_*(a)
+        q_true = np.random.normal(0, 1, n_bandits)
+        
+        # 2. Initialize estimates Q(a) and counts N(a)
+        q_est = np.zeros(n_bandits)
+        action_counts = np.zeros(n_bandits)
+        
+        for step in range(n_steps):
+            # 3. ε-greedy action selection
+            if np.random.rand() < epsilon:
+                action = np.random.choice(n_bandits)       # explore
+            else:
+                max_val = np.max(q_est)
+                best_actions = np.where(q_est == max_val)[0]
+                action = np.random.choice(best_actions)     # exploit (break ties randomly)
+            
+            # 4. Generate reward
+            reward = np.random.normal(q_true[action], 1)
+            
+            # 5. Update estimate using sample-average
+            action_counts[action] += 1
+            q_est[action] += (reward - q_est[action]) / action_counts[action]
+            
+            task_rewards[task, step] = reward
+            
+    average_rewards[:, i] = np.mean(task_rewards, axis=0)
+
+# Plot
+plt.figure(figsize=(10, 6))
+plt.plot(average_rewards[:, 0], label="ε = 0 (Greedy)", color='red')
+plt.plot(average_rewards[:, 1], label="ε = 0.1", color='blue')
+plt.plot(average_rewards[:, 2], label="ε = 0.01", color='green')
+plt.xlabel("Steps"); plt.ylabel("Average Reward")
+plt.title("ε-Greedy Performance on 10-Armed Bandit")
+plt.legend(); plt.grid(True); plt.show()
+```
+
+### Performance Analysis
+
+* **Greedy ($\epsilon = 0$)**: Plateaus early — gets stuck choosing suboptimal arms, never discovers the best one.
+* **$\epsilon = 0.1$**: Rapid improvement. High exploration rate finds optimal arm quickly, but 10% exploration penalty limits asymptotic performance.
+* **$\epsilon = 0.01$**: Slow start but steady climb. Once it finds the best arm, it exploits 99% of the time → eventually outperforms $\epsilon = 0.1$ in long trials.
+
+---
+
+## 6. Bandits vs. Full Reinforcement Learning
+
+| Characteristic | Multi-Arm Bandit Problems | Full Reinforcement Learning |
+|---|---|---|
+| **State Space** | **Single State**: same situation regardless of action. | **Multiple States**: environment changes dynamically based on actions. |
+| **Planning** | **No Planning**: actions only affect immediate rewards. | **Planning Required**: actions have long-term consequences (e.g., chess moves). |
+| **Action Dependency** | **Independent**: feedback for an action is independent of previous choices. | **Sequential**: reward and next state depend on prior choices $a_{t-1}, a_{t-2}, \dots$ |
+
+---
+
+## 7. Key Takeaways
+
+1. **Value Estimation**: We estimate action values using averages of observed rewards. Over time, $Q_t(a) \to q_*(a)$.
+2. **Exploitation vs. Exploration**: Exploitation maximizes immediate reward but risks missing better options. Exploration sacrifices short-term gains to discover higher long-term returns.
+3. **ε-Greedy Strategy**: Simple and effective — greedy most of the time ($1-\epsilon$), random with probability $\epsilon$.
+
+---
+
+*Bandits have one state — the agent sits in the same situation forever. Real problems have many states, and actions affect what state you land in next. To handle that, we need a formal mathematical framework: Markov Decision Processes → Chapter 3.*
+    </script>
+
+    <script src="rl-notes.js"></script>
+    <script src="assets/interactive/bandit-simulator.js"></script>
+</body>
+
+</html>

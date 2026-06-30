@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Personal research notes on reinforcement learning — from first principles (Sutton & Barto) through policy gradients, PPO, GRPO, and LLM alignment. Seven interconnected chapters.">
+    <meta name="keywords"
+        content="Reinforcement Learning, RL, PPO, GRPO, Policy Gradients, Bellman Equations, MDPs, LLM Alignment, RLHF, Deep RL">
+    <meta name="author" content="Anshul Singh">
+    <title>RL Notes Series — Anshul Singh</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="rl-notes-style.css">
+
+    <style>
+        .series-overview {
+            margin: 40px 0 48px;
+            padding: 24px 28px;
+            background: #fafafa;
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+
+        .series-overview h2 {
+            font-size: 1rem;
+            color: #333;
+            margin-top: 0;
+            border: none;
+            padding-bottom: 0;
+        }
+
+        .series-overview p {
+            font-size: 0.88rem;
+            color: #555;
+            line-height: 1.65;
+            margin-bottom: 0.8em;
+        }
+
+        .series-overview ul {
+            font-size: 0.85rem;
+            color: #555;
+            padding-left: 1.5em;
+        }
+
+        .series-overview li {
+            margin-bottom: 0.3em;
+        }
+
+        .prereqs {
+            margin: 24px 0;
+            padding: 16px 20px;
+            border-left: 3px solid #f59e0b;
+            background: rgba(245, 158, 11, 0.04);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .prereqs strong {
+            color: #d97706;
+        }
+
+        .divider-label {
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #bbb;
+            margin: 48px 0 24px;
+            position: relative;
+        }
+
+        .divider-label::before,
+        .divider-label::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: calc(50% - 60px);
+            height: 1px;
+            background: #eee;
+        }
+
+        .divider-label::before {
+            left: 0;
+        }
+
+        .divider-label::after {
+            right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/llm_arch.svg" class="scribble-svg"
+            style="top:150px; right:-240px; width:180px; opacity:0.1;">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <span style="font-weight:bold; color:#111;">RL Notes</span>]
+            </p>
+        </header>
+
+        <main>
+            <div class="series-hero">
+                <div class="chapter-number">Notes Series • 7 Chapters</div>
+                <h1>Reinforcement Learning for LLMs</h1>
+                <p class="series-subtitle">
+                    Personal research notes building from first principles to modern LLM alignment.
+                    From Bellman equations to PPO and GRPO — the mathematics and intuition behind teaching
+                    language models to reason.
+                </p>
+                <div class="series-meta">June 2026 · Anshul Singh · ~90 min total reading time</div>
+            </div>
+
+            <div class="series-overview">
+                <h2>What These Notes Cover</h2>
+                <p>
+                    These are my personal learning notes on reinforcement learning, written while studying
+                    Sutton & Barto and the papers behind modern LLM post-training. They trace a complete arc:
+                </p>
+                <ul>
+                    <li>Why RL matters and what makes it different from supervised learning</li>
+                    <li>The exploration-exploitation tradeoff (bandits)</li>
+                    <li>Formal frameworks: MDPs, Bellman equations, optimal policies</li>
+                    <li>Computing solutions: dynamic programming, Monte Carlo, temporal difference</li>
+                    <li>Scaling up: function approximation, policy gradients, actor-critic</li>
+                    <li>Modern algorithms: TRPO, PPO, GAE</li>
+                    <li>Applying RL to LLMs: RLHF, GRPO, and the reasoning revolution</li>
+                </ul>
+                <p style="margin-bottom:0;">
+                    Each chapter builds on the previous one. The notes are meant to be read in order, but each
+                    can stand alone if you already have the prerequisites.
+                </p>
+            </div>
+
+            <div class="prereqs">
+                <strong>Prerequisites:</strong> Calculus (derivatives, chain rule), linear algebra (vectors, matrices),
+                probability (expectations, distributions), and basic Python.
+            </div>
+
+            <div class="series-overview" style="margin-top:24px;">
+                <h2>Series Concept Map</h2>
+                <figure><img src="assets/svg/rl-concept-map.svg?v=3" alt="Reinforcement Learning Concept Map" style="max-width:100%;"><figcaption>Figure 0.1: Connections and flow between the notes chapters</figcaption></figure>
+                <hr style="border:none; border-top:1px solid #eee; margin:20px 0;">
+                <h2>Method Evolution Tree</h2>
+                <figure><img src="assets/svg/method-tree-v2.svg" alt="Reinforcement Learning Method Tree" style="max-width:100%;"><figcaption>Figure 0.2: Progression of Reinforcement Learning algorithms</figcaption></figure>
+            </div>
+
+            <div class="divider-label">Chapters</div>
+
+            <div class="learning-path">
+                <a href="ch-01.html" class="chapter-card">
+                    <div class="card-number">1</div>
+                    <div class="card-content">
+                        <div class="card-title">The RL Problem — What Are We Even Doing?</div>
+                        <div class="card-desc">Three paradigms of ML. The agent-environment interface. Policy, reward,
+                            value, model. A tic-tac-toe case study showing temporal difference learning in action.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Trial & Error</span>
+                            <span class="topic-tag">Value Functions</span>
+                            <span class="topic-tag">TD Backing Up</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-02.html" class="chapter-card">
+                    <div class="card-number">2</div>
+                    <div class="card-content">
+                        <div class="card-title">Bandits & The Exploration Problem</div>
+                        <div class="card-desc">The purest form of exploration vs. exploitation. Action-value methods,
+                            ε-greedy strategy, and the 10-armed testbed with full Python implementation.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Multi-Arm Bandits</span>
+                            <span class="topic-tag">ε-Greedy</span>
+                            <span class="topic-tag">Sample Average</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-03.html" class="chapter-card">
+                    <div class="card-number">3</div>
+                    <div class="card-content">
+                        <div class="card-title">MDPs, Value Functions & Bellman Equations</div>
+                        <div class="card-desc">The formal mathematical framework. Markov property, returns, discounting.
+                            Full derivation of the Bellman equation and Bellman optimality equation.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">MDPs</span>
+                            <span class="topic-tag">Bellman Equations</span>
+                            <span class="topic-tag">Optimal Policies</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-04.html" class="chapter-card">
+                    <div class="card-number">4</div>
+                    <div class="card-content">
+                        <div class="card-title">Dynamic Programming — When You Know the World</div>
+                        <div class="card-desc">Policy evaluation, policy improvement, policy iteration, and value
+                            iteration. Jack's Car Rental as a worked example. Why DP fails at scale.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Policy Iteration</span>
+                            <span class="topic-tag">Value Iteration</span>
+                            <span class="topic-tag">Model-Based</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-05.html" class="chapter-card">
+                    <div class="card-number">5</div>
+                    <div class="card-content">
+                        <div class="card-title">Learning from Experience — MC, TD & Control</div>
+                        <div class="card-desc">Model-free methods. Monte Carlo vs. temporal difference. SARSA and
+                            Q-learning (cliff walking). Function approximation and semi-gradient SARSA.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Monte Carlo</span>
+                            <span class="topic-tag">TD Learning</span>
+                            <span class="topic-tag">Q-Learning</span>
+                            <span class="topic-tag">Function Approx.</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-06.html" class="chapter-card">
+                    <div class="card-number">6</div>
+                    <div class="card-content">
+                        <div class="card-title">Policy Gradients — Optimizing the Policy Directly</div>
+                        <div class="card-desc">The policy gradient theorem. REINFORCE with baseline. Actor-critic.
+                            Generalized Advantage Estimation. TRPO's trust regions. PPO's clipping mechanism.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">REINFORCE</span>
+                            <span class="topic-tag">Actor-Critic</span>
+                            <span class="topic-tag">GAE</span>
+                            <span class="topic-tag">TRPO</span>
+                            <span class="topic-tag">PPO</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-07.html" class="chapter-card">
+                    <div class="card-number">7</div>
+                    <div class="card-content">
+                        <div class="card-title">RL Meets LLMs — PPO, GRPO & Reasoning</div>
+                        <div class="card-desc">Mapping RL to language generation. Reward modeling and RLHF. PPO's
+                            4-model memory bottleneck. GRPO: eliminating the critic. Outcome vs. process supervision.
+                        </div>
+                        <div class="card-topics">
+                            <span class="topic-tag">RLHF</span>
+                            <span class="topic-tag">GRPO</span>
+                            <span class="topic-tag">LLM Alignment</span>
+                            <span class="topic-tag">DeepSeek-R1</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        </main>
+
+        <footer
+            style="margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+            &copy; 2024 Anshul Singh.
+        </footer>
+    </div>
+</body>
+
+</html>

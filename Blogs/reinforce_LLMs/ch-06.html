@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Chapter 6: Policy Gradient methods. REINFORCE, baselines, Advantage function, Actor-Critic, GAE, TRPO, and PPO algorithms.">
+    <meta name="keywords"
+        content="Policy Gradients, REINFORCE, Actor-Critic, GAE, TRPO, PPO, Reinforcement Learning, Direct Policy Optimization">
+    <meta name="author" content="Anshul Singh">
+    <title>Ch 6: Policy Gradients — RL Notes</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="rl-notes-style.css">
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:700px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">RL Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Chapter 6 of 7</div>
+                <h1>Policy Gradients — Optimizing the Policy Directly</h1>
+                <div class="chapter-meta">
+                    <span>June 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">18 min read</span>
+                    <span class="dot">●</span>
+                    <span>Policy Optimization</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target"></article>
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <a href="ch-05.html" class="nav-prev">
+                    <div class="nav-label">← Previous Chapter</div>
+                    <div class="nav-title">Learning from Experience — MC, TD & Control</div>
+                </a>
+                <a href="ch-07.html" class="nav-next">
+                    <div class="nav-label">Next Chapter →</div>
+                    <div class="nav-title">RL Meets LLMs — PPO, GRPO & Reasoning</div>
+                </a>
+            </div>
+        </main>
+
+        <footer style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2024 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*Chapter 5 ended with function approximation: approximate $Q(s,a)$ with a neural network, then derive the policy via $\operatorname{argmax}$. But this indirect approach has a fundamental limitation — it requires a maximization step over actions, which breaks for continuous action spaces and can't represent stochastic policies naturally. The move to direct policy optimization is the single most important transition in this entire set of notes. Everything from here — REINFORCE, Actor-Critic, GAE, TRPO, PPO — flows from one idea: parameterize the policy $\pi_\theta$ and use gradient ascent to maximize expected return.*
+
+---
+
+## 1. Why Direct Policy Optimization?
+
+### Limitations of Value-Based Methods
+
+| Attribute | Tabular Value Methods | Value Function Approximation | Policy Gradient Methods |
+| :--- | :--- | :--- | :--- |
+| **Target** | Q-table ($|\mathcal{S}| \times |\mathcal{A}|$) | Neural network $Q(s, a; \mathbf{w})$ | Neural network $\pi(a \mid s; \theta)$ |
+| **Optimization** | Minimize Bellman error locally | Minimize mean squared value error | Maximize expected return directly: $J(\theta)$ |
+| **Action Selection** | Deterministic / Greedy ($\operatorname{argmax}$) | Deterministic / Greedy ($\operatorname{argmax}$) | Stochastic (outputs probabilities) |
+| **Scaling** | Fails in large/continuous spaces | Scales but relies on value proxy | Scales to continuous/complex spaces |
+
+The key problem: value-based methods optimize a **proxy** (the value function) to find a policy. Policy gradients optimize the policy itself.
+
+### Parameterized Policies
+
+$$\pi(a \mid s, \theta) = \mathbb{P}(A_t = a \mid S_t = s, \theta_t = \theta)$$
+
+* $\theta \in \mathbb{R}^{d'}$: parameter vector (neural network weights).
+* By tuning $\theta$, we smoothly warp the action probability distribution.
+
+### Softmax Parameterization (Discrete Actions)
+Define a preference function $h(s, a, \theta) \in \mathbb{R}$ (can be a neural network), then convert to probabilities:
+
+$$\pi(a \mid s, \theta) = \frac{e^{h(s, a, \theta)}}{\sum_{b \in \mathcal{A}} e^{h(s, b, \theta)}}$$
+
+#### Worked Example
+5 actions with preferences $\{3, 2, 4, 5, 1\}$:
+
+| Action | $h(s,a,\theta)$ | $e^h$ | $\pi(a \mid s,\theta)$ |
+|---|---|---|---|
+| $a_1$ | 3 | 20.09 | 8.6% |
+| $a_2$ | 2 | 7.39 | 3.2% |
+| $a_3$ | 4 | 54.60 | 23.4% |
+| $a_4$ | 5 | 148.41 | **63.6%** |
+| $a_5$ | 1 | 2.72 | 1.2% |
+| **Sum** | | **233.20** | **100%** |
+
+The softmax preserves the ranking while satisfying probability axioms (non-negative, sums to 1).
+
+---
+
+## 2. The Policy Gradient Theorem
+
+### The Performance Measure
+For episodic tasks, define:
+$$J(\theta) \doteq v_{\pi_\theta}(s_0)$$
+
+The expected return starting from the initial state under policy $\pi_\theta$. We optimize via gradient ascent:
+
+$$\theta_{t+1} = \theta_t + \alpha \nabla_\theta J(\theta_t)$$
+
+### The Fundamental Challenge
+$J(\theta)$ depends on two things, **both** affected by $\theta$:
+1. **Action probabilities**: $\pi(a|s,\theta)$ — directly controlled by $\theta$.
+2. **State distribution**: $\mu(s)$ — which states the agent visits. Changes implicitly when $\theta$ changes the policy's behavior.
+
+Expanding $J(\theta)$:
+$$J(\theta) = \sum_{s} \mu(s) \sum_{a} \pi(a|s,\theta) q_\pi(s,a)$$
+
+Taking the gradient via product rule:
+$$\nabla_\theta J = \sum_s \left[ \nabla_\theta \mu(s) \sum_a \pi(a|s,\theta) q_\pi(s,a) + \mu(s) \nabla_\theta \left(\sum_a \pi(a|s,\theta) q_\pi(s,a)\right) \right]$$
+
+The term $\nabla_\theta \mu(s)$ is **intractable** — it depends on the unknown environment dynamics $P(s'|s,a)$.
+
+### The Theorem
+The **Policy Gradient Theorem** proves that under expectation, we don't need $\nabla_\theta \mu(s)$:
+
+$$\nabla_\theta J(\theta) \propto \sum_{s} \mu(s) \sum_{a} q_\pi(s,a) \nabla_\theta \pi(a|s,\theta)$$
+
+This is remarkable: we can compute the gradient of the objective without knowing how the state distribution changes with $\theta$.
+
+---
+
+## 3. REINFORCE: From Theorem to Algorithm
+
+### Step 1: State Sum → Expectation
+Since $\mu(s)$ is a probability distribution over states:
+
+$$\sum_s \mu(s) [\cdots] = \mathbb{E}_\pi [\cdots]$$
+
+$$\nabla_\theta J(\theta) \propto \mathbb{E}_\pi \left[\sum_a q_\pi(S_t, a) \nabla_\theta \pi(a|S_t, \theta)\right]$$
+
+### Step 2: Action Sum → Expectation (Log-Derivative Trick)
+Multiply and divide by $\pi(a|S_t,\theta)$:
+
+$$\sum_a q_\pi(S_t,a) \nabla_\theta \pi(a|S_t,\theta) = \sum_a \pi(a|S_t,\theta) \cdot q_\pi(S_t,a) \cdot \frac{\nabla_\theta \pi(a|S_t,\theta)}{\pi(a|S_t,\theta)}$$
+
+The ratio is the log-derivative: $\frac{\nabla f}{f} = \nabla \ln f$
+
+$$= \mathbb{E}_{a \sim \pi} \left[ q_\pi(S_t, A_t) \nabla_\theta \ln \pi(A_t|S_t,\theta) \right]$$
+
+### Step 3: Replace $q_\pi$ with Sample Return $G_t$
+Since $q_\pi(S_t, A_t) = \mathbb{E}[G_t | S_t, A_t]$, we can substitute the actual observed return:
+
+$$\nabla_\theta J(\theta) \propto \mathbb{E}_\pi \left[ G_t \nabla_\theta \ln \pi(A_t|S_t,\theta) \right]$$
+
+### The REINFORCE Update
+
+$$\theta_{t+1} = \theta_t + \alpha G_t \frac{\nabla_\theta \pi(A_t|S_t,\theta_t)}{\pi(A_t|S_t,\theta_t)}$$
+
+### Geometric Intuition
+
+$$\Delta\theta = \alpha \cdot G_t \cdot \frac{\nabla_\theta \pi(A_t|S_t,\theta)}{\pi(A_t|S_t,\theta)}$$
+
+* **Direction**: $\nabla_\theta \pi$ points toward increased probability of action $A_t$.
+* **Scale** ($G_t$): High return → big step. Low/negative return → small/opposite step.
+* **Normalization** ($1/\pi$): Rare but good actions get proportionally larger boosts. Without it, frequently taken actions would dominate the update regardless of quality.
+
+---
+
+## 4. Baselines & the Advantage Function
+
+### The Variance Problem
+REINFORCE is unbiased but has **high variance** — $G_t$ varies wildly between episodes, making convergence slow and noisy.
+
+### Subtracting a Baseline
+Subtract any action-independent baseline $b(s)$ from the return:
+
+$$\nabla_\theta J(\theta) \propto \mathbb{E}_\pi \left[ (q_\pi(s,a) - b(s)) \nabla_\theta \pi(a|s,\theta) \right]$$
+
+### Proof: Zero Bias
+
+$$\sum_a b(s) \nabla_\theta \pi(a|s,\theta) = b(s) \nabla_\theta \sum_a \pi(a|s,\theta) = b(s) \cdot \nabla_\theta(1) = 0$$
+
+Since $\pi$ is a valid probability distribution, its sum is always 1, whose gradient is 0. So subtracting $b(s)$ adds zero expected contribution → no bias, but can massively reduce variance.
+
+### The Advantage Function
+The natural baseline: $b(s) = v_\pi(s)$.
+
+$$A_\pi(s,a) = q_\pi(s,a) - v_\pi(s)$$
+
+* $A > 0$: Action is **better than average** → increase its probability.
+* $A < 0$: Action is **worse than average** → decrease its probability.
+* $A = 0$: Action matches the average.
+
+### REINFORCE with Baseline
+
+$$\theta_{t+1} = \theta_t + \alpha (G_t - \hat{v}(S_t, \mathbf{w})) \frac{\nabla_\theta \pi(A_t|S_t,\theta_t)}{\pi(A_t|S_t,\theta_t)}$$
+
+---
+
+## 5. Actor-Critic: Online Policy Gradients
+
+### The Remaining Problem
+REINFORCE (even with baseline) is a Monte Carlo method — needs complete episodes to compute $G_t$. Can't update mid-episode.
+
+### Solution: Replace $G_t$ with TD Target
+
+$$G_t \approx R_{t+1} + \gamma \hat{v}(S_{t+1}, \mathbf{w})$$
+
+Substituting into the baseline-subtracted update:
+
+$$\theta_{t+1} = \theta_t + \alpha \left(R_{t+1} + \gamma \hat{v}(S_{t+1}, \mathbf{w}) - \hat{v}(S_t, \mathbf{w})\right) \frac{\nabla_\theta \pi(A_t|S_t,\theta_t)}{\pi(A_t|S_t,\theta_t)}$$
+
+The term $R_{t+1} + \gamma \hat{v}(S_{t+1}, \mathbf{w}) - \hat{v}(S_t, \mathbf{w})$ is the TD error $\delta_t$.
+
+<figure><img src="assets/svg/actor-critic.svg?v=2" alt="Actor-Critic Architecture" style="max-width:550px;"><figcaption>Figure 6.1: Actor-Critic Architecture</figcaption></figure>
+
+*The Actor-Critic diagram separates policy selection and value evaluation. The Actor (policy network) selects actions based on the state, while the Critic (value network) estimates state values and sends the TD error $\delta_t$ to guide the Actor's gradient updates.*
+
+### Comparison
+
+| Method | Return Estimate | Variance | Update Type |
+| :--- | :--- | :--- | :--- |
+| **REINFORCE** | $G_t$ (full return) | High | Offline (episode end) |
+| **REINFORCE + Baseline** | $G_t - \hat{v}(S_t, \mathbf{w})$ | Medium | Offline (episode end) |
+| **Actor-Critic** | $\delta_t$ (TD Error) | Low | Online (step-by-step) |
+
+---
+
+## 6. Generalized Advantage Estimation (GAE)
+
+### The Bias-Variance Tradeoff in Advantage Estimation
+The 1-step TD advantage $\hat{A}_t^{(1)} = \delta_t$ has low variance but high bias. The MC advantage $G_t - V(S_t)$ has low bias but high variance. Can we interpolate?
+
+### n-Step Advantage Estimates
+$$\hat{A}_t^{(1)} = \delta_t = R_t + \gamma V(S_{t+1}) - V(S_t)$$
+$$\hat{A}_t^{(2)} = \delta_t + \gamma\delta_{t+1} = R_t + \gamma R_{t+1} + \gamma^2 V(S_{t+2}) - V(S_t)$$
+$$\hat{A}_t^{(n)} = \sum_{l=0}^{n-1} \gamma^l \delta_{t+l}$$
+$$\hat{A}_t^{(\infty)} = G_t - V(S_t)$$
+
+### GAE: Exponentially Weighted Average
+Instead of picking a single $n$, GAE takes an exponentially weighted average of **all** $n$-step advantage estimates $\hat{A}_t^{(k)}$. The contribution of the $k$-step estimator is scaled by $\lambda^{k-1}$:
+
+$$\hat{A}_t^{GAE(\gamma,\lambda)} = (1-\lambda) \sum_{k=1}^{\infty} \lambda^{k-1} \hat{A}_t^{(k)}$$
+
+where $\lambda \in [0, 1]$ is a hyperparameter and $(1-\lambda)$ is a normalization factor ensuring the weights sum to $1$ (since $\sum_{k=1}^{\infty} (1-\lambda)\lambda^{k-1} = 1$).
+
+### Detailed Step-by-Step Derivation
+
+To derive the final GAE formula, let us substitute the sum-of-TD-errors definition for each $k$-step estimator:
+$$\hat{A}_t^{(k)} = \sum_{l=0}^{k-1} \gamma^l \delta_{t+l}$$
+
+Plugging this into our GAE definition:
+$$\hat{A}_t^{GAE(\gamma,\lambda)} = (1-\lambda) \left[ \lambda^0 (\delta_t) + \lambda^1 (\delta_t + \gamma\delta_{t+1}) + \lambda^2 (\delta_t + \gamma\delta_{t+1} + \gamma^2\delta_{t+2}) + \lambda^3 (\delta_t + \gamma\delta_{t+1} + \gamma^2\delta_{t+2} + \gamma^3\delta_{t+3}) + \cdots \right]$$
+
+Now we collect and group the coefficients for each temporal difference error term $\delta_{t+l}$ for $l \ge 0$:
+
+1. **For $\delta_t$ ($l=0$ boundary)**:
+   The error $\delta_t$ is present in every term of the series, scaled by $(1-\lambda)\lambda^n$ for $n \ge 0$:
+   $$\text{Coefficient}(\delta_t) = (1-\lambda)(1 + \lambda + \lambda^2 + \lambda^3 + \cdots)$$
+   Using the geometric series sum formula $\sum_{n=0}^{\infty} \lambda^n = \frac{1}{1-\lambda}$ (for $0 \le \lambda < 1$):
+   $$\text{Coefficient}(\delta_t) = (1-\lambda) \cdot \frac{1}{1-\lambda} = 1$$
+   Thus, the term for $\delta_t$ in the sum is exactly $1 \cdot \delta_t$.
+
+2. **For $\delta_{t+1}$ ($l=1$)**:
+   The error $\delta_{t+1}$ appears in all estimators starting from $\hat{A}_t^{(2)}$, scaled by $\gamma$ and $(1-\lambda)\lambda^n$ for $n \ge 1$:
+   $$\text{Coefficient}(\delta_{t+1}) = (1-\lambda)(\gamma\lambda + \gamma\lambda^2 + \gamma\lambda^3 + \gamma\lambda^4 + \cdots)$$
+   Factoring out the term $\gamma\lambda$:
+   $$\text{Coefficient}(\delta_{t+1}) = (1-\lambda)\gamma\lambda (1 + \lambda + \lambda^2 + \lambda^3 + \cdots)$$
+   Applying the geometric series sum:
+   $$\text{Coefficient}(\delta_{t+1}) = (1-\lambda)\gamma\lambda \cdot \frac{1}{1-\lambda} = \gamma\lambda$$
+   Thus, the term for $\delta_{t+1}$ in the sum is exactly $(\gamma\lambda)\delta_{t+1}$.
+
+3. **For $\delta_{t+2}$ ($l=2$)**:
+   The error $\delta_{t+2}$ appears in all estimators starting from $\hat{A}_t^{(3)}$, scaled by $\gamma^2$ and $(1-\lambda)\lambda^n$ for $n \ge 2$:
+   $$\text{Coefficient}(\delta_{t+2}) = (1-\lambda)(\gamma^2\lambda^2 + \gamma^2\lambda^3 + \gamma^2\lambda^4 + \gamma^2\lambda^5 + \cdots)$$
+   Factoring out the term $\gamma^2\lambda^2$:
+   $$\text{Coefficient}(\delta_{t+2}) = (1-\lambda)\gamma^2\lambda^2 (1 + \lambda + \lambda^2 + \lambda^3 + \cdots)$$
+   Applying the geometric series sum:
+   $$\text{Coefficient}(\delta_{t+2}) = (1-\lambda)\gamma^2\lambda^2 \cdot \frac{1}{1-\lambda} = (\gamma\lambda)^2$$
+   Thus, the term for $\delta_{t+2}$ in the sum is exactly $(\gamma\lambda)^2\delta_{t+2}$.
+
+4. **For any $\delta_{t+l}$ (by induction)**:
+   For any future step $l \ge 0$, the TD error $\delta_{t+l}$ is scaled by $\gamma^l$ and starts appearing at the estimator $\hat{A}_t^{(l+1)}$ with initial weight $(1-\lambda)\lambda^l$:
+   $$\text{Coefficient}(\delta_{t+l}) = (1-\lambda)\sum_{k=l+1}^{\infty} \gamma^l \lambda^{k-1} = (1-\lambda)\gamma^l\lambda^l \sum_{j=0}^{\infty} \lambda^j = (1-\lambda)\gamma^l\lambda^l \cdot \frac{1}{1-\lambda} = (\gamma\lambda)^l$$
+
+Summing all these grouped terms together yields the final GAE estimator:
+$$\hat{A}_t^{GAE(\gamma,\lambda)} = \sum_{l=0}^{\infty} (\gamma\lambda)^l \delta_{t+l}$$
+
+### The $\lambda$ Parameter
+* **$\lambda = 0$**: $\hat{A}_t = \delta_t$ — pure TD, high bias, low variance.
+* **$\lambda = 1$**: $\hat{A}_t = G_t - V(S_t)$ — pure MC, low bias, high variance.
+* **Practice**: $\lambda \in [0.95, 0.98]$ balances both. Used in PPO, GRPO.
+
+---
+
+## 7. TRPO: Trust Regions for Safe Updates
+
+### The Problem with Vanilla Policy Gradients
+Standard gradient ascent can take destructively large steps — the policy changes so much in one update that it enters a bad region of parameter space and never recovers.
+
+### Policy Performance Difference Identity
+For any two policies $\pi'$ and $\pi$:
+
+$$\eta(\pi') = \eta(\pi) + \mathbb{E}_{\tau \sim \pi'} \left[ \sum_{t=0}^{\infty} \gamma^t A_\pi(s_t, a_t) \right]$$
+
+#### Proof (Telescoping Sum)
+By definition, the advantage of action $a_t$ in state $s_t$ relative to policy $\pi$ is:
+$$A_\pi(s_t, a_t) = \mathbb{E}_{s_{t+1} \sim P} \left[ R(s_t) + \gamma v_\pi(s_{t+1}) - v_\pi(s_t) \right]$$
+
+Substitute this into the expectation over trajectories $\tau = (s_0, a_0, s_1, a_1, \dots)$ generated by the new policy $\pi'$:
+$$\mathbb{E}_{\tau \sim \pi'} \left[ \sum_{t=0}^{\infty} \gamma^t A_\pi(s_t, a_t) \right] = \mathbb{E}_{\tau \sim \pi'} \left[ \sum_{t=0}^{\infty} \gamma^t \left( R(s_t) + \gamma v_\pi(s_{t+1}) - v_\pi(s_t) \right) \right]$$
+
+Now, expand the summation and distribute the discount factor $\gamma^t$:
+$$= \mathbb{E}_{\tau \sim \pi'} \left[ \sum_{t=0}^{\infty} \gamma^t R(s_t) \right] + \mathbb{E}_{\tau \sim \pi'} \left[ \sum_{t=0}^{\infty} \gamma^{t+1} v_\pi(s_{t+1}) - \sum_{t=0}^{\infty} \gamma^t v_\pi(s_t) \right]$$
+
+Observe that the first term is precisely the definition of the expected discounted return of the new policy $\pi'$:
+$$\mathbb{E}_{\tau \sim \pi'} \left[ \sum_{t=0}^{\infty} \gamma^t R(s_t) \right] = \eta(\pi')$$
+
+Now expand the remaining terms inside the second expectation:
+$$\sum_{t=0}^{\infty} \gamma^{t+1} v_\pi(s_{t+1}) - \sum_{t=0}^{\infty} \gamma^t v_\pi(s_t)$$
+$$= \left( \gamma v_\pi(s_1) + \gamma^2 v_\pi(s_2) + \gamma^3 v_\pi(s_3) + \cdots \right) - \left( v_\pi(s_0) + \gamma v_\pi(s_1) + \gamma^2 v_\pi(s_2) + \cdots \right)$$
+
+This is a telescoping sum where every discounted value term $\gamma^k v_\pi(s_k)$ for $k \ge 1$ appears once positively in the first sum and once negatively in the second sum. Subtracting them cancels out all future terms, leaving only the $t=0$ boundary term of the negative sum:
+$$= -v_\pi(s_0)$$
+
+Substituting this back into our original expectation:
+$$\mathbb{E}_{\tau \sim \pi'} \left[ \sum_{t=0}^{\infty} \gamma^t A_\pi(s_t, a_t) \right] = \eta(\pi') + \mathbb{E}_{\tau \sim \pi'} \left[ -v_\pi(s_0) \right]$$
+
+Since the initial state $s_0$ is drawn from the start state distribution $s_0 \sim \rho_0$ (which is identical under both policies), the expectation of $-v_\pi(s_0)$ is the expected performance of the old policy $\pi$:
+$$\mathbb{E}_{\tau \sim \pi'} \left[ -v_\pi(s_0) \right] = - \mathbb{E}_{s_0 \sim \rho_0} \left[ v_\pi(s_0) \right] = -\eta(\pi)$$
+
+Thus:
+$$\mathbb{E}_{\tau \sim \pi'} \left[ \sum_{t=0}^{\infty} \gamma^t A_\pi(s_t, a_t) \right] = \eta(\pi') - \eta(\pi)$$
+
+Rearranging terms yields the Performance Difference Identity:
+$$\eta(\pi') = \eta(\pi) + \mathbb{E}_{\tau \sim \pi'} \left[ \sum_{t=0}^{\infty} \gamma^t A_\pi(s_t, a_t) \right] \quad \blacksquare$$
+
+### The Surrogate Objective
+
+To optimize the new policy $\pi'$, let us first write the Performance Difference Identity by expanding the expectation over state-action visitations:
+$$\eta(\pi') = \eta(\pi) + \sum_{s} \rho_{\pi'}(s) \sum_{a} \pi'(a|s) A_\pi(s, a)$$
+
+where $\rho_{\pi'}(s) = \sum_{t=0}^{\infty} \gamma^t P(s_t = s \mid \pi')$ is the unnormalized discounted state visitation frequency under the new policy $\pi'$.
+
+#### The Circular Dependency Problem
+To evaluate or optimize this exact expression for a candidate new policy $\pi'$, we would need to sample states from $\rho_{\pi'}(s)$. However, $\rho_{\pi'}(s)$ depends directly on the transition dynamics under the *new, unknown* policy $\pi'$. This is a classic chicken-and-egg problem: we cannot search for the optimal new policy parameters $\theta'$ without already knowing its resulting state distribution, which would require running the policy in the environment.
+
+#### Bypassing via Old Distribution Approximation
+To bypass this dependency, we approximate the state distribution of the new policy $\rho_{\pi'}(s)$ using the state visitation distribution of our current (old) policy $\rho_\pi(s)$, which we *can* easily estimate from our collected trajectories.
+
+This approximation gives us the **surrogate objective** $L_\pi(\pi')$:
+$$L_\pi(\pi') = \eta(\pi) + \sum_{s} \rho_\pi(s) \sum_{a} \pi'(a|s) A_\pi(s, a)$$
+
+#### Key Properties of the Surrogate Objective
+This approximation is highly effective locally because at the point of expansion (where the new policy $\pi'$ equals the current policy $\pi$):
+1. **Value Matching**: The surrogate value is identical to the true objective:
+   $$L_\pi(\pi) = \eta(\pi) + \sum_{s} \rho_\pi(s) \sum_{a} \pi(a|s) A_\pi(s, a) = \eta(\pi) \quad \left(\text{since } \sum_a \pi(a|s)A_\pi(s,a) = 0\right)$$
+2. **Gradient Matching**: The first-order gradient of the surrogate objective matches the gradient of the true objective:
+   $$\nabla_{\theta'} L_\pi(\pi')\Big|_{\pi' = \pi} = \nabla_{\theta'} \eta(\pi')\Big|_{\pi' = \pi}$$
+   This ensures that taking a small step to maximize $L_\pi(\pi')$ is guaranteed to also improve the true objective $\eta(\pi')$.
+
+### Monotonic Improvement Bound
+How far can $\pi'$ deviate from $\pi$ before the approximation breaks?
+
+$$\eta(\pi') \geq L_\pi(\pi') - C \cdot D_{KL}^{\max}(\pi, \pi')$$
+
+where $C = \frac{4\epsilon\gamma}{(1-\gamma)^2}$ and $\epsilon = \max_{s,a} |A_\pi(s,a)|$.
+
+### From Penalty to Constraint
+
+The penalty constant $C$ is enormous, restricting parameter steps to microscopic, impractical sizes. TRPO reformulates the objective as a **constrained** optimization problem:
+$$\max_{\pi'} L_\pi(\pi') \quad \text{s.t.} \quad D_{KL}^{\max}(\pi, \pi') \le \delta$$
+
+#### The Practical (Sample-Based) TRPO Optimization Problem
+In a real reinforcement learning system, we cannot compute the theoretical surrogate $L_\pi(\pi')$ directly for two reasons:
+1. **Intractable State Space**: We cannot evaluate the state summation $\sum_s \rho_\pi(s)$ or supremum $D_{KL}^{\max}$ because the state space is typically infinite or extremely large.
+2. **Off-Distribution Evaluation (Chicken-and-Egg)**: We want to evaluate the expected performance of a candidate *new* policy parameters $\theta$, but we only have access to experience trajectories $(s_t, a_t, r_t)$ collected under our *old* policy parameters $\theta_{old}$. We cannot run every candidate $\theta$ in the environment to collect new samples just to evaluate it during a single gradient update.
+
+To make the optimization problem practically solvable, TRPO applies two critical mathematical transformations:
+
+##### 1. Bypassing Off-Distribution Actions via Importance Sampling
+Instead of calculating the action summation $\sum_a \pi'(a|s) A_\pi(s, a)$ over all possible actions, we rewrite it as an expectation over the actions actually taken by our old policy $\pi_{\theta_{old}}$. 
+Recall the **Importance Sampling Identity** from statistics: for any function $f(a)$ and target distribution $P(a)$, we can estimate the expectation under $P$ using samples from a proposal distribution $Q(a)$ by scaling with the likelihood ratio:
+$$\mathbb{E}_{a \sim P}[f(a)] = \sum_a P(a) f(a) = \sum_a Q(a) \frac{P(a)}{Q(a)} f(a) = \mathbb{E}_{a \sim Q}\left[ \frac{P(a)}{Q(a)} f(a] \right]$$
+
+Applying this to our action summation, where the target distribution is the new policy $\pi_\theta$ and the proposal distribution is the old policy $\pi_{\theta_{old}}$:
+$$\sum_a \pi_\theta(a|s) A_{\theta_{old}}(s, a) = \mathbb{E}_{a \sim \pi_\theta}[A_{\theta_{old}}(s, a)] = \mathbb{E}_{a \sim \pi_{\theta_{old}}}\left[ \frac{\pi_\theta(a|s)}{\pi_{\theta_{old}}(a|s)} A_{\theta_{old}}(s,a) \right]$$
+
+The term $w(s, a) = \frac{\pi_\theta(a|s)}{\pi_{\theta_{old}}(a|s)}$ is the **importance sampling ratio (or weight)**:
+* **If $w(s, a) > 1$**: The action is more likely under the candidate new policy than the old policy. Its positive or negative advantage impact is scaled up.
+* **If $w(s, a) < 1$**: The action is less likely under the new policy. Its impact is scaled down.
+
+This yields the expected surrogate objective:
+$$L(\theta_{old}, \theta) = \mathbb{E}_{s \sim \rho_{\theta_{old}}, a \sim \pi_{\theta_{old}}} \left[ \frac{\pi_\theta(a|s)}{\pi_{\theta_{old}}(a|s)} A_{\theta_{old}}(s,a) \right]$$
+
+##### 2. Softening the KL Constraint via Average KL Divergence
+The supremum constraint $D_{KL}^{\max}(\pi, \pi') \le \delta$ requires that the KL divergence is bounded by $\delta$ in *every single possible state*. Evaluating this supremum is mathematically intractable.
+TRPO replaces this with the **average KL divergence** over the states visited under the old policy distribution $\rho_{\theta_{old}}$:
+$$\bar{D}_{KL}(\theta_{old}, \theta) = \mathbb{E}_{s \sim \rho_{\theta_{old}}} \left[ D_{KL}\left(\pi_{\theta_{old}}(\cdot|s) \parallel \pi_\theta(\cdot|s)\right) \right]$$
+
+While this average constraint is slightly weaker than the supremum constraint, it is highly practical because it can be estimated directly from sample averages.
+
+##### The Final Practical Optimization Problem
+By combining these two steps and replacing the theoretical expectations $\mathbb{E}$ with empirical averages $\hat{\mathbb{E}}_t$ over a batch of sampled step trajectories $t = 0, \dots, T$:
+$$\max_\theta \hat{\mathbb{E}}_t \left[ \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{old}}(a_t|s_t)} \hat{A}_t \right] \quad \text{s.t.} \quad \hat{\mathbb{E}}_t \left[ D_{KL}\left(\pi_{\theta_{old}}(\cdot|s_t) \parallel \pi_\theta(\cdot|s_t)\right) \right] \le \delta$$
+
+Each term in this optimization problem is now fully calculable from our batch of experience data:
+* $\pi_{\theta_{old}}(a_t|s_t)$ is the logged probability of the action when we took it.
+* $\pi_\theta(a_t|s_t)$ is the candidate policy's probability of taking that action, which we can compute by passing the state $s_t$ through our neural network.
+* $\hat{A}_t$ is the estimated advantage (e.g. using GAE).
+* $D_{KL}$ measures how far the candidate policy distribution has drifted from our old policy distribution on the sampled states.
+
+### Solving via Taylor Approximations
+Since the objective is non-linear and the KL divergence is complex, we approximate them using Taylor expansion around the current parameter vector $\theta_{old}$. Let $x = \theta - \theta_{old}$ represent our parameter step.
+
+* **Surrogate Objective $L_\pi(\theta)$** is approximated by its 1st-order Taylor expansion:
+  $$L_\pi(\theta) \approx L_\pi(\theta_{old}) + g^T x$$
+  where $g = \nabla_\theta L_\pi(\theta)|_{\theta_{old}}$ is the policy gradient vector.
+* **KL Divergence Constraint** is approximated by its 2nd-order Taylor expansion (since the KL divergence is zero and its gradient is zero at $\theta_{old}$):
+  $$D_{KL}(\pi_{old} \parallel \pi) \approx \frac{1}{2} x^T \mathbf{A} x$$
+  where $\mathbf{A} = \nabla_\theta^2 D_{KL}(\pi_{old} \parallel \pi)|_{\theta_{old}}$ is the Fisher Information Matrix (FIM).
+
+This yields the quadratic approximation of the constrained optimization problem:
+$$\max_x g^T x \quad \text{s.t.} \quad \frac{1}{2} x^T \mathbf{A} x \le \delta$$
+
+### Lagrangian Solution
+To solve this inequality-constrained quadratic program, we construct the Lagrangian function with multiplier $\lambda \ge 0$:
+$$\mathcal{L}(x, \lambda) = g^T x - \lambda \left( \frac{1}{2} x^T \mathbf{A} x - \delta \right)$$
+
+We compute the gradient of $\mathcal{L}$ with respect to the step vector $x$. Using vector derivative rules:
+* The derivative of $g^T x$ is $g$.
+* The derivative of the quadratic form $\frac{1}{2} x^T \mathbf{A} x$ with respect to $x$ (for symmetric FIM $\mathbf{A}$) is $\mathbf{A} x$.
+
+Setting the gradient to zero:
+$$\nabla_x \mathcal{L} = g - \lambda \mathbf{A} x = 0 \implies \lambda \mathbf{A} x = g$$
+
+Since $\mathbf{A}$ is positive-definite and invertible, we solve for the optimal direction $x^*$:
+$$x^* = \frac{1}{\lambda} \mathbf{A}^{-1} g$$
+
+### Solving for the Lagrangian Multiplier $\lambda$
+At the optimal step, the constraint is active and lies exactly on the boundary of the trust region:
+$$\frac{1}{2} (x^*)^T \mathbf{A} x^* = \delta$$
+
+Substitute the expression for $x^*$ back into the constraint equation:
+$$\frac{1}{2} \left( \frac{1}{\lambda} \mathbf{A}^{-1} g \right)^T \mathbf{A} \left( \frac{1}{\lambda} \mathbf{A}^{-1} g \right) = \delta$$
+
+Using the transpose property $(AB)^T = B^T A^T$ and noting that the Fisher matrix $\mathbf{A}$ and its inverse are symmetric ($\mathbf{A}^T = \mathbf{A}$, $(\mathbf{A}^{-1})^T = \mathbf{A}^{-1}$):
+$$\frac{1}{2 \lambda^2} g^T \mathbf{A}^{-1} \mathbf{A} \mathbf{A}^{-1} g = \delta$$
+
+Since $\mathbf{A}^{-1} \mathbf{A} = \mathbf{I}$, this simplifies to:
+$$\frac{1}{2 \lambda^2} g^T \mathbf{A}^{-1} g = \delta$$
+
+Solving for $\lambda^2$:
+$$\lambda^2 = \frac{g^T \mathbf{A}^{-1} g}{2 \delta} \implies \lambda = \sqrt{\frac{g^T \mathbf{A}^{-1} g}{2 \delta}}$$
+
+### Final TRPO Step
+Substitute the solved value of $\lambda$ back into our optimal step formula $x^*$:
+$$x^* = \sqrt{\frac{2\delta}{g^T \mathbf{A}^{-1} g}} \cdot \mathbf{A}^{-1} g$$
+
+Since $x = \theta - \theta_k$, the updated parameter vector is:
+$$\theta_{k+1} = \theta_k + \sqrt{\frac{2\delta}{g^T \mathbf{A}^{-1} g}} \cdot \mathbf{A}^{-1} g$$
+
+Because of approximation errors introduced by Taylor expansions, the constraint might be violated slightly in practice. To prevent this, TRPO applies a **backtracking line search** along the update direction with decay parameter $\alpha \in (0, 1)$ and search index $j$:
+$$\theta_{k+1} = \theta_k + \alpha^j \sqrt{\frac{2\delta}{g^T \mathbf{A}^{-1} g}} \cdot \mathbf{A}^{-1} g$$
+
+### The Computational Bottleneck
+$\mathbf{A}$ is $N \times N$ where $N$ = number of parameters. For modern neural networks:
+* Storing $\mathbf{A}$: $O(N^2)$ memory — prohibitive.
+* Computing $\mathbf{A}^{-1} g$: $O(N^3)$ — impractical.
+* **Workaround**: Conjugate Gradient to approximate $\mathbf{A}^{-1} g$ without storing $\mathbf{A}$. Still complex.
+
+This bottleneck directly motivated PPO.
+
+---
+
+## 8. PPO: Clipping Instead of Constraints
+
+PPO achieves the stability of TRPO using only **first-order** derivatives and a simple clipping mechanism.
+
+### The Path from TRPO to PPO
+
+Recall that TRPO maximizes the surrogate objective subject to a hard KL constraint:
+$$\max_{\theta} L(\theta_{old}, \theta) \quad \text{s.t.} \quad \bar{D}_{KL}(\theta_{old}, \theta) \le \delta$$
+
+To make this computationally feasible, we can write the constraint as an unconstrained penalty (Lagrangian formulation):
+$$\max_{\theta} L(\theta_{old}, \theta) - \beta \bar{D}_{KL}(\theta_{old}, \theta)$$
+
+However, using a fixed penalty coefficient $\beta$ is not robust: a single $\beta$ value fails to generalize across different tasks, environment dynamics, or even during different stages of a single training run. 
+
+Instead of a complex second-order penalty or constraint, PPO directly bounds the change in action probabilities under the new policy. Let us define the **Probability Ratio**:
+$$r_t(\theta) = \frac{\pi_\theta(A_t|S_t)}{\pi_{\theta_{old}}(A_t|S_t)}$$
+
+* $r_t = 1$: New policy is identical to the old.
+* $r_t > 1$: The action has become more likely under the updated policy.
+* $r_t < 1$: The action has become less likely under the updated policy.
+
+Without constraints, a policy optimization step would maximize the standard Conservative Policy Iteration (CPI) objective:
+$$L^{CPI}(\theta) = \hat{\mathbb{E}}_t \left[ \frac{\pi_\theta(A_t|S_t)}{\pi_{\theta_{old}}(A_t|S_t)} \hat{A}_t \right] = \hat{\mathbb{E}}_t \left[ r_t(\theta) \hat{A}_t \right]$$
+
+Maximizing $L^{CPI}(\theta)$ without constraints is highly destructive: if the advantage $\hat{A}_t$ is positive, the optimizer will push $r_t(\theta)$ to infinity; if negative, it will push it to zero. This leads directly to policy collapse.
+
+PPO solves this by directly **clipping** the probability ratio $r_t(\theta)$ if it falls outside the interval $[1-\epsilon, 1+\epsilon]$ (where $\epsilon \approx 0.2$ is a hyperparameter). This leads to the **Clipped Surrogate Objective**:
+$$L^{CLIP}(\theta) = \mathbb{E}_t \left[ \min\left( r_t(\theta)\hat{A}_t, \; \operatorname{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_t \right) \right]$$
+
+### Detailed Intuitions behind the Objective
+
+Why the complex $\min$ and $\operatorname{clip}$ formulation? Let's break it down into core intuitions:
+
+1. **The Ratio $r_t(\theta)$ is a Measure of Step Size**:
+   Instead of using raw log-probabilities like REINFORCE, PPO optimizes the ratio of the new policy's probability to the old policy's probability: $r_t(\theta) = \pi_\theta(A_t|S_t) / \pi_{\theta_{old}}(A_t|S_t)$.
+   * $r_t > 1$ means we are making the action *more* likely.
+   * $r_t < 1$ means we are making the action *less* likely.
+   
+2. **The "Pessimistic" $\min$ Operator acts as a Safety Limit**:
+   By taking the minimum of the unclipped loss ($r_t \hat{A}_t$) and the clipped loss ($\operatorname{clip}(r_t, 1-\epsilon, 1+\epsilon) \hat{A}_t$), the objective establishes a conservative lower bound. It prevents the model from achieving a higher reward simply by making massive, unstable policy changes.
+   
+3. **The Asymmetry of the Safety Net**:
+   * **For Good Actions ($\hat{A}_t > 0$)**: We want to make these actions more likely ($r_t > 1$). However, if we make them *too* likely (beyond $1+\epsilon$), the clipping kicks in. The gradient becomes zero, stopping further updates for this step. This prevents the policy from over-optimizing on a single batch of good data.
+   * **For Bad Actions ($\hat{A}_t < 0$)**: We want to make these actions less likely ($r_t < 1$). If the policy successfully decreases the probability below $1-\epsilon$, the gradient becomes zero — meaning we have suppressed it "enough" and don't need to waste gradients pushing it further.
+   * **No Mercy for Mistaken Ascent**: If the policy accidentally makes a *bad* action more likely ($r_t > 1+\epsilon$), the clipped term is higher than the unclipped term (since clipping keeps it at $1+\epsilon$, but the unclipped goes to $1.5$ or higher, and multiplying by a negative advantage makes the unclipped value much more negative!). Due to the $\min$ operator, the model is forced to use the **unclipped, highly negative penalty**, pushing the policy back down aggressively.
+
+<div id="ppo-clipping-explorer"></div>
+
+#### How to read the Clipping Explorer:
+* **Adjust the slider** to change the probability ratio $r_t(\theta)$ from $0.40$ (action is rare under the new policy) to $1.60$ (action is common under the new policy).
+* **Observe the curves**:
+  * The **solid colored line** represents the final clipped surrogate loss $L^{CLIP}(\theta)$ maximized by PPO.
+  * The **dotted line** represents the standard unclipped policy gradient loss ($r_t \hat{A}_t$).
+* **Watch the clipping boundaries**:
+  * The vertical dashed grid lines mark the boundaries $1-\epsilon = 0.80$ and $1+\epsilon = 1.20$ (with $\epsilon = 0.20$).
+* **Analyze the active point status**:
+  * **Active (Green)**: The update lies within the safe step region. The solid line follows the unclipped dotted line.
+  * **Clipped (Red)**: The update has exceeded the safety boundary. The solid line flattens out (zero gradient), preventing the policy from pushing further.
+  * **Mistaken Ascent (Asymmetric Penalty)**: Under **Negative Advantage**, slide the ratio to $r_t > 1.20$. Notice the red curve continues to plunge steeply downwards (unclipped penalty) instead of clipping. This is the $\min$ operator punishing the policy for making a bad action more probable!
+
+<figure><img src="assets/svg/ppo-clipping.svg?v=2" alt="PPO Clipping Loss Curves" style="max-width:550px;"><figcaption>Figure 6.2: PPO Clipped Surrogate Loss curves for Positive and Negative Advantages</figcaption></figure>
+
+*The PPO clipping graphs plot the surrogate loss $L^{CLIP}(\theta)$ as a function of the probability ratio $r_t(\theta)$ for two cases:
+1. **Advantage is positive ($A > 0$)**: The action is better than average. We want to make it more probable ($r_t > 1$). However, the loss is capped (clipped) at $1+\epsilon$ to prevent the policy from taking excessively large steps or becoming overconfident on this single sample.
+2. **Advantage is negative ($A < 0$)**: The action is worse than average. We want to make it less probable ($r_t < 1$). The loss is clipped at $1-\epsilon$ as $r_t$ decreases, but notice it is NOT clipped when $r_t > 1+\epsilon$ — meaning if the policy accidentally makes a bad action *more* probable, it faces a steep, unclipped penalty to force it back.
+The minimum operator in the PPO objective acts as a conservative bound, ensuring we only update the policy when it is safe to do so.*
+
+### Complete PPO Objective
+
+$$L^{PPO}(\theta) = \mathbb{E}_t \left[ L^{CLIP}(\theta) - c_1 L^{VF}(\theta) + c_2 S[\pi_\theta](S_t) \right]$$
+
+| Term | Purpose |
+|---|---|
+| $L^{CLIP}$ | Clipped policy gradient loss |
+| $L^{VF} = (V_\theta(S_t) - V_t^{target})^2$ | Value function accuracy |
+| $S[\pi_\theta](S_t)$ | Entropy bonus — encourages exploration |
+
+### PPO vs VPG vs TRPO
+
+| Metric | VPG | TRPO | PPO |
+| :--- | :--- | :--- | :--- |
+| **Optimization** | First-Order | Second-Order | **First-Order** |
+| **Computation** | Low | High (FIM inversion) | **Low** |
+| **Stability** | Low (collapse risk) | High (KL constraint) | **High (clipping)** |
+| **Implementation** | Easy | Hard | **Easy** |
+
+---
+
+## Key Takeaways
+
+1. **Policy Gradient Theorem**: We can compute the gradient of expected return without knowing the state distribution's gradient.
+2. **REINFORCE**: Replace $q_\pi$ with sample return $G_t$ → model-free policy gradient.
+3. **Baselines**: Subtracting $v_\pi(s)$ introduces zero bias but massively reduces variance.
+4. **Actor-Critic**: Replace $G_t$ with TD target → online updates.
+5. **GAE**: Interpolate between TD and MC via $\lambda$ → tunable bias-variance.
+6. **TRPO**: Trust region constraint guarantees monotonic improvement, but requires second-order optimization.
+7. **PPO**: Clips the probability ratio → achieves TRPO's stability with first-order simplicity.
+
+---
+
+*PPO gives us a stable, scalable policy optimizer. Now: how do we actually apply this to language models — where the "action" is a token, the "state" is a prompt, and the "reward" comes from a human or a verifier? → Chapter 7.*
+    </script>
+
+    <script src="rl-notes.js"></script>
+    <script src="assets/interactive/ppo-clipping.js"></script>
+</body>
+
+</html>
