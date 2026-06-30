@@ -169,6 +169,46 @@ $$\nabla_\theta J(\theta) \propto \sum_{s} \mu(s) \sum_{a} q_\pi(s,a) \nabla_\th
 
 This is remarkable: we can compute the gradient of the objective without knowing how the state distribution changes with $\theta$.
 
+#### Proof of the Policy Gradient Theorem
+
+Let's derive this theorem step-by-step. We start with the definition of the state value function:
+$$v_\pi(s) = \sum_a \pi(a|s) q_\pi(s,a)$$
+
+Take the gradient of both sides with respect to the policy parameters $\theta$. Using the product rule of calculus:
+$$\nabla v_\pi(s) = \nabla \left[ \sum_a \pi(a|s) q_\pi(s,a) \right] = \sum_a \left[ \nabla \pi(a|s) q_\pi(s,a) + \pi(a|s) \nabla q_\pi(s,a) \right]$$
+
+Recall the recursive definition of the action-value function:
+$$q_\pi(s,a) = R(s,a) + \gamma \sum_{s'} P(s' \mid s,a) v_\pi(s')$$
+
+Differentiating this expression with respect to $\theta$ (noting that the transition probabilities $P$ and reward function $R$ are constants independent of $\theta$):
+$$\nabla q_\pi(s,a) = \nabla \left( R(s,a) + \gamma \sum_{s'} P(s' \mid s,a) v_\pi(s') \right) = \gamma \sum_{s'} P(s' \mid s,a) \nabla v_\pi(s')$$
+
+Substitute this back into our equation for $\nabla v_\pi(s)$:
+$$\nabla v_\pi(s) = \sum_a \left[ \nabla \pi(a|s) q_\pi(s,a) + \gamma \pi(a|s) \sum_{s'} P(s' \mid s,a) \nabla v_\pi(s') \right]$$
+$$= \sum_a \nabla \pi(a|s) q_\pi(s,a) + \gamma \sum_a \pi(a|s) \sum_{s'} P(s' \mid s,a) \nabla v_\pi(s')$$
+
+Let us define the state-to-state transition probability under policy $\pi$ as $P(s \to s' \mid \pi) = \sum_a \pi(a|s) P(s' \mid s,a)$. Substituting this in:
+$$\nabla v_\pi(s) = \sum_a \nabla \pi(a|s) q_\pi(s,a) + \gamma \sum_{s'} P(s \to s' \mid \pi) \nabla v_\pi(s')$$
+
+This is a recursive relation in terms of $\nabla v_\pi(s)$. We can unroll this relation by repeatedly substituting $\nabla v_\pi(s')$ into itself:
+$$\nabla v_\pi(s) = \sum_a \nabla \pi(a|s) q_\pi(s,a) + \gamma \sum_{s'} P(s \to s' \mid \pi) \left[ \sum_a \nabla \pi(a|s') q_\pi(s',a) + \gamma \sum_{s''} P(s' \to s'' \mid \pi) \nabla v_\pi(s'') \right]$$
+$$= \sum_a \nabla \pi(a|s) q_\pi(s,a) + \gamma \sum_{s'} P(s \to s' \mid \pi) \sum_a \nabla \pi(a|s') q_\pi(s',a) + \gamma^2 \sum_{s''} P(s \to s'' \mid 2 \text{ steps}, \pi) \nabla v_\pi(s'')$$
+
+Continuing this expansion infinitely, the recursion resolves to:
+$$\nabla v_\pi(s) = \sum_{x \in \mathcal{S}} \sum_{k=0}^{\infty} \gamma^k P(s \to x \mid k \text{ steps}, \pi) \sum_a \nabla \pi(a|x) q_\pi(x,a)$$
+
+Our objective function is the expected value of the start state $s_0$:
+$$J(\theta) = v_\pi(s_0)$$
+
+Therefore, taking the gradient of $J(\theta)$ yields:
+$$\nabla J(\theta) = \nabla v_\pi(s_0) = \sum_{s \in \mathcal{S}} \left( \sum_{k=0}^{\infty} \gamma^k P(s_0 \to s \mid k \text{ steps}, \pi) \right) \sum_a \nabla \pi(a|s) q_\pi(s,a)$$
+
+If we define the unnormalized discounted state visitation distribution $\mu(s)$ as:
+$$\mu(s) = \sum_{k=0}^{\infty} \gamma^k P(s_0 \to s \mid k \text{ steps}, \pi)$$
+
+We can write this cleanly as:
+$$\nabla J(\theta) = \sum_s \mu(s) \sum_a q_\pi(s,a) \nabla \pi(a|s) \quad \blacksquare$$
+
 ---
 
 ## 3. REINFORCE: From Theorem to Algorithm
