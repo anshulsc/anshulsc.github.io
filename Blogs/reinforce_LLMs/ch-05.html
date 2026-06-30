@@ -243,16 +243,23 @@ TD(0) with $\alpha = 0.1$ converges to true values after ~100 episodes, without 
 
 ---
 
-## 4. TD Control: SARSA & Q-Learning
+## 4. TD Control: SARSA, Q-Learning, & Expected SARSA
 
-Now we use TD for **control** — finding optimal policies. Two approaches, differing in what action they use for the bootstrap target.
+Prediction estimates the value of a fixed policy, but **control** aims to find the optimal policy. 
+
+In a model-free setting, state values $V(s)$ alone are not enough for control. Without a transition model $P(s' \mid s, a)$, knowing $V(s')$ doesn't tell us *which* action $a$ will lead to that high-value state. Therefore, we must learn **action-values** $Q(s, a)$ directly from experience.
+
+---
 
 ### SARSA (On-Policy TD Control)
-Update $Q(S_t, A_t)$ using the action $A_{t+1}$ actually taken by the ε-greedy policy:
+
+SARSA is an on-policy method, meaning it learns the action-value function of the policy that the agent is actually executing (the **behavior policy**). The update rule uses the exact sequence $(S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1})$:
 
 $$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t) \right]$$
 
-Name comes from the quintuple: $(S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1})$ — **SARSA**.
+#### Intuition and Behavior
+* **On-Policy Target**: The bootstrap target uses the value of the action $A_{t+1}$ that was actually selected by the current exploratory policy (e.g., $\epsilon$-greedy) in the next state $S_{t+1}$.
+* **Exploration Awareness**: Because it updates based on actual behavior, SARSA is fully aware of its own random exploration steps. If an action could lead to a catastrophic outcome via an occasional exploratory move, SARSA learns a conservative path to stay far away from danger.
 
 ```
 SARSA (On-Policy TD Control):
@@ -269,10 +276,17 @@ SARSA (On-Policy TD Control):
     Until S is terminal
 ```
 
+---
+
 ### Q-Learning (Off-Policy TD Control)
-Update $Q(S_t, A_t)$ using the **maximum** Q-value at the next state — regardless of what action is actually taken:
+
+Q-Learning is an off-policy method. It decouples the policy used to generate data (the **behavior policy**, which is $\epsilon$-greedy) from the policy being optimized (the **target policy**, which is strictly *greedy*). Its update rule is:
 
 $$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma \max_{a} Q(S_{t+1}, a) - Q(S_t, A_t) \right]$$
+
+#### Intuition and Behavior
+* **Off-Policy Target**: Q-Learning assumes that from state $S_{t+1}$ onwards, it will follow the *optimal, greedy* policy ($\max_a Q(S_{t+1}, a)$), regardless of the actual exploratory action $A_{t+1}$ the behavior policy takes next.
+* **Optimality Focus**: Q-Learning ignores its own exploratory slips during updates, targeting the absolute optimal policy directly. It learns the values of perfect play, even while executing imperfect, random exploration.
 
 ```
 Q-LEARNING (Off-Policy TD Control):
@@ -284,22 +298,43 @@ Q-LEARNING (Off-Policy TD Control):
     For each step:
       Choose A from S using ε-greedy on Q           # behavior policy
       Take action A, observe R, S'
-      Q(S,A) ← Q(S,A) + α[R + γ max_a Q(S',a) - Q(S,A)]   # off-policy: max over all actions
+      Q(S,A) ← Q(S,A) + α[R + γ max_a Q(S',a) - Q(S,A)]   # off-policy: target is greedy max
       S ← S'
     Until S is terminal
 ```
 
-### The Key Difference
+---
 
-| Feature | SARSA (On-Policy) | Q-Learning (Off-Policy) |
-|---|---|---|
-| **Target action** | $A_{t+1}$ from ε-greedy | $\operatorname{argmax}_a Q(S_{t+1}, a)$ |
-| **Learns about** | The ε-greedy policy being followed | The greedy policy (even while exploring) |
-| **Behavior** | Safer — accounts for exploration in learning | Bolder — targets optimality directly |
+### Expected SARSA (On-Policy / Off-Policy Hybrid)
+
+Expected SARSA is a variation that replaces the random sample $Q(S_{t+1}, A_{t+1})$ of SARSA and the hard maximum $\max_a Q(S_{t+1}, a)$ of Q-learning with the **expected value** of the next state-action pair under the target policy:
+
+$$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma \sum_{a} \pi(a \mid S_{t+1}) Q(S_{t+1}, a) - Q(S_t, A_t) \right]$$
+
+#### Intuition and Behavior
+* **Expectation Target**: Instead of sampling a single next action $A_{t+1}$, it sums the values of all possible next actions weighted by their probability of selection under the policy $\pi$.
+* **Variance Reduction**: By taking the expectation over all actions, Expected SARSA eliminates the variance introduced by random $\epsilon$-greedy action selection in the bootstrap target.
+* **Flexibility**: It can be on-policy (if $\pi$ is the current behavior policy) or off-policy (if $\pi$ is a different target policy, such as a greedy policy, in which case it is mathematically equivalent to Q-learning).
+
+---
+
+### Comparison: SARSA vs. Q-Learning vs. Expected SARSA
+
+| Feature | SARSA | Q-Learning | Expected SARSA |
+|---|---|---|---|
+| **Paradigm** | On-Policy | Off-Policy | On-Policy or Off-Policy |
+| **Next Action Target** | $A_{t+1}$ (actual sample) | $\operatorname{argmax}_a Q(S_{t+1}, a)$ (greedy) | $\sum_a \pi(a \mid S_{t+1}) Q(S_{t+1}, a)$ (expected) |
+| **Variance** | High (due to sample action) | Medium | Low (averages out action selection) |
+| **Behavioral Path** | Safer (accounts for exploration) | Bolder (assumes perfect future play) | Safer (on-policy) or Bolder (off-policy) |
+
+---
 
 ### The Cliff Walking Case Study
-* **SARSA**: Takes the **safer** path (one row above the cliff). Because it's on-policy, it accounts for the fact that ε-greedy exploration might accidentally step into the cliff → learns to stay far from the edge.
-* **Q-Learning**: Takes the **optimal** path (right along the cliff edge). Off-policy learning converges to the greedy optimal regardless of the exploratory behavior — but during learning, the agent occasionally falls off the cliff.
+
+The classic **Cliff Walking** gridworld highlights the behavioral differences between SARSA and Q-learning:
+
+* **SARSA (On-Policy)**: Learns the **safer path** one row above the cliff. Because it accounts for the fact that its $\epsilon$-greedy behavior policy occasionally makes random exploratory moves, it knows that walking along the edge carries a constant risk of falling off.
+* **Q-Learning (Off-Policy)**: Learns the **absolute optimal path** right along the edge of the cliff. It assumes its target policy will behave perfectly (greedily) at the next step, ignoring the fact that the behavior policy will occasionally choose exploration and plunge into the cliff. During training, the Q-learning agent frequently falls off, but its learned $Q$-values represent perfect play.
 
 <figure><img src="assets/svg/cliff-walking.svg?v=2" alt="Cliff Walking Paths Comparison" style="max-width:550px;"><figcaption>Figure 5.2: Safe Path (SARSA) vs Optimal Path (Q-Learning) in Cliff Walking</figcaption></figure>
 
