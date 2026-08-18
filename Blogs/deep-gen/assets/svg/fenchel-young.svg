@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="fy-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#a35f05"/>
+    </marker>
+  </defs>
+
+  <!-- ══ LEFT PANEL ══ -->
+  <text x="195" y="24" text-anchor="middle" font-size="12" font-weight="700" fill="#333">a generic u — the gap falls short</text>
+
+  <line x1="50" y1="250" x2="345" y2="250" stroke="#999" stroke-width="1"/>
+  <line x1="50" y1="46" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+  <text x="340" y="266" font-size="10.5" fill="#888">u</text>
+
+  <line x1="50" y1="250" x2="340" y2="60" stroke="#999" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="292" y="76" font-size="10.5" fill="#888">y = t·u</text>
+
+  <path d="M 60 96 Q 150 268 200 232 Q 270 186 330 62" fill="none" stroke="#0e7490" stroke-width="2.4"/>
+  <text x="66" y="88" font-size="11" fill="#0e7490" font-weight="600">f(u)</text>
+
+  <line x1="140" y1="191" x2="140" y2="216" stroke="#d97706" stroke-width="2.6"/>
+  <circle cx="140" cy="216" r="3.4" fill="#0e7490"/>
+  <circle cx="140" cy="191" r="3" fill="#999"/>
+  <text x="149" y="209" font-size="10.5" fill="#d97706">gap</text>
+  <line x1="140" y1="250" x2="140" y2="255" stroke="#999"/>
+  <text x="140" y="267" text-anchor="middle" font-size="10.5" fill="#555">u</text>
+
+  <text x="195" y="290" text-anchor="middle" font-size="10.5" fill="#666">t·u − f(u)  ≤  f*(t)     for every u</text>
+
+  <line x1="382" y1="34" x2="382" y2="278" stroke="#eee" stroke-width="1.5"/>
+
+  <!-- ══ RIGHT PANEL ══ -->
+  <text x="575" y="24" text-anchor="middle" font-size="12" font-weight="700" fill="#333">u* with f′(u*) = t — the gap is exactly f*(t)</text>
+
+  <line x1="430" y1="250" x2="725" y2="250" stroke="#999" stroke-width="1"/>
+  <line x1="430" y1="46" x2="430" y2="250" stroke="#999" stroke-width="1"/>
+  <text x="720" y="266" font-size="10.5" fill="#888">u</text>
+
+  <line x1="430" y1="250" x2="720" y2="60" stroke="#999" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="672" y="76" font-size="10.5" fill="#888">y = t·u</text>
+
+  <!-- supporting line: same slope, dropped by f*(t) -->
+  <line x1="552" y1="250" x2="720" y2="140" stroke="#d97706" stroke-width="2"/>
+  <text x="648" y="132" font-size="10.5" font-weight="600" fill="#d97706">y = t·u − f*(t)</text>
+
+  <path d="M 440 96 Q 530 268 580 232 Q 650 186 710 62" fill="none" stroke="#0e7490" stroke-width="2.4"/>
+  <text x="446" y="88" font-size="11" fill="#0e7490" font-weight="600">f(u)</text>
+
+  <line x1="587" y1="147" x2="587" y2="227" stroke="#d97706" stroke-width="3"/>
+  <circle cx="587" cy="227" r="4.2" fill="#d97706"/>
+  <circle cx="587" cy="147" r="3" fill="#999"/>
+  <text x="596" y="184" font-size="11" font-weight="700" fill="#d97706">f*(t)</text>
+  <line x1="587" y1="250" x2="587" y2="255" stroke="#999"/>
+  <text x="587" y="267" text-anchor="middle" font-size="10.5" fill="#555">u*</text>
+
+  <path d="M 512 214 L 570 226" stroke="#a35f05" stroke-width="1.1" fill="none" marker-end="url(#fy-a)"/>
+  <text x="452" y="211" font-size="9.8" fill="#a35f05">line touches curve</text>
+
+  <text x="575" y="290" text-anchor="middle" font-size="10.5" fill="#666">equality  ⟺  t = f′(u)     — this is what makes the bound tight</text>
+</svg>

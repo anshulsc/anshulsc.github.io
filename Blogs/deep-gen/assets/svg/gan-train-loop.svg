@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 470" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="tl-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/>
+    </marker>
+    <marker id="tl-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/>
+    </marker>
+    <marker id="tl-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/>
+    </marker>
+  </defs>
+
+  <!-- ══════════ PHASE B (discriminator) ══════════ -->
+  <rect x="14" y="16" width="360" height="436" rx="14" fill="#fcfcfc" stroke="#ddd" stroke-width="1.3"/>
+  <rect x="14" y="16" width="360" height="34" rx="14" fill="rgba(14,116,144,0.10)"/>
+  <rect x="14" y="40" width="360" height="10" fill="rgba(14,116,144,0.10)"/>
+  <text x="194" y="38" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0e7490">PHASE 1 · train the critic (ω)</text>
+  <text x="194" y="66" text-anchor="middle" font-size="10.5" fill="#777">θ is frozen · gradient ASCENT on J</text>
+
+  <!-- inputs -->
+  <rect x="36" y="84" width="120" height="42" rx="9" fill="rgba(14,116,144,0.08)" stroke="#0e7490" stroke-width="1.3"/>
+  <text x="96" y="102" text-anchor="middle" font-size="10.8" font-weight="600" fill="#0e7490">real batch</text>
+  <text x="96" y="117" text-anchor="middle" font-size="10" fill="#555">x₁ … x_N ~ P_x</text>
+
+  <rect x="232" y="84" width="120" height="42" rx="9" fill="#f2f2f2" stroke="#aaa" stroke-width="1.3" stroke-dasharray="5 3"/>
+  <text x="292" y="101" text-anchor="middle" font-size="10.8" font-weight="600" fill="#777">G_θ  🔒 frozen</text>
+  <text x="292" y="116" text-anchor="middle" font-size="10" fill="#888">x̂₁ … x̂_M</text>
+
+  <path d="M 96 126 L 96 158" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#tl-t)"/>
+  <path d="M 292 126 L 292 158" stroke="#888" stroke-width="1.5" fill="none" marker-end="url(#tl-t)"/>
+
+  <!-- critic -->
+  <rect x="60" y="160" width="268" height="52" rx="10" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="2"/>
+  <text x="194" y="182" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">D_ω  ✏️ updating</text>
+  <text x="194" y="200" text-anchor="middle" font-size="10" fill="#555">same network scores both batches</text>
+
+  <path d="M 194 212 L 194 240" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#tl-t)"/>
+
+  <!-- loss -->
+  <rect x="46" y="242" width="296" height="66" rx="10" fill="#fff" stroke="#bbb" stroke-width="1.3"/>
+  <text x="194" y="262" text-anchor="middle" font-size="11" font-weight="600" fill="#333">maximise</text>
+  <text x="194" y="281" text-anchor="middle" font-size="11" fill="#333">(1/N) Σ log D_ω(xᵢ)</text>
+  <text x="194" y="298" text-anchor="middle" font-size="11" fill="#333">+ (1/M) Σ log(1 − D_ω(x̂ⱼ))</text>
+
+  <!-- backward -->
+  <path d="M 342 275 L 356 275 L 356 186 L 330 186" stroke="#7c3aed" stroke-width="1.8" fill="none"
+        stroke-dasharray="6 4" marker-end="url(#tl-r)"/>
+  <text x="194" y="332" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">backprop reaches ω and stops there</text>
+
+  <!-- stop wall -->
+  <rect x="60" y="346" width="268" height="46" rx="9" fill="rgba(124,58,237,0.06)" stroke="#7c3aed" stroke-width="1.2" stroke-dasharray="5 3"/>
+  <text x="194" y="365" text-anchor="middle" font-size="10.5" fill="#5b21b6">gradient dies at the critic's input layer —</text>
+  <text x="194" y="381" text-anchor="middle" font-size="10.5" fill="#5b21b6">it never enters G_θ</text>
+
+  <text x="194" y="418" text-anchor="middle" font-size="10.5" fill="#666">ω ← ω + β ∇_ω Ĵ</text>
+  <text x="194" y="438" text-anchor="middle" font-size="9.8" fill="#999">repeat k times per generator step</text>
+
+  <!-- ══════════ PHASE A (generator) ══════════ -->
+  <rect x="386" y="16" width="360" height="436" rx="14" fill="#fcfcfc" stroke="#ddd" stroke-width="1.3"/>
+  <rect x="386" y="16" width="360" height="34" rx="14" fill="rgba(217,119,6,0.10)"/>
+  <rect x="386" y="40" width="360" height="10" fill="rgba(217,119,6,0.10)"/>
+  <text x="566" y="38" text-anchor="middle" font-size="12.5" font-weight="700" fill="#d97706">PHASE 2 · train the generator (θ)</text>
+  <text x="566" y="66" text-anchor="middle" font-size="10.5" fill="#777">ω is frozen · gradient DESCENT on J</text>
+
+  <rect x="446" y="84" width="240" height="42" rx="9" fill="#f7f7f7" stroke="#aaa" stroke-width="1.3"/>
+  <text x="566" y="102" text-anchor="middle" font-size="10.8" font-weight="600" fill="#555">noise batch</text>
+  <text x="566" y="117" text-anchor="middle" font-size="10" fill="#777">z₁ … z_M ~ 𝒩(0, I)</text>
+
+  <path d="M 566 126 L 566 152" stroke="#d97706" stroke-width="1.5" fill="none" marker-end="url(#tl-o)"/>
+
+  <rect x="446" y="154" width="240" height="46" rx="10" fill="rgba(217,119,6,0.12)" stroke="#d97706" stroke-width="2"/>
+  <text x="566" y="174" text-anchor="middle" font-size="12" font-weight="700" fill="#d97706">G_θ  ✏️ updating</text>
+  <text x="566" y="191" text-anchor="middle" font-size="10" fill="#8a5104">x̂ⱼ = G_θ(zⱼ)</text>
+
+  <path d="M 566 200 L 566 226" stroke="#d97706" stroke-width="1.5" fill="none" marker-end="url(#tl-o)"/>
+
+  <rect x="446" y="228" width="240" height="46" rx="10" fill="#f2f2f2" stroke="#aaa" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="566" y="248" text-anchor="middle" font-size="12" font-weight="700" fill="#777">D_ω  🔒 frozen</text>
+  <text x="566" y="265" text-anchor="middle" font-size="10" fill="#888">used only as a differentiable road</text>
+
+  <path d="M 566 274 L 566 298" stroke="#d97706" stroke-width="1.5" fill="none" marker-end="url(#tl-o)"/>
+
+  <rect x="440" y="300" width="252" height="48" rx="10" fill="#fff" stroke="#bbb" stroke-width="1.3"/>
+  <text x="566" y="320" text-anchor="middle" font-size="11" font-weight="600" fill="#333">minimise</text>
+  <text x="566" y="338" text-anchor="middle" font-size="11" fill="#333">(1/M) Σ log(1 − D_ω(x̂ⱼ))</text>
+  <text x="700" y="292" text-anchor="end" font-size="9.6" fill="#999">the real-data term has no θ in it — its gradient is 0</text>
+
+  <!-- backward path passing THROUGH D into G -->
+  <path d="M 692 324 L 712 324 L 712 251 L 690 251" stroke="#7c3aed" stroke-width="1.8" fill="none"
+        stroke-dasharray="6 4" marker-end="url(#tl-r)"/>
+  <path d="M 442 251 L 422 251 L 422 177 L 444 177" stroke="#7c3aed" stroke-width="1.8" fill="none"
+        stroke-dasharray="6 4" marker-end="url(#tl-r)"/>
+  <text x="566" y="372" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">backprop passes straight through D_ω</text>
+  <text x="566" y="388" text-anchor="middle" font-size="10.2" fill="#5b21b6">(reading its weights, changing none) and lands on θ</text>
+
+  <text x="566" y="418" text-anchor="middle" font-size="10.5" fill="#666">θ ← θ − α ∇_θ Ĵ</text>
+  <text x="566" y="438" text-anchor="middle" font-size="9.8" fill="#999">one step, then back to Phase 1</text>
+</svg>

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lecture 6 notes: domain adversarial networks for unsupervised domain adaptation, why the manifold hypothesis breaks Jensen-Shannon, the Wasserstein distance and Kantorovich-Rubinstein duality, WGAN and weight clipping, and latent variable models from the ELBO to EM and the road to VAEs.">
+    <meta name="keywords"
+        content="Domain Adaptation, Domain Adversarial Network, Wasserstein GAN, WGAN, Earth Mover Distance, Optimal Transport, Kantorovich-Rubinstein Duality, Lipschitz, Weight Clipping, Latent Variable Model, ELBO, Expectation Maximization, GMM, VAE">
+    <meta name="author" content="Anshul Singh">
+    <title>Lecture 6: Domain Adaptation, Wasserstein GANs &amp; Latent Variable Models — DGM Notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="dgm-notes-style.css">
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../../css/theme.css">
+  <script src="../../js/theme.js"></script>
+  <!-- Passphrase gate for this notes series -->
+  <script src="../../js/gate.js"></script>
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">DGM Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Lecture 6</div>
+                <h1>Domain Adaptation, Wasserstein GANs &amp; Latent Variable Models</h1>
+                <div class="chapter-meta">
+                    <span>August 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">44 min read</span>
+                    <span class="dot">●</span>
+                    <span>WGAN &amp; LVMs</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target">
+                    <!-- Rendered markdown goes here -->
+                </article>
+
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <a href="ch-05.html" class="nav-prev">
+                    <div class="nav-label">← Previous Lecture</div>
+                    <div class="nav-title">The Classifier View, Conditional GANs &amp; CycleGAN</div>
+                </a>
+                <a href="ch-07.html" class="nav-next">
+                    <div class="nav-label">Next Lecture →</div>
+                    <div class="nav-title">Variational Autoencoders</div>
+                </a>
+            </div>
+        </main>
+
+        <footer
+            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*Three movements in one lecture, in the order the lecture took them: adversarial training moved down into feature space, then the repair for the flat-gradient problem Ch.4 diagnosed, then a change of direction entirely into latent variable models. They look unrelated and they share one move — the quantity you want is unreachable, so you build a surrogate you can differentiate.*
+
+*Each movement below starts with the plain version and finishes with the fine print, rather than making you wait for a later part to find out what it costs.*
+
+<div class="part-marker"><span class="part-label">Part I</span><span class="part-name">Domain adversarial networks</span><span class="part-sub">A model that works on the data it was trained on and fails on data that is obviously the same task. The discriminator idea, applied one level down the network.</span></div>
+
+## 1. When the Test Set Is a Different World
+
+Everything up to here assumed train and test data come from the same distribution. That assumption breaks constantly.
+
+Train a digit classifier on **MNIST** — clean grayscale strokes on black — and run it on **SVHN**, photographs of house numbers, or **MNIST-M**, the same digits blended onto colour patches. The task is identical; it is still a three. Accuracy collapses anyway.
+
+<figure><img src="assets/svg/domain-shift.svg" alt="The same digit three in MNIST, MNIST-M and SVHN, with a note on why a CNN trained on one fails on the others" style="max-width:100%;"><figcaption>Figure 6.1: The semantics are identical. Everything else is different.</figcaption></figure>
+
+Nothing ever told the network which features were the point. Trained on MNIST alone it will happily learn "bright pixels on a pure black field", because on MNIST that is a perfect predictor. It is a property of the *dataset*, not of the digit, and it does not survive the move.
+
+The setup is called **unsupervised domain adaptation**, and "unsupervised" is doing real work:
+
+* **Source domain** $D_S = \{(x_1, y_1), \dots, (x_n, y_n)\} \sim P_S$ — **fully labelled**.
+* **Target domain** $D_T = \{\hat{x}_1, \dots, \hat{x}_m\} \sim P_T$ — **no labels at all**.
+
+We want a classifier that works on the target having never seen one target label. So we cannot train on the target directly. What we can do is force the *representation* to be one in which the two domains are indistinguishable — because a classifier trained on source features then has nothing to trip over when handed target features.
+
+That is a job for a discriminator, and we already know how to build one.
+
+---
+
+## 2. Why This Is Not CycleGAN
+
+The obvious objection: CycleGAN also had two domains and aligned them. Same thing?
+
+No, and the distinction changes what you build. **CycleGAN operates in pixel space** — it generates an actual new image in the other domain, something you can look at, and Ch.5, §14 spent a whole section on the cycle loss needed to stop it destroying the input's structure. **Domain adaptation operates in feature space** — nothing is generated and nothing is displayed. We only need the two clouds of *latent vectors* to overlap.
+
+<figure><img src="assets/svg/pixel-vs-feature.svg" alt="CycleGAN aligning images in pixel space versus DAN aligning features in latent space" style="max-width:100%;"><figcaption>Figure 6.2: The same adversarial idea, applied one level down the network.</figcaption></figure>
+
+Which is a much weaker requirement, and correspondingly cheaper. We never have to produce a convincing SVHN image; we only have to make the *statistics* of the two feature clouds match.
+
+---
+
+## 3. The Architecture
+
+Three pieces sharing one trunk:
+
+1. **Feature extractor $\phi$** maps an input to a latent vector. Both domains go through it: $z_s = \phi(x)$, $z_t = \phi(\hat{x})$.
+2. **Task classifier $h_\theta$** takes $z_s$ and predicts the label. Trained supervised on source data only — the only place labels are used at all.
+3. **Domain critic $T_w$** takes any $z$ and guesses which domain it came from.
+
+<figure><img src="assets/svg/dan-arch.svg" alt="The three-part DAN architecture with a shared feature extractor and two competing heads" style="max-width:100%;"><figcaption>Figure 6.3: One trunk, two heads. The critic's gradient reaches φ negated, which is the whole trick.</figcaption></figure>
+
+The batches go through **sequentially**, not merged. Push a source batch, get $z_s$, route it to both heads. Push a target batch, get $z_t$, route it to the critic only — the task head has nothing to say about an unlabelled sample, and there is no loss to compute for it.
+
+---
+
+## 4. The Adversarial Objective
+
+The domain critic maximises its ability to separate the two feature clouds:
+
+$$\max_w \; \mathbb{E}_{x \sim P_S}\big[\log T_w(\phi(x))\big] + \mathbb{E}_{\hat{x} \sim P_T}\big[\log\big(1 - T_w(\phi(\hat{x}))\big)\big]$$
+
+— the same binary cross-entropy as Ch.5, §6, evaluated on features rather than images. Call it $\mathcal{L}_{\text{domain}}(\phi, w)$. The task head minimises ordinary supervised cross-entropy on the source:
+
+$$\mathcal{L}_{\text{task}}(\phi, \theta) = \mathbb{E}_{(x,y) \sim D_S}\Big[-\sum_c y_c \log\big(h_\theta(\phi(x))_c\big)\Big]$$
+
+and the two are wired together with opposite signs on the shared trunk:
+
+$$\boxed{\; \min_{\phi, \theta} \; \max_w \; \Big\{ \mathcal{L}_{\text{task}}(\phi, \theta) \;-\; \lambda\, \mathcal{L}_{\text{domain}}(\phi, w) \Big\} \;}$$
+
+Read the signs carefully, because they encode the architecture. The critic parameters $w$ *maximise* $\mathcal{L}_{\text{domain}}$ — it is trying to succeed. The feature parameters $\phi$ appear with a **minus** in front of that same term, so $\phi$ is trained to make the critic *fail*. And $\phi$ appears in $\mathcal{L}_{\text{task}}$ with a plus, so it must keep the features useful at the same time.
+
+In practice this is implemented with a **gradient reversal layer**: a module that is the identity going forward and multiplies the gradient by $-\lambda$ coming back. One ordinary loss, one ordinary backward pass, and the sign flip happens automatically where the critic's gradient enters the trunk.
+
+### Why $\phi$ needs both losses
+
+It is tempting to train $\phi$ with the domain loss alone and let $h_\theta$ adapt to whatever features come out. That fails, and the failure is instructive.
+
+With only the domain loss, $\phi$ finds the cheapest possible way to make the two feature clouds identical: **map every input, of every class, to the same constant vector** $z = [1, 1, \dots, 1]^\top$. Source and target features are then trivially indistinguishable, the critic is helpless, and the domain loss is perfectly minimised — a global optimum, not a local trap.
+
+The features are also completely worthless. Every digit has the same representation, so no classifier can do anything with them.
+
+The task loss is what forbids that solution: it demands features that still separate a 3 from an 8, which a constant vector cannot do. **Domain-invariant *and* task-discriminative** — neither loss alone gets you both, and $\lambda$ sets the exchange rate. At $\lambda = 0$ you have an ordinary source-only classifier that will not transfer; push $\lambda$ too high and the collapse starts to win.
+
+At test time the critic is discarded, exactly as the discriminator was in Ch.5, §8. What ships is $\phi$ followed by $h_\theta$ — an ordinary classifier that happens to have been trained to ignore which dataset its input came from.
+
+<div class="part-marker"><span class="part-label">Part II</span><span class="part-name">Why standard GANs stall, and the Wasserstein repair</span><span class="part-sub">The geometric reason Jensen-Shannon goes flat, the distance that does not, and the constraint you have to pay for it.</span></div>
+
+## 5. The Manifold Hypothesis
+
+Ch.4, §16 proved algebraically that disjoint supports pin $D_{JS}$ at $\log 2$. This is the geometric reason it happens in practice rather than as a pathological special case.
+
+Real images do not fill their ambient space. A $28 \times 28$ image lives in $\mathbb{R}^{784}$, but the set of arrays that look like handwritten digits is an unimaginably thin, curved sheet inside it. The **manifold hypothesis** says real data concentrates near such low-dimensional surfaces.
+
+Here is the thought experiment that makes "thin" concrete. Toss a fair coin 784 times; colour a pixel white on heads, black on tails. What is the chance you produce a recognisable digit? For practical purposes, **zero**. Digit-like arrays are a vanishing fraction of the $2^{784}$ possibilities — and note this is not a statement about probability being small, it is a statement about the *dimension* of where the mass sits.
+
+<figure><img src="assets/svg/manifold-disjoint.svg" alt="Two low-dimensional manifolds in a high-dimensional ambient space, not intersecting" style="max-width:100%;"><figcaption>Figure 6.4: Two thin sheets placed independently in a huge space generically miss each other entirely.</figcaption></figure>
+
+Now put the generator's output distribution $P_\theta$ in the same space. It is also a thin sheet — the image of $\mathbb{R}^k$ under $g_\theta$, with $k \ll d$. Two thin sheets in a huge space, positioned independently, **generically do not intersect**.
+
+---
+
+## 6. Disjoint Supports and Vanishing Gradients
+
+A perfect discriminator exists the moment the supports are disjoint: some function separates them with total confidence, and finding it is easy. When that happens, classification accuracy hits 100% and every $f$-divergence has already reached its ceiling — $D_{JS} = \log 2$, $D_{KL} = \infty$.
+
+Ceilings are constants, and constants have no slope:
+
+$$\nabla_\theta D_f(P_r \parallel P_\theta) = 0$$
+
+The generator is told "you are $\log 2$ away" and nothing else — not which direction, not whether it is getting warmer. Training stalls. This is the mathematical core of GAN instability, and it is not a tuning problem.
+
+Here is the exact comparison in closed form, using the standard example of two parallel unit segments offset by $\theta$:
+
+<div class="dgm-widget" id="widget-jsvsw"></div>
+
+<figure><img src="assets/svg/js-vs-w.svg" alt="Jensen-Shannon jumping to log 2 and staying flat, versus Wasserstein growing linearly" style="max-width:100%;"><figcaption>Figure 6.5: One of these can be differentiated. The other cannot.</figcaption></figure>
+
+What we need is a distance that answers *how far apart* rather than *do they touch*.
+
+---
+
+## 7. Moving Dirt
+
+Picture each distribution as a pile of earth. The **Wasserstein distance**, also called the earth mover's distance, is the minimum work needed to reshape the first pile into the second, where work means mass moved times distance carried.
+
+<figure><img src="assets/svg/earth-mover.svg" alt="Two piles of earth with a transport plan moving mass between them" style="max-width:100%;"><figcaption>Figure 6.6: It never asks whether the piles overlap — only how far the dirt has to travel.</figcaption></figure>
+
+That is the whole idea, and notice there is no overlap test anywhere in it. Slide two non-overlapping piles further apart and the work goes up smoothly, in proportion. A gradient exists at every separation.
+
+---
+
+## 8. Wasserstein Distance, Properly
+
+Let $\Pi(P_x, P_{\hat{x}})$ be the set of all joint distributions $\gamma(x, \hat{x})$ whose marginals are $P_x$ and $P_{\hat{x}}$. Each such $\gamma$ is a **transport plan**: $\gamma(x, \hat{x})$ is how much mass moves from $x$ to $\hat{x}$, and the marginal constraints say precisely "move all of what you have, and end up with exactly what you want".
+
+The cost of a plan is the expected distance travelled, and the **Wasserstein-1 distance** is the cheapest such cost:
+
+$$\boxed{\; W(P_x, P_{\hat{x}}) = \inf_{\gamma \in \Pi(P_x, P_{\hat{x}})} \; \mathbb{E}_{(x, \hat{x}) \sim \gamma}\big[\|x - \hat{x}\|\big] \;}$$
+
+**Does the direction matter?** It is tempting to think we should be transporting the *generated* distribution onto the *real* one rather than the other way round. It makes no difference: $W$ is a genuine metric, and in particular symmetric,
+
+$$W(P_x, P_{\hat{x}}) = W(P_{\hat{x}}, P_x)$$
+
+because a plan moving pile $A$ onto pile $B$, read backwards, is a plan moving $B$ onto $A$ at identical cost. The direction is a labelling convention; we minimise over $\theta$ either way.
+
+### A transport plan you can check by hand
+
+Say the source pile has mass $0.3$ at $x_1$ and $0.7$ at $x_2$; the target wants $0.1$ at $\hat{x}_1$, $0.4$ at $\hat{x}_2$, $0.5$ at $\hat{x}_3$. A plan is a table of how much goes from each source position to each target position:
+
+| from \ to | $\hat{x}_1$ (0.1) | $\hat{x}_2$ (0.4) | $\hat{x}_3$ (0.5) | row total |
+| :--- | :--- | :--- | :--- | :--- |
+| $x_1$ (0.3) | 0.1 | 0.2 | 0.0 | **0.3** |
+| $x_2$ (0.7) | 0.0 | 0.2 | 0.5 | **0.7** |
+| column total | **0.1** | **0.4** | **0.5** | **1.0** |
+
+The rows must sum to what you have and the columns to what you want — that is exactly what "marginals are $P_x$ and $P_{\hat{x}}$" means, written out. The cost is each cell times the distance it represents, $\sum_{i,j} \gamma(x_i, \hat{x}_j)\|x_i - \hat{x}_j\|$. Many plans are valid; they cost different amounts; $W$ is the cheapest.
+
+In one dimension you never have to search, because the optimal plan has a closed form and its cost equals the area between the two cumulative curves:
+
+<div class="dgm-widget" id="widget-w1"></div>
+
+---
+
+## 9. Kantorovich–Rubinstein Duality
+
+The definition is useless computationally: an infimum over the set of *all* joint distributions with given marginals is an enormous constrained optimisation for anything beyond a small discrete example.
+
+The escape is a duality, in the same spirit as Ch.4, §7's conjugate — rewrite a hard optimisation over one object as an easier optimisation over another:
+
+$$\boxed{\; W(P_r, P_\theta) = \sup_{\|T_w\|_L \le 1} \; \mathbb{E}_{x \sim P_r}\big[T_w(x)\big] - \mathbb{E}_{y \sim P_\theta}\big[T_w(y)\big] \;}$$
+
+The infimum over transport plans has become a **supremum over functions**, and the objective is a difference of two expectations — which by Ch.4, §6's argument is exactly the shape we can estimate from samples.
+
+The price is the constraint. $T_w$ must be **1-Lipschitz**:
+
+$$|T_w(x_1) - T_w(x_2)| \le \|x_1 - x_2\| \qquad \text{for all } x_1, x_2$$
+
+equivalently $\|\nabla_x T_w(x)\| \le 1$ everywhere. The function is not allowed to be steep.
+
+That constraint is not decoration. Without it the supremum is $+\infty$: take any function separating the supports and scale it up without limit, and the difference of expectations grows without bound. The Lipschitz bound is what makes the supremum finite and equal to the transport cost.
+
+---
+
+## 10. The WGAN Objective
+
+Substituting a generator gives the training problem:
+
+$$\min_\theta \; \max_{w \,:\, \|T_w\|_L \le 1} \; \mathbb{E}_{x \sim P_r}\big[T_w(x)\big] - \mathbb{E}_{z \sim P_z}\big[T_w(g_\theta(z))\big]$$
+
+Three differences from Ch.4's GAN, all consequences rather than choices:
+
+* **No sigmoid.** $T_w$ outputs an unbounded real number. There is no $\mathrm{dom}\,f^*$ to respect because we have left the $f$-divergence family entirely; the constraint is on the *slope*, not the range. It is called a **critic** rather than a discriminator precisely because its output is a score, not a probability.
+* **No logs.** The objective is a plain difference of means.
+* **The critic can be trained to optimality.** In Ch.4, §13 a too-good discriminator killed the generator's gradient. Here the opposite holds: the bound is only exact when the critic *is* optimal, so WGAN training deliberately runs several critic steps per generator step.
+
+---
+
+## 11. Enforcing the Lipschitz Constraint
+
+How do you make a neural network 1-Lipschitz? Not, as one might first guess, by flattening all the weights into a single vector and normalising it — that is neither necessary nor sufficient for a bound on the function's slope.
+
+The original paper's answer is **weight clipping**: after each critic update, clamp every weight into a small box,
+
+$$w \leftarrow \mathrm{clip}(w, -c, c), \qquad c \approx 0.01$$
+
+The justification is crude but valid. Weights confined to a compact set give bounded derivatives, so the network is $K$-Lipschitz for *some* $K$; and since the objective is positively homogeneous in $T_w$, an unknown constant $K$ rescales $W$ without moving the argmin.
+
+<figure><img src="assets/svg/lipschitz-clip.svg" alt="An unconstrained steep critic, a 1-Lipschitz critic, and weight clipping pushing weights to the boundary" style="max-width:100%;"><figcaption>Figure 6.7: Clipping buys a Lipschitz constant, but not the one you asked for, and at a real cost in capacity.</figcaption></figure>
+
+### What it costs
+
+The WGAN authors called clipping "a terrible way to enforce a Lipschitz constraint" in their own paper, and the reasons explain the entire follow-up literature.
+
+**It enforces the wrong thing.** Bounded weights imply *some* Lipschitz constant, not a constant of 1, and not one you can compute. The theory needs $\|T_w\|_L \le 1$; clipping delivers $\|T_w\|_L \le K$ for an unknown $K$ depending on depth, width and $c$. The estimate reported during training is therefore $W$ scaled by an unknown factor.
+
+**It destroys capacity.** The optimisation pushes weights to the extremes of the box, so a clipped critic tends toward a function with most weights parked at exactly $\pm c$ — far simpler than the network's nominal capacity, and often unable to represent the optimal critic at all.
+
+**It interacts badly with depth.** Lipschitz constants of a composition multiply, so a $c$ small enough to control an $L$-layer network makes each layer's contribution tiny and gradients vanish exponentially in depth. A $c$ large enough to avoid that fails to constrain anything.
+
+The standard replacement is **WGAN-GP**, which drops clipping and adds a penalty encouraging the gradient norm to equal 1 at points sampled between real and fake data:
+
+$$\lambda\, \mathbb{E}_{\hat{x}}\Big[\big(\|\nabla_{\hat{x}} T_w(\hat{x})\|_2 - 1\big)^2\Big]$$
+
+It penalises deviation from 1 in *both* directions rather than merely capping, because the optimal critic under KR duality has gradient norm exactly 1 almost everywhere along the transport paths — so pushing toward 1 is closer to the truth than pushing below it. A later alternative, **spectral normalisation**, divides each weight matrix by its largest singular value, controlling the constant directly and per-layer instead of through a penalty.
+
+---
+
+## 12. Standard GAN versus Wasserstein GAN
+
+| | Standard GAN | Wasserstein GAN |
+| :--- | :--- | :--- |
+| **Critic output** | probability via sigmoid, $[0,1]$ | unbounded score, $\mathbb{R}$ |
+| **What is minimised** | Jensen-Shannon (Ch.4, §10) | Wasserstein-1 |
+| **Disjoint supports** | divergence constant, gradient zero | distance finite, gradient informative |
+| **Constraint on the critic** | none | 1-Lipschitz |
+| **A strong critic** | starves the generator (Ch.4, §13) | is what you want — train it to optimality |
+| **Loss value** | uninformative | correlates with sample quality |
+
+The fifth row is the practical reversal, and the sixth is why practitioners adopted it so quickly — a loss curve that actually tracks quality, after years of curves that told you nothing.
+
+Two claims from that table deserve trimming, though. **"No mode collapse" is too strong**: WGAN reduces it substantially and does not eliminate it, because mode collapse in Ch.5, §7 was a *capacity and stationary-point* phenomenon and no change of divergence repairs a generator that cannot represent more than one mode. And **the Lipschitz constraint is never actually enforced** — clipping, gradient penalty and spectral normalisation are all approximations applied on sampled points or per layer, so what you optimise is not exactly $W$ and the "loss tracks quality" property is empirical rather than guaranteed.
+
+The conceptual contribution stands, and it is the part worth carrying forward: **the failure was in the choice of distance, not in the adversarial idea.**
+
+<div class="part-marker"><span class="part-label">Part III</span><span class="part-name">Latent variable models and the road to VAEs</span><span class="part-sub">A change of direction: no adversary at all. A likelihood you cannot write down, the bound that replaces it, and the algorithm that falls out.</span></div>
+
+## 13. Hidden Variables
+
+Data is generated by processes we cannot observe. A handwritten digit has an *identity*, a *slant*, a *stroke thickness* — none of which appear in the pixel array, all of which explain it. Variables like these are **latent**: present in the process, absent from the data.
+
+Given a dataset $D = \{x_1, \dots, x_n\} \sim P_X$, a latent variable model writes the density of what we see as a marginal over what we do not:
+
+$$P_\theta(x) = \sum_z P_\theta(x, z) \quad \text{(discrete } z\text{)}, \qquad P_\theta(x) = \int P_\theta(x, z)\, dz \quad \text{(continuous } z\text{)}$$
+
+For every observed $x_i$ there is a corresponding unobserved $z_i$ describing its hidden state, and training has to learn both the parameters $\theta$ and, in effect, those latents.
+
+One notation point worth fixing early, because it silently corrupts whole derivations: $z \mid x$ is read "$z$ **given** $x$" — a conditional distribution. The bar is not division. It caused a genuine tangle in the lecture and it is exactly the kind of misreading that survives until an exam.
+
+---
+
+## 14. Discrete versus Continuous Latents
+
+What the latent variable *is* determines what the model is for.
+
+<figure><img src="assets/svg/lvm-tree.svg" alt="Discrete latent variables give clustering, continuous latent variables give representation learning" style="max-width:100%;"><figcaption>Figure 6.8: The same marginal formula, two entirely different purposes.</figcaption></figure>
+
+**Discrete $Z \in \{1, \dots, M\}$** makes $P(z \mid x)$ a soft cluster assignment — the probability that $x$ belongs to hidden group $j$. Gaussian mixture models live here; K-means is the hard-assignment special case.
+
+**Continuous $Z \in \mathbb{R}^K$** makes $z \mid x$ a feature extractor — a compressed, lower-dimensional code for $x$. Autoencoders and VAEs live here, and the code is genuinely useful downstream: it is a learned representation you can classify on, retrieve with, or interpolate through.
+
+This is also the sharpest difference from a GAN. A GAN learns only the map from noise to data; ask it "which $z$ produced this particular image?" and it has no answer, because nothing in its training ever computed one. A latent variable model gives you that code for every data point — it reconstructs and extracts, not just generates.
+
+---
+
+## 15. Maximising Likelihood, and the Bottleneck
+
+The goal is the usual one: make $P_\theta$ match the data distribution, i.e. minimise $D_{KL}(P_X \parallel P_\theta)$. Since $P_X$ does not depend on $\theta$, that is the same as **maximising the expected log-likelihood**:
+
+$$\theta^* = \arg\min_\theta D_{KL}(P_X \parallel P_\theta) = \arg\max_\theta \mathbb{E}_{P_X}\big[\log P_\theta(x)\big]$$
+
+Drop the outer expectation and work with a single observation's log-likelihood, $\ell(\theta) = \log P_\theta(x)$. Substitute the marginal and the problem appears immediately:
+
+$$\ell(\theta) = \log \int_z P_\theta(x, z)\, dz$$
+
+The integral is **inside the logarithm**. A log of a sum does not decompose — you cannot push the log through — so the parameters of every latent configuration stay tangled together and the gradient has no closed form. This is the analytical bottleneck the rest of the lecture exists to get around.
+
+---
+
+## 16. The Evidence Lower Bound
+
+Introduce an arbitrary distribution $q(z \mid x)$ over the latent space — any distribution, chosen by us, meant to approximate the true posterior $P_\theta(z \mid x)$. Multiply and divide inside the integral:
+
+$$\ell(\theta) = \log \int_z P_\theta(x, z) \frac{q(z \mid x)}{q(z \mid x)} \, dz = \log\, \mathbb{E}_{q(z \mid x)}\!\left[ \frac{P_\theta(x, z)}{q(z \mid x)} \right]$$
+
+Nothing has changed yet — we multiplied by one and recognised an expectation, using $\int_z q(z \mid x)\, dz = 1$. Now apply **Jensen's inequality**, and mind the direction. Ch.4, §5 used it for convex $f$, where the average of the function exceeds the function of the average. Here $\log$ is **concave**, so it flips:
+
+$$g\big(\mathbb{E}[Y]\big) \ge \mathbb{E}\big[g(Y)\big] \;\; \text{for concave } g \qquad\Longrightarrow\qquad \log \mathbb{E}[Y] \ge \mathbb{E}[\log Y]$$
+
+Getting this backwards is easy — it was written the wrong way round on the board and caught mid-derivation. The check that always works: $\log$ bends downward, so a chord lies *below* the curve, so averaging inside beats averaging outside.
+
+Applying it moves the log inside, which is exactly what the intractability demanded:
+
+$$\ell(\theta) \;\ge\; \mathbb{E}_{q}\!\left[ \log \frac{P_\theta(x, z)}{q(z \mid x)} \right] \;=:\; F_\theta(q)$$
+
+$$\boxed{\; F_\theta(q) = \int_z q(z \mid x) \log \frac{P_\theta(x, z)}{q(z \mid x)} \, dz \;\le\; \ell(\theta) \;}$$
+
+This is the **evidence lower bound** — "evidence" being the old name for the marginal likelihood $P_\theta(x)$.
+
+### The gap is exactly a KL divergence
+
+The bound is more than an inequality; the slack has a closed form. Expand $P_\theta(x,z) = P_\theta(z \mid x) P_\theta(x)$ inside the logarithm:
+
+$$F_\theta(q) = \mathbb{E}_q\!\left[\log \frac{P_\theta(z \mid x) P_\theta(x)}{q(z \mid x)}\right] = \log P_\theta(x) + \mathbb{E}_q\!\left[\log \frac{P_\theta(z \mid x)}{q(z \mid x)}\right]$$
+
+$$\boxed{\; \ell(\theta) = F_\theta(q) + D_{KL}\big(q(z \mid x) \,\big\|\, P_\theta(z \mid x)\big) \;}$$
+
+Everything follows from that one line. $D_{KL} \ge 0$ gives the bound. $D_{KL} = 0$ if and only if $q = P_\theta(z \mid x)$ gives the tightness condition. And because $\ell(\theta)$ does not depend on $q$ at all, **maximising the ELBO over $q$ is identical to minimising the KL to the true posterior** — the approximation problem and the bound-tightening problem are the same problem.
+
+<div class="dgm-widget" id="widget-elbo"></div>
+
+So instead of the intractable $\ell(\theta)$ we optimise the bound over both arguments:
+
+$$\theta^*, q^* = \arg\max_{\theta, q} \; F_\theta(q)$$
+
+---
+
+## 17. EM and Gaussian Mixtures
+
+Two arguments, one objective — so alternate, as in Ch.4, §12, though this time both moves go uphill.
+
+<figure><img src="assets/svg/em-loop.svg" alt="The E-step and M-step alternating on the ELBO" style="max-width:100%;"><figcaption>Figure 6.9: Optimise q, then optimise θ, then repeat. Both steps increase the same quantity.</figcaption></figure>
+
+**E-step — optimise $q$ with $\theta$ fixed.** By §16's identity, maximising $F_{\theta^{(t)}}(q)$ over $q$ means minimising $D_{KL}(q \| P_{\theta^{(t)}}(z \mid x))$, and a KL is minimised at zero by the obvious choice:
+
+$$q^{(t+1)}(z \mid x) = P_{\theta^{(t)}}(z \mid x)$$
+
+No parameters move. What changes is that **the bound becomes exact**: $F_{\theta^{(t)}}(q^{(t+1)}) = \ell(\theta^{(t)})$.
+
+**M-step — optimise $\theta$ with $q$ fixed.**
+
+$$\theta^{(t+1)} = \arg\max_\theta \; F_\theta\big(q^{(t+1)}\big)$$
+
+<figure><img src="assets/svg/elbo-gap.svg" alt="The log-likelihood, the ELBO below it, and the KL gap closed by the E-step" style="max-width:100%;"><figcaption>Figure 6.10: The E-step closes the vertical gap; the M-step then climbs. Neither can lower the likelihood.</figcaption></figure>
+
+**Why the likelihood never decreases** — the entire convergence argument in three steps. After the E-step the bound touches: $F_{\theta^{(t)}}(q^{(t+1)}) = \ell(\theta^{(t)})$. The M-step can only raise the bound. And the bound always sits below the likelihood. Chain them:
+
+$$\ell(\theta^{(t+1)}) \;\ge\; F_{\theta^{(t+1)}}(q^{(t+1)}) \;\ge\; F_{\theta^{(t)}}(q^{(t+1)}) \;=\; \ell(\theta^{(t)})$$
+
+Monotone by construction — compare Ch.4's GAN, where alternating updates have no such guarantee and oscillation is the norm. The difference is that here both players climb the same hill.
+
+### Where it is all closed form
+
+For a GMM the latent $z$ is which component generated the point:
+
+$$P_\theta(x, z = j) = \alpha_j \, \mathcal{N}(x; \mu_j, \Sigma_j), \qquad \sum_{j=1}^M \alpha_j = 1$$
+
+with $\theta = \{\alpha_j, \mu_j, \Sigma_j\}_{j=1}^M$. The E-step posterior is just Bayes' rule, computable exactly because the denominator is a finite sum over $M$ components:
+
+$$P_\theta(z = j \mid x) = \frac{\alpha_j \mathcal{N}(x; \mu_j, \Sigma_j)}{\sum_{k=1}^M \alpha_k \mathcal{N}(x; \mu_k, \Sigma_k)}$$
+
+These are the **responsibilities** — how much component $j$ owns point $x$. The M-step then refits each component to the points it owns, weighted, and every update is a closed-form weighted mean and variance.
+
+<div class="dgm-widget" id="widget-em"></div>
+
+**Why settle for a bound at all?** Try differentiating the likelihood directly. Setting the derivative with respect to one component mean to zero gives
+
+$$\frac{\partial}{\partial \mu_j} \log \sum_{i=1}^M \alpha_i \mathcal{N}(x; \mu_i, \Sigma_i) = 0$$
+
+and because the sum sits inside the log, the derivative with respect to $\mu_j$ still contains every other component's parameters. Nothing isolates; there is no closed form. Jensen's inequality pushes the log inside the sum, which **decouples the parameters** and hands you tractable updates. That is what the bound bought — not merely tractability, but separability.
+
+---
+
+## 18. Where EM Stops Working
+
+Everything above rested on one line: the E-step sets $q$ to the exact posterior. For a GMM that is Bayes' rule with a finite sum underneath. For a deep model it is impossible.
+
+$$P_\theta(z \mid x) = \frac{P_\theta(x \mid z)\, P(z)}{\int P_\theta(x, z)\, dz}$$
+
+The numerator is fine — a forward pass through the decoder and a prior evaluation. The denominator is an integral over the whole latent space $\mathbb{R}^K$ of a quantity involving a deep non-linear network. No closed form, no practical quadrature; it is exactly the integral from §15, returning as a normalising constant.
+
+| | GMM | deep latent variable model |
+| :--- | :--- | :--- |
+| **Latent $Z$** | discrete, $\{1, \dots, M\}$ | continuous, $\mathbb{R}^K$ |
+| **$P_\theta(x \mid z)$** | a Gaussian per component | a neural decoder |
+| **Posterior $P_\theta(z \mid x)$** | exact, by Bayes' rule | intractable |
+| **E-step** | closes the gap exactly | cannot be performed |
+| **Consequence** | bound is tight every iteration | bound stays loose, always |
+
+The **variational autoencoder** is the response, and it is a retreat rather than a solution: since the exact posterior is unavailable, give up on it and train a second network — an **encoder** $q_\phi(z \mid x)$ — to output the parameters of an approximate one. The E-step is replaced by a gradient step on $\phi$, and encoder and decoder train together by maximising the same ELBO.
+
+Two things follow, and they are the honest cost. The bound is **never tight**: the residual $D_{KL}(q_\phi \| P_\theta(z \mid x))$ is whatever the encoder family cannot close, so we always optimise a strictly pessimistic estimate of the likelihood — structurally the same compromise as Ch.4's Move 3, where restricting the critic to a network turned an equality into an inequality. And the objective now contains an expectation over $q_\phi$ whose *parameters we are differentiating*, so the gradient cannot simply be pushed inside. That obstacle has a name and a fix — the **reparameterisation trick** — and it is where the next lecture starts.
+
+---
+
+## 19. Cheat Sheet
+
+| Result | Statement | Where |
+| :--- | :--- | :--- |
+| **UDA setup** | labelled source, unlabelled target, shared task | §1 |
+| **DAN objective** | $\min_{\phi,\theta}\max_w \mathcal{L}_{\text{task}} - \lambda \mathcal{L}_{\text{domain}}$ | §4 |
+| **Why the task loss is mandatory** | domain loss alone is minimised by a constant feature | §4 |
+| **Manifold hypothesis** | real data occupies a thin low-dimensional sheet | §5 |
+| **Disjoint supports** | $D_{JS} = \log 2$, $\nabla_\theta D_f = 0$ | §6 |
+| **Transport plan** | $\gamma \in \Pi(P_x, P_{\hat{x}})$, marginals fixed | §8 |
+| **Wasserstein-1** | $W = \inf_\gamma \mathbb{E}_\gamma\|x - \hat{x}\|$ | §8 |
+| **Symmetry** | $W(P, Q) = W(Q, P)$ — a true metric | §8 |
+| **KR duality** | $W = \sup_{\|T\|_L \le 1} \mathbb{E}_{P_r}[T] - \mathbb{E}_{P_\theta}[T]$ | §9 |
+| **1-Lipschitz** | $|T(x_1) - T(x_2)| \le \|x_1 - x_2\|$, so $\|\nabla T\| \le 1$ | §9 |
+| **WGAN critic** | linear output, no sigmoid, no logs | §10 |
+| **Weight clipping** | $w \leftarrow \mathrm{clip}(w, -c, c)$ — crude, superseded | §11 |
+| **LVM marginal** | $P_\theta(x) = \int P_\theta(x, z)\, dz$ | §13 |
+| **Jensen, concave** | $\log \mathbb{E}[Y] \ge \mathbb{E}[\log Y]$ | §16 |
+| **ELBO** | $F_\theta(q) = \mathbb{E}_q[\log \frac{P_\theta(x,z)}{q(z\mid x)}]$ | §16 |
+| **The gap** | $\ell(\theta) = F_\theta(q) + D_{KL}(q \| P_\theta(z\mid x))$ | §16 |
+| **Optimal $q$** | $q^*(z \mid x) = P_\theta(z \mid x)$, gap zero | §17 |
+| **EM monotonicity** | $\ell(\theta^{(t+1)}) \ge \ell(\theta^{(t)})$, always | §17 |
+| **Why VAEs exist** | that posterior is intractable for a deep decoder | §18 |
+
+---
+
+## 20. Key Takeaways
+
+1. **Domain adaptation is the GAN trick applied one level down**: put the discriminator on features rather than pixels, and the two domains become statistically indistinguishable in a space where a source-trained classifier still works.
+2. **The task loss on $\phi$ is not optional.** Domain alignment alone has a trivial global optimum — map everything to one constant vector — which is perfectly domain-invariant and perfectly useless.
+3. **The manifold hypothesis explains GAN instability geometrically.** Real and generated data both occupy thin sheets in a huge ambient space; two such sheets generically fail to intersect, a perfect discriminator then exists, and every $f$-divergence saturates at a constant with zero gradient.
+4. **Wasserstein distance measures how far, not whether.** It is the minimum work to transport one pile of mass onto another, so it stays finite and informative for disjoint supports — exactly where JS gives up.
+5. **KR duality makes it computable**, converting an infimum over transport plans into a supremum over 1-Lipschitz functions — a difference of two expectations, estimable from samples.
+6. **The Lipschitz constraint is the whole difficulty**, and weight clipping is an admitted placeholder: it enforces an unknown constant, wastes critic capacity, and interacts badly with depth. Gradient penalty and spectral normalisation are the repairs.
+7. **The critic/discriminator relationship inverts.** A too-strong discriminator starves a standard GAN; a WGAN wants its critic at optimality, because that is when the bound is exact.
+8. **A latent variable model gives you the code, not just the sample** — the structural difference from a GAN, and the reason the representation is reusable.
+9. **The ELBO decomposition is the single most useful identity here:** $\ell(\theta) = F_\theta(q) + D_{KL}(q \| P_\theta(z \mid x))$. Non-negativity of KL gives the bound; vanishing KL gives tightness; and maximising the bound over $q$ is the same act as approximating the posterior.
+10. **EM is monotone because the E-step makes the bound exact and the M-step then climbs it.** No such guarantee exists for adversarial training, where both players move on the same surface in opposite directions.
+11. **VAEs exist because that E-step becomes impossible.** A deep decoder makes the posterior's normalising integral intractable, so an encoder network approximates it — leaving a bound that is never tight and an expectation whose parameters we must differentiate through.
+
+---
+
+*Next (Ch.7): the variational autoencoder — what to do once the E-step is impossible, and the reparameterisation trick that lets a gradient cross a sampling step.*
+    </script>
+
+    <script src="dgm-notes.js"></script>
+    <script src="dgm-widgets.js"></script>
+</body>
+
+</html>

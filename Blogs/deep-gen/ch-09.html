@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lecture 9 notes: denoising diffusion probabilistic models derived end to end — DDPM as a hierarchical VAE, the fixed forward chain and its closed form, the ELBO and its three terms, the analytic denoising posterior, and the noise-prediction objective.">
+    <meta name="keywords"
+        content="DDPM, Denoising Diffusion, Diffusion Models, Hierarchical VAE, Forward Process, Reverse Process, Markov Chain, Variance Preserving, Denoising Posterior, Noise Prediction, U-Net, ELBO, Stable Diffusion">
+    <meta name="author" content="Anshul Singh">
+    <title>Lecture 9: Denoising Diffusion Probabilistic Models — DGM Notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="dgm-notes-style.css">
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../../css/theme.css">
+  <script src="../../js/theme.js"></script>
+  <!-- Passphrase gate for this notes series -->
+  <script src="../../js/gate.js"></script>
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">DGM Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Lecture 9</div>
+                <h1>Denoising Diffusion Probabilistic Models</h1>
+                <div class="chapter-meta">
+                    <span>August 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">38 min read</span>
+                    <span class="dot">●</span>
+                    <span>Diffusion</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target">
+                    <!-- Rendered markdown goes here -->
+                </article>
+
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <a href="ch-08.html" class="nav-prev">
+                    <div class="nav-label">← Previous Lecture</div>
+                    <div class="nav-title">Using a VAE: Embeddings, β-VAE &amp; VQ-VAE</div>
+                </a>
+                <a href="ch-10.html" class="nav-next">
+                    <div class="nav-label">Next Lecture →</div>
+                    <div class="nav-title">Score Matching, Guidance &amp; DDIM</div>
+                </a>
+            </div>
+        </main>
+
+        <footer
+            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*This is the chapter where the course arrives at what actually powers modern image generation. The route in is the nicest thing about it: a diffusion model turns out to be a VAE with three restrictions imposed, and every restriction removes a difficulty rather than adding one. The encoder stops being learned, so there is nothing to collapse; the latent stops being a bottleneck, so nothing is thrown away; and the single latent becomes a chain, so each individual step is easy enough to solve in closed form.*
+
+*The payoff at the end is a loss function of startling plainness — predict the noise, mean squared error — and the whole chapter is the derivation of why that is the right thing to do.*
+
+<div class="part-marker"><span class="part-label">Part I</span><span class="part-name">From VAEs to diffusion</span><span class="part-sub">Two loose ends from last time, then the three structural changes that turn a VAE into a DDPM, and the forward process they define.</span></div>
+
+## 1. The Last Step of the VAE Pipeline
+
+One thing left over from Ch.8. Having trained a VAE, how do you actually generate?
+
+Ch.8, §5 said: draw $z \sim \mathcal{N}(0, I)$ and decode. That works, and it is what the KL term was arranged for. But there is a better option that the industrial systems all take. Encode the whole training set to get a cloud of latents $\{z_1, \dots, z_n\}$, then **train a second generative model on that cloud** — a GMM, a PixelCNN, or as it turns out a small diffusion model — and sample from *that* instead:
+
+$$\hat{z}_{\text{new}} \;\longrightarrow\; \boxed{\text{decoder}} \;\longrightarrow\; \hat{x}_{\text{new}}$$
+
+The reason is that the aggregate posterior — the distribution of encoded latents across the whole dataset — is never exactly the prior. The KL term pulls it close, not onto. Sampling the prior therefore lands slightly off the region the decoder knows best, and fitting a model to where the latents *actually* are recovers that gap.
+
+This is not a footnote. **It is the blueprint for Stable Diffusion and Imagen**: compress to a latent space with an autoencoder, then run the expensive generative model in that smaller space rather than on pixels. Everything in this chapter is what goes in the second stage.
+
+---
+
+## 2. A Loose End on β: What "Disentanglement" Means
+
+The other leftover, and it is a genuine ambiguity rather than a quibble. Ch.8, §9 said that raising $\beta$ increases disentanglement and degrades reconstruction. Both halves need care.
+
+Reconstruction degrading is not in dispute. The word doing the work is **entanglement**, which refers to how mixed the underlying generative factors are within the latent code. At moderate $\beta > 1$ the pressure toward a factorised prior encourages individual latent coordinates to align with independent factors of variation — one dimension for rotation, another for lighting — and that is *more* disentangled, which is the property $\beta$-VAE was introduced for.
+
+Push $\beta$ far enough and something different happens. The posterior matches the prior regardless of the input, every $x$ maps to the same standard Gaussian, and the code stops carrying information at all. Whether to call that state "maximally disentangled" (the dimensions are certainly independent — they are independent of *everything*, including the data) or "maximally entangled" (all inputs are now indistinguishable, hopelessly mixed together) is a matter of which definition you reached for.
+
+The honest answer is that the question is ill-posed at that end of the range, and the useful thing to carry forward is the mechanism rather than the label: **moderate $\beta$ buys axis-alignment, extreme $\beta$ buys collapse**, and only the first is what anyone means by disentanglement.
+
+---
+
+## 3. Diffusion Models, and the Three Restrictions
+
+In current vision and vision-language work, diffusion models have largely displaced both VAEs and GANs. The route to understanding them is not to start over but to start from Ch.7.
+
+**A DDPM is a hierarchical VAE with three structural properties imposed.**
+
+<figure><img src="assets/svg/vae-to-ddpm.svg" alt="A standard VAE with one compressed learned latent, versus a DDPM chain with many same-sized latents and a fixed forward process" style="max-width:100%;"><figcaption>Figure 9.1: Three restrictions, each of which removes a problem rather than adding one.</figcaption></figure>
+
+**One — a chain of latents, not a single one.** A VAE maps $X \to Z \to X$. A DDPM maps through a whole cascade,
+
+$$X \longrightarrow Z_1 \longrightarrow Z_2 \longrightarrow \cdots \longrightarrow Z_T$$
+
+and reconstructs by walking back down it. Each individual hop is small, which is exactly why each will turn out to be analytically tractable where a single big hop was not.
+
+**Two — no bottleneck.** A VAE's latent is deliberately compressed, $\dim(Z) \ll \dim(X)$. In a DDPM every latent has **exactly the dimension of the data**:
+
+$$\dim(Z_t) = \dim(X) \qquad \text{for all } t$$
+
+Nothing is compressed away, which sounds wasteful and is what makes near-perfect reconstruction possible.
+
+**Three — the encoder is fixed and has no parameters.** This is the big one. A VAE learns $q_\phi(z \mid x)$. A DDPM *defines* its forward process as a fixed rule — add a prescribed amount of Gaussian noise — with nothing to learn. There is no encoder network at all, so the entire capacity of the model goes into the reverse direction.
+
+**Why give up a learned encoder?** Because learning both directions at once is where VAE trouble comes from: posterior collapse (Ch.8, §8), unstable interaction between encoder and decoder, the $\beta$ balancing act. Fix the forward process and all of it evaporates. In exchange you get a latent space whose structure is guaranteed rather than encouraged — statistical theory says a long enough Gaussian Markov chain converges to a standard Gaussian, so $x_T \sim \mathcal{N}(0, I)$ **by construction, not by regularisation.** There is no KL term to balance because there is nothing to pull into line.
+
+Three more things worth pinning down before the maths.
+
+**What "Markov" means here.** A first-order Markov chain is one where the next state depends only on the current one, and not on any earlier history:
+
+$$q(Z_t \mid Z_{t-1}, Z_{t-2}, \dots, X) = q(Z_t \mid Z_{t-1})$$
+
+Everything the process needs to know about the past is contained in where it is now.
+
+**Is it still probabilistic?** Entirely — fresh Gaussian noise is injected at every transition. "Fixed" refers to the *rule*, not to determinism: how much noise to add at each step is hardcoded in advance rather than learned. Fixed schedule, random draws.
+
+**Single data point or minibatch?** Everything below is written for one data point, because the notation stays clean that way. Training is still minibatched for GPU efficiency; converting a single-point loss to a batch loss is adding an average over the batch at the very end, and it changes nothing in any derivation.
+
+---
+
+## 4. The Notation Everyone Else Uses
+
+A warning that saves real confusion when reading papers: **the diffusion literature does not use VAE notation.** The clean data point is $x_0$, and the latents are $x_1, \dots, x_T$ — the letter $z$ largely disappears.
+
+| concept | VAE notation | DDPM notation |
+| :--- | :---: | :---: |
+| clean input | $X$ | $x_0$ |
+| intermediate latents | $Z_1, Z_2, \dots$ | $x_1, x_2, \dots$ |
+| final latent | $Z_T$ | $x_T$ |
+
+The trap is that $x_1, \dots, x_T$ look like a batch of different images and are nothing of the sort. **They are progressively noisier versions of one single image $x_0$.** Every subscript is a time index, not a sample index.
+
+Everything in the rest of the chapter is built from these symbols, so they are worth having in one place to refer back to:
+
+| symbol | meaning | learned? | shape |
+| :--- | :--- | :--- | :--- |
+| $x_0$ | the clean data point | — | $\dim(x_0)$ |
+| $x_t$ | the same point after $t$ noising steps | — | same as $x_0$, always |
+| $T$ | length of the chain, typically 1000 | fixed by you | scalar |
+| $\alpha_t$ | fraction of *signal power* kept at step $t$ | **fixed schedule** | scalar |
+| $\beta_t = 1 - \alpha_t$ | fraction of *noise power* added at step $t$ | **fixed schedule** | scalar |
+| $\bar\alpha_t = \prod_{i=1}^t \alpha_i$ | signal surviving all $t$ steps at once | derived from the schedule | scalar |
+| $\tilde\beta_t$ | variance of the true denoising posterior | derived from the schedule | scalar |
+| $\epsilon$ | a draw from $\mathcal{N}(0, I)$ | — | same as $x_0$ |
+| $q(\cdot)$ | the forward process | **no parameters at all** | — |
+| $p_\theta(\cdot)$ | the reverse process | **the only learned thing** | — |
+| $\epsilon_\theta(x_t, t)$ | the network's guess at the noise in $x_t$ | learned | same as $x_0$ |
+
+The column that matters most is the third one. In a VAE both directions were learned; here only the bottom two rows carry parameters, and that single fact is what §3 was about.
+
+---
+
+## 5. The Forward Process
+
+Now the actual rule. Pick a schedule of fixed scalars $\alpha_1, \dots, \alpha_T$ with each $\alpha_t \in (0,1)$, and define
+
+$$\boxed{\; x_t = \sqrt{\alpha_t}\, x_{t-1} + \sqrt{1 - \alpha_t}\, \epsilon_t, \qquad \epsilon_t \sim \mathcal{N}(0, I) \;} \tag{1}$$
+
+which as a distribution is
+
+$$q(x_t \mid x_{t-1}) = \mathcal{N}\big(x_t;\, \sqrt{\alpha_t}\, x_{t-1},\, (1 - \alpha_t) I\big)$$
+
+Shrink the signal a little, add a little noise. No parameters anywhere.
+
+**Where do the square roots come from?** They are what makes the process **variance-preserving**, and it is worth checking rather than accepting. Suppose $x_{t-1}$ has unit variance. Since $x_{t-1}$ and $\epsilon_t$ are independent, variances add under scaling by the square of the coefficient:
+
+$$\mathrm{Var}(x_t) = \big(\sqrt{\alpha_t}\big)^2 \mathrm{Var}(x_{t-1}) + \big(\sqrt{1 - \alpha_t}\big)^2 \mathrm{Var}(\epsilon_t) = \alpha_t \cdot 1 + (1 - \alpha_t) \cdot 1 = 1$$
+
+Unit variance in, unit variance out, at every step. Without the square roots the coefficients would be $\alpha_t^2 + (1-\alpha_t)^2 \neq 1$ and the scale would drift over a thousand steps — either collapsing toward zero or blowing up. The two square roots are precisely the choice that makes the chain stable however long it runs.
+
+*(Both the indexing and the square roots were corrected mid-derivation on the board — first written with $\alpha_0, \epsilon_0$ for $x_1$, and once without the roots. The version above is the standard one: subscripts match the state being produced.)*
+
+---
+
+## 6. What the Chain Actually Does
+
+Start with a clean image. At $x_1$ it is scaled down a hair and given a little noise — still obviously the same picture. At $x_2$, slightly more. Iterate:
+
+$$x_0 \longrightarrow x_1 \longrightarrow x_2 \longrightarrow \cdots \longrightarrow x_T$$
+
+With $T$ around 1000 and a standard schedule, every trace of structure is gone by the end, and $x_T$ has reached the chain's **stationary distribution**:
+
+$$x_T \sim \mathcal{N}(0, I)$$
+
+<figure><img src="assets/svg/forward-chain.svg" alt="An image degrading across the forward chain into pure noise, with the alpha-bar values" style="max-width:100%;"><figcaption>Figure 9.2: Forward is fixed and free. Only the dashed arrow underneath is learned.</figcaption></figure>
+
+So the task is clear and narrow. The forward direction costs nothing and is fully specified. What we must learn is the **reverse** path $p_\theta(x_{t-1} \mid x_t)$: a network that takes noise and walks it back into an image.
+
+<div class="part-marker"><span class="part-label">Part II</span><span class="part-name">The reverse process and its objective</span><span class="part-sub">Why the reverse step is intractable as stated, and the conditioning trick that makes the ELBO decompose into terms you can compute.</span></div>
+
+## 7. The Reverse Process
+
+The reverse chain starts at the prior and denoises down to data:
+
+$$p(x_T) = \mathcal{N}(0, I), \qquad x_T \longrightarrow x_{T-1} \longrightarrow \cdots \longrightarrow x_0$$
+
+We would like the true reverse transition $q(x_{t-1} \mid x_t)$, and we cannot have it. Bayes' rule gives
+
+$$q(x_{t-1} \mid x_t) = \frac{q(x_t \mid x_{t-1})\, q(x_{t-1})}{q(x_t)}$$
+
+and the marginals are the problem. To know $q(x_t)$ you would have to integrate over the entire data distribution,
+
+$$q(x_t) = \int q(x_t \mid x_0)\, q(x_0)\, dx_0$$
+
+and $q(x_0)$ is the unknown distribution of natural images — the very thing we are trying to model. The integral is hopeless.
+
+So we approximate it with a learned Gaussian:
+
+$$p_\theta(x_{t-1} \mid x_t) = \mathcal{N}\big(x_{t-1};\, \mu_\theta(x_t, t),\, \Sigma_\theta(x_t, t)\big)$$
+
+with $\mu_\theta$ produced by a network — in practice a U-Net.
+
+**Is assuming a Gaussian transition too restrictive?** It would be if we were claiming the *data* is Gaussian. We are not. The claim is only that a single small step of the reverse chain is Gaussian, and there is a real theorem behind it: for sufficiently small step sizes, the reverse of a diffusion process has the same functional form as the forward one. The data distribution $p_\theta(x_0)$ that comes out at the end is a composition of a thousand Gaussian transitions — a deep hierarchical mixture, effectively an infinitely deep VAE — and is wildly non-Gaussian. Small Gaussian steps, arbitrarily complex destination.
+
+---
+
+## 8. Deriving the ELBO
+
+Same machinery as Ch.7, §9, now with $T$ latents instead of one. The forward process gives the variational posterior, the reverse gives the model:
+
+$$q(x_{1:T} \mid x_0) = \prod_{t=1}^T q(x_t \mid x_{t-1}), \qquad p_\theta(x_{0:T}) = p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} \mid x_t)$$
+
+*(The reverse product runs from $x_T$ down: $p(x_T) \cdot p_\theta(x_{T-1}\mid x_T) \cdots p_\theta(x_0 \mid x_1)$. Written compactly with index $t$ it looks like it is going the wrong way, but the final factor really is $p_\theta(x_0 \mid x_1)$ — the last denoising step producing the clean image.)*
+
+Jensen gives the bound exactly as before:
+
+$$\log p_\theta(x_0) \;\ge\; \mathbb{E}_{q(x_{1:T} \mid x_0)}\!\left[ \log \frac{p_\theta(x_{0:T})}{q(x_{1:T} \mid x_0)} \right]$$
+
+Substituting both products and splitting off $t = 1$ from each — with the reason for every line against it:
+
+$$\begin{aligned} \text{ELBO} &= \mathbb{E}_q\!\left[ \log \frac{p_\theta(x_{0:T})}{q(x_{1:T} \mid x_0)} \right] & \text{(the bound above)} \\[2pt] &= \mathbb{E}_q\!\left[ \log \frac{p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} \mid x_t)}{\prod_{t=1}^T q(x_t \mid x_{t-1})} \right] & \text{(both factorisations)} \\[2pt] &= \mathbb{E}_q\!\left[ \log \frac{p(x_T)\, p_\theta(x_0 \mid x_1) \prod_{t=2}^T p_\theta(x_{t-1} \mid x_t)}{q(x_1 \mid x_0) \prod_{t=2}^T q(x_t \mid x_{t-1})} \right] & \text{(peel off } t = 1) \end{aligned}$$
+
+### The conditioning trick
+
+As it stands the denominator runs forwards and the numerator backwards, so nothing pairs up. The fix is to rewrite the forward transitions in reverse form — and the key move is that **conditioning on $x_0$ costs nothing**, since by the Markov property $q(x_t \mid x_{t-1}) = q(x_t \mid x_{t-1}, x_0)$. Knowing where the chain started tells you nothing extra once you know where it is now.
+
+So we may write, and then apply Bayes' rule to the conditioned version:
+
+$$q(x_t \mid x_{t-1}) \overset{\text{Markov}}{=} q(x_t \mid x_{t-1}, x_0) \overset{\text{Bayes}}{=} \frac{q(x_{t-1} \mid x_t, x_0)\, q(x_t \mid x_0)}{q(x_{t-1} \mid x_0)}$$
+
+Take the product over $t = 2, \dots, T$. The middle ratios telescope:
+
+$$\prod_{t=2}^T \frac{q(x_t \mid x_0)}{q(x_{t-1} \mid x_0)} = \frac{q(x_2\mid x_0)}{q(x_1\mid x_0)} \cdot \frac{q(x_3\mid x_0)}{q(x_2\mid x_0)} \cdots \frac{q(x_T\mid x_0)}{q(x_{T-1}\mid x_0)} = \frac{q(x_T \mid x_0)}{q(x_1 \mid x_0)}$$
+
+so the whole forward product becomes
+
+$$\prod_{t=2}^T q(x_t \mid x_{t-1}) = \frac{q(x_T \mid x_0)}{q(x_1 \mid x_0)} \prod_{t=2}^T q(x_{t-1} \mid x_t, x_0)$$
+
+Substitute back. The $q(x_1 \mid x_0)$ we split off at the start cancels against the one the telescoping produced, leaving
+
+$$\text{ELBO} = \mathbb{E}_q\!\left[ \log \frac{p(x_T)\, p_\theta(x_0 \mid x_1) \prod_{t=2}^T p_\theta(x_{t-1} \mid x_t)}{q(x_T \mid x_0) \prod_{t=2}^T q(x_{t-1} \mid x_t, x_0)} \right]$$
+
+Now every factor pairs with a matching one. Split the logarithm and marginalise out the variables each term does not mention:
+
+$$\boxed{\; \text{ELBO} = \underbrace{\mathbb{E}_{q(x_1 \mid x_0)}\big[\log p_\theta(x_0 \mid x_1)\big]}_{\text{reconstruction}} - \underbrace{D_{KL}\big(q(x_T \mid x_0) \parallel p(x_T)\big)}_{\text{prior matching}} - \underbrace{\sum_{t=2}^T \mathbb{E}_{q(x_t \mid x_0)}\Big[ D_{KL}\big(q(x_{t-1} \mid x_t, x_0) \parallel p_\theta(x_{t-1} \mid x_t)\big) \Big]}_{\text{denoising matching}} \;}$$
+
+**Why condition on $x_0$ at all?** Because it is the difference between an intractable object and a Gaussian. Without it, §7 showed, $q(x_{t-1} \mid x_t)$ needs marginals over the unknown data distribution. Condition on a specific $x_0$ and both marginals $q(x_t \mid x_0)$ and $q(x_{t-1} \mid x_0)$ are simple Gaussians we can write down — §10 does exactly that. Conditioning on $x_0$ is the single mathematical move that makes the whole objective computable, and it is legal only because of the Markov property.
+
+---
+
+## 9. The Three Terms
+
+<figure><img src="assets/svg/ddpm-elbo-terms.svg" alt="The three terms of the DDPM ELBO and which of them carries the training signal" style="max-width:100%;"><figcaption>Figure 9.3: One term is free, one is nearly negligible, and one does all the work.</figcaption></figure>
+
+**Reconstruction**, $\mathbb{E}_{q(x_1\mid x_0)}[\log p_\theta(x_0 \mid x_1)]$ — the final denoising step, from barely-noisy $x_1$ back to clean $x_0$. Structurally identical to the VAE reconstruction term of Ch.7, §5, and it is exactly one term out of a thousand.
+
+**Prior matching**, $-D_{KL}(q(x_T \mid x_0) \parallel p(x_T))$ — is the fully-noised state really $\mathcal{N}(0,I)$? With a fixed schedule and $T$ large it is, by construction. And crucially **it contains no $\theta$**: the forward process has no parameters and the prior is fixed. It is a constant with respect to everything we optimise, so it is simply dropped.
+
+**Denoising matching**, the sum — this is the training signal. Rather than trying to match the intractable reverse transition directly, we match our learned $p_\theta(x_{t-1} \mid x_t)$ against the **conditional** posterior $q(x_{t-1} \mid x_t, x_0)$, which conditioning made tractable. Both sides are Gaussians, so each KL has a closed form, and §12 shows it collapses further still.
+
+<div class="part-marker"><span class="part-label">Part III</span><span class="part-name">Making it computable</span><span class="part-sub">Three derivations: jumping to any step in one shot, the posterior in closed form, and the reparameterisation that turns the whole thing into mean squared error.</span></div>
+
+## 10. Jumping Straight to Any Step
+
+Training needs $x_t$ for a randomly chosen $t$. Walking the chain $t$ times to get there would make each training step cost $O(t)$, which for $t$ near 1000 is intolerable. It turns out we never have to.
+
+**Unfold one step.** Substitute the definition of $x_{t-1}$ into that of $x_t$:
+
+$$x_t = \sqrt{\alpha_t}\Big( \sqrt{\alpha_{t-1}}\, x_{t-2} + \sqrt{1 - \alpha_{t-1}}\, \epsilon_{t-2} \Big) + \sqrt{1 - \alpha_t}\, \epsilon_{t-1}$$
+
+$$= \sqrt{\alpha_t \alpha_{t-1}}\, x_{t-2} + \sqrt{\alpha_t(1 - \alpha_{t-1})}\, \epsilon_{t-2} + \sqrt{1 - \alpha_t}\, \epsilon_{t-1}$$
+
+**Combine the two noise terms.** They are independent Gaussians, and a sum of independent Gaussians is Gaussian with variances adding:
+
+$$\sigma^2_{\text{combined}} = \alpha_t(1 - \alpha_{t-1}) + (1 - \alpha_t) = \alpha_t - \alpha_t\alpha_{t-1} + 1 - \alpha_t = 1 - \alpha_t \alpha_{t-1}$$
+
+so both collapse into one draw $\epsilon^* \sim \mathcal{N}(0,I)$:
+
+$$x_t = \sqrt{\alpha_t \alpha_{t-1}}\, x_{t-2} + \sqrt{1 - \alpha_t \alpha_{t-1}}\, \epsilon^*$$
+
+The same shape as before with $\alpha_t \alpha_{t-1}$ in place of $\alpha_t$. *(Precisely: we are using that a linear combination of independent Gaussians is Gaussian — scale the means, add the squared scale factors to get the variance. The same fact powered Ch.7's reparameterisation.)*
+
+**Recurse to the bottom.** Repeating down to $x_0$ and writing $\bar{\alpha}_t = \prod_{i=1}^t \alpha_i$:
+
+$$\boxed{\; x_t = \sqrt{\bar{\alpha}_t}\, x_0 + \sqrt{1 - \bar{\alpha}_t}\, \epsilon, \qquad q(x_t \mid x_0) = \mathcal{N}\big(x_t;\, \sqrt{\bar{\alpha}_t}\, x_0,\, (1 - \bar{\alpha}_t) I\big) \;} \tag{2}$$
+
+**Any noisy state, from the clean image, in one shot.** Note the coefficients still square-sum to one, so variance preservation survives the collapse — and as $\bar{\alpha}_t \to 0$ the expression tends to pure $\epsilon$, which is the $\mathcal{N}(0,I)$ endpoint.
+
+<div class="dgm-widget" id="widget-forward"></div>
+
+---
+
+## 11. The True Denoising Posterior
+
+Now compute $q(x_{t-1} \mid x_t, x_0)$ explicitly. Bayes' rule, using the Markov property to drop $x_0$ from the first factor:
+
+$$q(x_{t-1} \mid x_t, x_0) = \frac{q(x_t \mid x_{t-1}, x_0)\, q(x_{t-1} \mid x_0)}{q(x_t \mid x_0)} = q(x_t \mid x_{t-1}) \frac{q(x_{t-1} \mid x_0)}{q(x_t \mid x_0)}$$
+
+All three are now known Gaussians — the first from §5, the other two from §10. Writing $\beta_t = 1 - \alpha_t$ and keeping only exponents:
+
+$$\propto \exp\left( -\frac{1}{2}\left[ \frac{\|x_t - \sqrt{\alpha_t} x_{t-1}\|^2}{\beta_t} + \frac{\|x_{t-1} - \sqrt{\bar{\alpha}_{t-1}} x_0\|^2}{1 - \bar{\alpha}_{t-1}} - \frac{\|x_t - \sqrt{\bar{\alpha}_t} x_0\|^2}{1 - \bar{\alpha}_t} \right] \right)$$
+
+Both $x_t$ and $x_0$ are given, so treat them as constants and collect powers of $x_{t-1}$:
+
+$$= \exp\left( -\frac{1}{2}\left[ \left( \frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}} \right) x_{t-1}^2 - 2\left( \frac{\sqrt{\alpha_t}}{\beta_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}} x_0 \right) x_{t-1} + C \right] \right)$$
+
+A quadratic in the exponent is a Gaussian, so complete the square.
+
+**The variance** is the reciprocal of the $x_{t-1}^2$ coefficient:
+
+$$\frac{1}{\tilde\beta_t} = \frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}} = \frac{\alpha_t(1 - \bar{\alpha}_{t-1}) + \beta_t}{\beta_t(1 - \bar{\alpha}_{t-1})}$$
+
+and the numerator simplifies beautifully using $\alpha_t = 1 - \beta_t$ and $\alpha_t \bar{\alpha}_{t-1} = \bar{\alpha}_t$:
+
+$$\alpha_t - \alpha_t\bar{\alpha}_{t-1} + \beta_t \overset{\alpha_t = 1 - \beta_t}{=} (1 - \beta_t) - \alpha_t\bar{\alpha}_{t-1} + \beta_t \overset{\alpha_t \bar{\alpha}_{t-1} = \bar{\alpha}_t}{=} 1 - \bar{\alpha}_t$$
+
+$$\boxed{\; \tilde\beta_t = \frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}\, \beta_t \;} \tag{3}$$
+
+Note it depends only on the schedule — **not on the data, not on $x_t$**. It is a known constant at every step.
+
+**The mean** is the linear coefficient over the quadratic one:
+
+$$\mu_q(x_t, x_0) = \tilde\beta_t\left( \frac{\sqrt{\alpha_t}}{\beta_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}} x_0 \right) = \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}(1 - \alpha_t)}{1 - \bar{\alpha}_t} x_0$$
+
+A weighted average of where we are and where we started, with weights fixed by the schedule. Worth confirming rather than trusting:
+
+<div class="dgm-widget" id="widget-ddpmpost"></div>
+
+---
+
+## 12. From KL to Mean Squared Error
+
+We now have both sides of the denoising-matching KL. Model the reverse step as a Gaussian and — this is the standard choice — **fix its covariance to the posterior's**, $\Sigma_\theta(t) = \tilde\beta_t I$, which §11 showed is a known constant needing no learning.
+
+For two Gaussians sharing a covariance, the KL divergence collapses to a scaled squared distance between means:
+
+$$D_{KL}\big(q(x_{t-1} \mid x_t, x_0) \parallel p_\theta(x_{t-1} \mid x_t)\big) = \frac{1}{2\sigma_q^2(t)} \big\| \mu_q(x_t, x_0) - \mu_\theta(x_t, t) \big\|^2$$
+
+**The whole objective is now a mean squared error between two means.** Every KL in that sum over $t$ has become an $L_2$ distance, which is about as friendly as a loss function gets.
+
+---
+
+## 13. Predicting the Noise Instead
+
+One more reparameterisation, and it is the one that produces the loss people actually implement.
+
+From §10, $x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1 - \bar\alpha_t}\,\epsilon$, so we can solve for the clean image in terms of the noise that produced $x_t$:
+
+$$x_0 = \frac{1}{\sqrt{\bar\alpha_t}}\Big( x_t - \sqrt{1 - \bar\alpha_t}\, \epsilon \Big)$$
+
+Substitute that into $\mu_q$. Using $\sqrt{\bar\alpha_t} = \sqrt{\alpha_t}\sqrt{\bar\alpha_{t-1}}$ the coefficients collapse, and after simplification:
+
+$$\boxed{\; \mu_q(x_t, x_0) = \frac{1}{\sqrt{\alpha_t}}\left( x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar\alpha_t}}\, \epsilon \right) \;} \tag{4}$$
+
+Read what that says. **The target mean is just the current point with a scaled multiple of the noise subtracted.** Everything else is schedule constants. So instead of having the network output a mean, give it the same shape and let it predict the one unknown piece:
+
+$$\mu_\theta(x_t, t) = \frac{1}{\sqrt{\alpha_t}}\left( x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar\alpha_t}}\, \epsilon_\theta(x_t, t) \right)$$
+
+Now substitute both into the mean-squared error of §12. The $x_t$ terms are identical and cancel, the constants factor out, and what is left is
+
+$$\boxed{\; \mathcal{L}_{\text{simple}}(\theta) = \mathbb{E}_{t, x_0, \epsilon}\Big[ \big\| \epsilon - \epsilon_\theta\big(\sqrt{\bar\alpha_t} x_0 + \sqrt{1 - \bar\alpha_t}\,\epsilon,\; t\big) \big\|^2 \Big] \;}$$
+
+After all of that — a hierarchical ELBO, a telescoping product, completing the square — the training objective is: **corrupt an image with known noise, and ask a network to say what noise you added.** Plain regression on a quantity you generated yourself, so labels are free and infinite.
+
+The network is doing score matching in disguise: predicting $\epsilon$ is equivalent up to scaling to predicting $\nabla_{x_t} \log q(x_t)$, the direction of increasing data density. Framing it as noise prediction rather than mean prediction puts the target on a fixed scale — $\epsilon$ is always $\mathcal{N}(0,I)$ regardless of $t$ — where the mean's magnitude varies wildly across the schedule. That normalisation is a large part of why DDPMs train as stably as they do.
+
+---
+
+## 14. Architecture and Training
+
+<figure><img src="assets/svg/ddpm-training.svg" alt="The DDPM training step: sample a timestep and noise, build x_t in one line, predict the noise, take an MSE gradient" style="max-width:100%;"><figcaption>Figure 9.4: One training step. No chain is ever walked.</figcaption></figure>
+
+The network is a **U-Net** taking the noisy image $x_t$ and the scalar $t$. The timestep is projected into a high-dimensional embedding — the same sinusoidal trick as positional encodings in Transformers — and injected into the residual blocks, so **one set of weights serves all $T$ steps** and learns to behave differently depending on how noisy its input is.
+
+The training loop:
+
+1. Draw a clean image $x_0$ from the dataset.
+2. Draw a timestep $t \sim \mathcal{U}\{1, \dots, T\}$.
+3. Draw noise $\epsilon \sim \mathcal{N}(0, I)$, shaped like $x_0$.
+4. Build $x_t = \sqrt{\bar\alpha_t}\, x_0 + \sqrt{1 - \bar\alpha_t}\, \epsilon$ — one line, thanks to §10.
+5. Predict $\epsilon_\theta(x_t, t)$.
+6. Take a gradient step on $\|\epsilon - \epsilon_\theta(x_t, t)\|^2$.
+
+Notice what is missing: no sequence, no recurrence, no adversary, no sampling of intermediate states. Each training step is independent of every other, so it parallelises perfectly.
+
+**Sampling is the opposite**, and it is the practical price. To generate you must start at $x_T \sim \mathcal{N}(0,I)$ and apply the reverse step $T$ times, strictly in order:
+
+$$x_{t-1} = \frac{1}{\sqrt{\alpha_t}}\left( x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar\alpha_t}} \epsilon_\theta(x_t, t) \right) + \sqrt{\tilde\beta_t}\, z, \qquad z \sim \mathcal{N}(0,I)$$
+
+A thousand sequential network evaluations for one image, against a GAN's single forward pass. That gap is what the entire accelerated-sampler literature exists to close.
+
+Does the sampler actually reconstruct the distribution, assuming the network learns its job? Worth checking separately from whether the network can learn it:
+
+<div class="dgm-widget" id="widget-reverse"></div>
+
+---
+
+## 15. Cheat Sheet
+
+| Result | Statement | Where |
+| :--- | :--- | :--- |
+| **Three restrictions** | chain of latents; no bottleneck; fixed encoder | §3 |
+| **Markov property** | $q(x_t \mid x_{t-1}, \dots, x_0) = q(x_t \mid x_{t-1})$ | §3 |
+| **Notation** | $x_0$ is data; $x_1 \dots x_T$ are noisier versions of it | §4 |
+| **Forward step** | $x_t = \sqrt{\alpha_t} x_{t-1} + \sqrt{1-\alpha_t}\,\epsilon_t$ | §5 |
+| **Variance preserving** | $\alpha_t + (1 - \alpha_t) = 1$ — why the square roots | §5 |
+| **Endpoint** | $x_T \sim \mathcal{N}(0,I)$ by construction | §6 |
+| **Reverse is intractable** | $q(x_t)$ needs an integral over the data distribution | §7 |
+| **Conditioning trick** | $q(x_t \mid x_{t-1}) = q(x_t \mid x_{t-1}, x_0)$ by Markov | §8 |
+| **Telescoping** | $\prod_{t\ge2} \frac{q(x_t\mid x_0)}{q(x_{t-1}\mid x_0)} = \frac{q(x_T\mid x_0)}{q(x_1\mid x_0)}$ | §8 |
+| **Three terms** | reconstruction − prior matching − denoising matching | §9 |
+| **Prior term** | contains no $\theta$; a constant, dropped | §9 |
+| **Closed-form jump** | $x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon$ | §10 |
+| **Posterior variance** | $\tilde\beta_t = \frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\beta_t$ — schedule only | §11 |
+| **Posterior mean** | weighted average of $x_t$ and $x_0$ | §11 |
+| **KL → MSE** | shared covariance ⟹ squared distance between means | §12 |
+| **ε-form of $\mu_q$** | $\frac{1}{\sqrt{\alpha_t}}(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon)$ | §13 |
+| **Training loss** | $\|\epsilon - \epsilon_\theta(x_t, t)\|^2$ | §13 |
+| **Training cost** | $O(1)$ per step, fully parallel | §14 |
+| **Sampling cost** | $T$ sequential network evaluations | §14 |
+
+---
+
+## 16. Key Takeaways
+
+1. **A DDPM is a hierarchical VAE with three restrictions**: a chain of latents rather than one, no dimensional bottleneck, and a forward process with no parameters at all.
+2. **Fixing the encoder is what removes the difficulties**, not what adds them. With nothing to learn in the forward direction there is no posterior collapse, no encoder–decoder instability, and no $\beta$ to tune — and $x_T \sim \mathcal{N}(0,I)$ is guaranteed by the schedule rather than encouraged by a penalty.
+3. **The square roots make the process variance-preserving.** $\alpha_t + (1-\alpha_t) = 1$ exactly, so the scale neither collapses nor explodes across a thousand steps.
+4. **The reverse transition is intractable because its marginals need the data distribution** — but conditioning on $x_0$ replaces those marginals with Gaussians you can write down, and the Markov property makes that conditioning free.
+5. **The ELBO telescopes into three terms**, of which the prior-matching one has no parameters and is discarded, and the denoising-matching sum carries essentially all the training signal.
+6. **You can jump to any noise level in one shot.** Composing the Gaussian steps gives $x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\epsilon$, which is why training a 1000-step model costs no more per step than a 1-step one.
+7. **The true denoising posterior is Gaussian with a variance that depends only on the schedule**, so it can be computed in advance and never needs to be learned.
+8. **Shared covariance turns every KL into a squared distance between means**, and reparameterising the mean in terms of the noise cancels everything else.
+9. **The final objective is regression on noise you added yourself** — free, unlimited labels, no adversary, and a target that is $\mathcal{N}(0,I)$ at every timestep, which is a large part of why it trains so stably.
+10. **Training is parallel and sampling is sequential.** One forward pass to train, $T$ of them to generate — the trade that the whole fast-sampler literature is trying to undo.
+
+---
+
+## 17. References
+
+* Ho, Jain and Abbeel (2020), *Denoising Diffusion Probabilistic Models* — [arXiv:2006.11239](https://arxiv.org/abs/2006.11239). The paper this chapter derives; the noise-prediction objective of §13 is their Eq. 14.
+* Sohl-Dickstein et al. (2015), *Deep Unsupervised Learning using Nonequilibrium Thermodynamics* — [arXiv:1503.03585](https://arxiv.org/abs/1503.03585). Where the diffusion formulation originates.
+* Luo (2022), *Understanding Diffusion Models: A Unified Perspective* — [arXiv:2208.11970](https://arxiv.org/abs/2208.11970). The hierarchical-VAE reading of §3, worked out at length.
+* Chan (2024), *Tutorial on Diffusion Models for Imaging and Vision* — [arXiv:2403.18103](https://arxiv.org/abs/2403.18103). Recommended in the lecture; ~100 pages that follow the same VAE → ELBO → DDPM path as these notes.
+* Rombach et al. (2022), *High-Resolution Image Synthesis with Latent Diffusion Models* — [arXiv:2112.10752](https://arxiv.org/abs/2112.10752). Stable Diffusion — the two-stage blueprint of §1.
+
+---
+
+*Next (Ch.10): the training details in full, then two results that each give something for nothing — Tweedie's formula turns the noise predictor into a score estimator, and DDIM shows the objective never constrained the sampling path at all.*
+    </script>
+
+    <script src="dgm-notes.js"></script>
+    <script src="dgm-widgets.js"></script>
+</body>
+
+</html>

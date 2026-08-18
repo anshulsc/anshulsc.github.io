@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="fid-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#888"/></marker>
+    <marker id="fid-s" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker>
+    <marker id="fid-e" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker>
+  </defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">FID: stop comparing pixels, compare the statistics of learned features</text>
+
+  <g fill="rgba(14,116,144,0.12)" stroke="#0e7490">
+    <rect x="26" y="56" width="34" height="34" rx="3"/><rect x="64" y="56" width="34" height="34" rx="3"/>
+    <rect x="26" y="94" width="34" height="34" rx="3"/><rect x="64" y="94" width="34" height="34" rx="3"/>
+  </g>
+  <text x="62" y="146" text-anchor="middle" font-size="10" font-weight="600" fill="#0e7490">real images</text>
+
+  <g fill="rgba(217,119,6,0.12)" stroke="#d97706">
+    <rect x="26" y="176" width="34" height="34" rx="3"/><rect x="64" y="176" width="34" height="34" rx="3"/>
+    <rect x="26" y="214" width="34" height="34" rx="3"/><rect x="64" y="214" width="34" height="34" rx="3"/>
+  </g>
+  <text x="62" y="266" text-anchor="middle" font-size="10" font-weight="600" fill="#d97706">generated images</text>
+
+  <path d="M 106 92 L 142 106" stroke="#888" stroke-width="1.5" fill="none" marker-end="url(#fid-g)"/>
+  <path d="M 106 212 L 142 198" stroke="#888" stroke-width="1.5" fill="none" marker-end="url(#fid-g)"/>
+
+  <rect x="146" y="120" width="112" height="64" rx="9" fill="#f7f7f7" stroke="#888" stroke-width="1.5"/>
+  <text x="202" y="142" text-anchor="middle" font-size="10.8" font-weight="600" fill="#555">Inception-V3</text>
+  <text x="202" y="158" text-anchor="middle" font-size="9.6" fill="#777">frozen, pre-trained</text>
+  <text x="202" y="174" text-anchor="middle" font-size="9.6" fill="#777">take a mid layer</text>
+
+  <path d="M 258 138 L 300 110" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#fid-g)"/>
+  <path d="M 258 166 L 300 194" stroke="#d97706" stroke-width="1.5" fill="none" marker-end="url(#fid-g)"/>
+  <text x="280" y="98" font-size="9.4" fill="#999">feature vectors</text>
+
+  <!-- gaussians -->
+  <text x="410" y="72" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0e7490">fit a Gaussian: mean μ₁, covariance Σ₁</text>
+  <line x1="320" y1="150" x2="520" y2="150" stroke="#ccc"/>
+  <path d="M 330 150 C 366 150, 372 92, 402 92 C 432 92, 438 150, 474 150" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="2"/>
+  <circle cx="402" cy="150" r="3.4" fill="#0e7490"/>
+  <text x="402" y="166" text-anchor="middle" font-size="9.4" fill="#0e7490">μ₁</text>
+
+  <text x="430" y="264" text-anchor="middle" font-size="10.5" font-weight="600" fill="#d97706">fit a Gaussian: mean μ₂, covariance Σ₂</text>
+  <line x1="320" y1="242" x2="540" y2="242" stroke="#ccc"/>
+  <path d="M 360 242 C 400 242, 404 176, 442 176 C 480 176, 484 242, 524 242" fill="rgba(217,119,6,0.10)" stroke="#d97706" stroke-width="2"/>
+  <circle cx="442" cy="242" r="3.4" fill="#d97706"/>
+  <text x="442" y="258" text-anchor="middle" font-size="9.4" fill="#d97706">μ₂</text>
+
+  <line x1="402" y1="106" x2="442" y2="190" stroke="#7c3aed" stroke-width="1.8" marker-start="url(#fid-s)" marker-end="url(#fid-e)"/>
+
+  <rect x="558" y="118" width="186" height="98" rx="10" fill="rgba(124,58,237,0.05)" stroke="#7c3aed" stroke-width="1.3"/>
+  <text x="651" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed">FID</text>
+  <text x="651" y="160" text-anchor="middle" font-size="10" fill="#555">Wasserstein-2 distance</text>
+  <text x="651" y="176" text-anchor="middle" font-size="10" fill="#555">between the two Gaussians</text>
+  <text x="651" y="198" text-anchor="middle" font-size="10" font-weight="600" fill="#7c3aed">lower is better</text>
+  <text x="651" y="212" text-anchor="middle" font-size="9.2" fill="#999">0 means the feature statistics match</text>
+
+  <text x="380" y="292" text-anchor="middle" font-size="10.5" fill="#777">Two images of the same scene shifted by one pixel are far apart in pixel space and nearly identical in feature space — which is the point.</text>
+</svg>

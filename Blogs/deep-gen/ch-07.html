@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lecture 7 notes: variational autoencoders end to end — the ELBO split into reconstruction and regularisation, how a network represents a distribution, why the naive gradient with respect to the encoder fails, the reparameterisation trick, and the full VAE training loop.">
+    <meta name="keywords"
+        content="Variational Autoencoder, VAE, ELBO, Reparameterization Trick, Score Function Estimator, REINFORCE, LOTUS, Encoder, Decoder, KL Divergence, Posterior Collapse, Kingma Welling, Auto-Encoding Variational Bayes">
+    <meta name="author" content="Anshul Singh">
+    <title>Lecture 7: Variational Autoencoders — DGM Notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="dgm-notes-style.css">
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../../css/theme.css">
+  <script src="../../js/theme.js"></script>
+  <!-- Passphrase gate for this notes series -->
+  <script src="../../js/gate.js"></script>
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">DGM Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Lecture 7</div>
+                <h1>Variational Autoencoders</h1>
+                <div class="chapter-meta">
+                    <span>August 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">36 min read</span>
+                    <span class="dot">●</span>
+                    <span>VAEs</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target">
+                    <!-- Rendered markdown goes here -->
+                </article>
+
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <a href="ch-06.html" class="nav-prev">
+                    <div class="nav-label">← Previous Lecture</div>
+                    <div class="nav-title">Domain Adaptation, Wasserstein GANs &amp; Latent Variable Models</div>
+                </a>
+                <a href="ch-08.html" class="nav-next">
+                    <div class="nav-label">Next Lecture →</div>
+                    <div class="nav-title">Using a VAE: Embeddings, β-VAE &amp; VQ-VAE</div>
+                </a>
+            </div>
+        </main>
+
+        <footer
+            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*The lecture opened by rebuilding the latent variable machinery from scratch — the marginal, the ELBO, EM on a mixture model. Ch.6 already covers all of that in detail, so §1–§3 here move through it briskly as a recap and the chapter proper begins at §4, where the posterior stops being computable and the VAE has to be invented.*
+
+*The destination is a single obstacle: the ELBO contains an expectation over a distribution whose parameters we are trying to differentiate. Everything after §9 exists to get around that one problem.*
+
+<div class="part-marker"><span class="part-label">Part I</span><span class="part-name">Recap: latent variables and the bound</span><span class="part-sub">The setup the lecture rebuilt before starting. Covered properly in Ch.6, §13–§17 — this is the short version, kept so the chapter stands alone.</span></div>
+
+## 1. Latent Variable Models, in One Page
+
+Observed data $x$ is high-dimensional and complicated. A **latent variable model** explains it through hidden variables $z$ that were never measured. Given $D = \{x_1, \dots, x_n\}$ drawn i.i.d. from $P_x$, the model's density is the joint, marginalised:
+
+$$P_\theta(x) = \sum_z P_\theta(x, z) \quad \text{(discrete } z\text{)}, \qquad P_\theta(x) = \int_z P_\theta(x, z)\, dz \quad \text{(continuous } z\text{)}$$
+
+For every $x_i$ there is an unobserved $z_i$ that goes with it.
+
+**Discrete $z \in \{1, \dots, M\}$** makes $z \mid x$ a cluster assignment — GMMs, $K$-means. **Continuous $z \in \mathbb{R}^K$** makes it a low-dimensional embedding — PCA, autoencoders, VAEs. Same formula, different purpose.
+
+---
+
+## 2. The Bound, Recalled
+
+Training means minimising $D_{KL}(P_x \parallel P_\theta)$, equivalently maximising the expected log-likelihood. For one point:
+
+$$\ell(\theta) = \log P_\theta(x) = \log \int_z P_\theta(x, z)\, dz$$
+
+which is intractable, because the integral sits inside the log and $z$ may be continuous and high-dimensional with a deep network between $z$ and $x$. The same obstruction makes the posterior
+
+$$P_\theta(z \mid x) = \frac{P_\theta(x, z)}{P_\theta(x)}$$
+
+unavailable, since its denominator is that very integral.
+
+The fix: introduce any tractable $q(z \mid x)$, multiply and divide by it, and apply Jensen's inequality — remembering that $\log$ is **concave**, so $\log \mathbb{E}[Y] \ge \mathbb{E}[\log Y]$:
+
+$$\ell(\theta) = \log \mathbb{E}_{q(z \mid x)}\!\left[\frac{P_\theta(x,z)}{q(z \mid x)}\right] \;\ge\; \mathbb{E}_{q(z \mid x)}\!\left[\log \frac{P_\theta(x,z)}{q(z \mid x)}\right] \;=\; \mathcal{F}_\theta(q)$$
+
+That lower bound is the **ELBO**. Ch.6, §16 shows the slack is exactly $D_{KL}(q \| P_\theta(z \mid x))$, so the bound is tight precisely when $q$ is the true posterior.
+
+**But $q$ is unknown too — so how do we take the expectation?** Both $\theta$ and $q$ start unknown, and we optimise over both at once:
+
+$$\theta^*, q^* = \arg\max_{\theta, q} \mathcal{F}_\theta(q)$$
+
+How that is done splits the field. In simple models the optimal $q$ is available analytically and you alternate — that is EM. In deep models it is not, and you parameterise $q$ with a second network and do gradient descent on both. The rest of this chapter is the second case.
+
+---
+
+## 3. Where EM Works
+
+For a **Gaussian mixture**, $P_\theta(z = j) = \alpha_j$ and $P_\theta(x \mid z = j) = \mathcal{N}(x; \mu_j, \Sigma_j)$, so
+
+$$P_\theta(x) = \sum_{j=1}^M \alpha_j\, \mathcal{N}(x; \mu_j, \Sigma_j)$$
+
+The **E-step** sets $q$ to the exact posterior, which Bayes' rule delivers because the denominator is a finite sum over $M$ components:
+
+$$q^*(z = j \mid x) = P_\theta(z = j \mid x) = \frac{\alpha_j \mathcal{N}(x; \mu_j, \Sigma_j)}{\sum_{k=1}^M \alpha_k \mathcal{N}(x; \mu_k, \Sigma_k)}$$
+
+The **M-step** then maximises $\mathbb{E}_{q^*}[\log P_\theta(x, z)]$ over $\theta$ with $q$ frozen.
+
+One thing worth being explicit about, because it is the hinge for §4: **$P_\theta(x \mid z)$ is not unknown.** It is chosen by us. Once you say "component $j$ is a Gaussian with mean $\mu_j$", the likelihood of any $x$ under it is a formula you can evaluate. The modeller picks the form; only the parameters are learned. Nothing about a GMM is mysterious — which is exactly what stops being true next.
+
+<div class="part-marker"><span class="part-label">Part II</span><span class="part-name">The variational autoencoder</span><span class="part-sub">What breaks when the decoder is a neural network, the two terms the ELBO splits into, and how a deterministic network comes to represent a distribution at all.</span></div>
+
+## 4. Why EM Breaks for a Deep Decoder
+
+EM rests entirely on computing the true posterior. Now let the conditional be a deep network:
+
+$$P_\theta(x \mid z) = \mathcal{N}\big(x;\, g_\theta(z),\, \sigma^2 I\big)$$
+
+where $g_\theta$ is a **decoder** network. This is still a modelling choice in the sense of §3 — a Gaussian whose mean happens to be computed by a network — so $P_\theta(x \mid z)$ remains perfectly evaluable.
+
+The posterior does not. With $g_\theta$ non-linear, the normalising integral
+
+$$P_\theta(z \mid x) = \frac{P_\theta(x \mid z) P(z)}{\int P_\theta(x, z)\, dz}$$
+
+has no closed form and no practical quadrature over $\mathbb{R}^K$. **The E-step cannot be performed**, and classical EM stops applying.
+
+That is the gap Kingma and Welling's *Auto-Encoding Variational Bayes* (2013) was written to close, and the framework it introduced sets out to do three things at once:
+
+1. **Efficient parameter estimation** of $\theta$ — maximise the marginal likelihood over a large dataset.
+2. **Efficient posterior inference** — approximate $P_\theta(z \mid x)$ for a given $x$, which is what makes the model useful for representation learning rather than only generation.
+3. **Efficient marginal inference** — sample new data, denoise, inpaint, super-resolve.
+
+The move is to stop trying to *compute* the posterior and instead **learn an approximation of it**: a second network $q_\phi(z \mid x)$, the **encoder**, trained jointly with the decoder.
+
+---
+
+## 5. Splitting the ELBO
+
+To train both networks we rewrite the bound so its two jobs become visible. Start from the ELBO with $q_\phi$ in place, and factor the joint as $P_\theta(x, z) = P_\theta(x \mid z) P(z)$, where the **prior** $P(z)$ is chosen — almost always $\mathcal{N}(0, I)$:
+
+$$\mathcal{F}_{\theta,\phi}(x) = \mathbb{E}_{q_\phi(z \mid x)}\!\left[\log \frac{P_\theta(x \mid z)\, P(z)}{q_\phi(z \mid x)}\right]$$
+
+Split the logarithm:
+
+$$\mathcal{F}_{\theta,\phi}(x) = \mathbb{E}_{q_\phi(z \mid x)}\big[\log P_\theta(x \mid z)\big] + \mathbb{E}_{q_\phi(z \mid x)}\!\left[\log \frac{P(z)}{q_\phi(z \mid x)}\right]$$
+
+and recognise the second term. It looks like it is missing a $q_\phi$ out front to be a KL divergence — but that factor is supplied by the expectation itself. Writing it out:
+
+$$\mathbb{E}_{q_\phi(z \mid x)}\!\left[\log \frac{P(z)}{q_\phi(z \mid x)}\right] = \int_z q_\phi(z \mid x) \log\frac{P(z)}{q_\phi(z \mid x)}\, dz = -\int_z q_\phi(z \mid x) \log\frac{q_\phi(z \mid x)}{P(z)}\, dz$$
+
+which is $-D_{KL}(q_\phi(z \mid x) \parallel P(z))$ — the $q_\phi$ was there all along, hiding inside the expectation operator. So:
+
+$$\boxed{\; \max_{\theta, \phi} \; \underbrace{\mathbb{E}_{q_\phi(z \mid x)}\big[\log P_\theta(x \mid z)\big]}_{\text{reconstruction}} \;-\; \underbrace{D_{KL}\big(q_\phi(z \mid x) \parallel P(z)\big)}_{\text{regularisation}} \;}$$
+
+<figure><img src="assets/svg/elbo-two-terms.svg" alt="The reconstruction term pushing posteriors apart and the KL term pulling them onto the prior" style="max-width:100%;"><figcaption>Figure 7.1: Two demands on the same latent space, pulling in opposite directions.</figcaption></figure>
+
+The **reconstruction** term wants $z$ to retain enough about $x$ that the decoder can rebuild it. The **regularisation** term wants every posterior to look like the prior, which fills the latent space in and stops it fragmenting into isolated islands around individual training points.
+
+Neither term alone is the objective, and the failure modes at each extreme are worth seeing directly — the optimum here has a closed form, so nothing below is being approximated:
+
+<div class="dgm-widget" id="widget-vaelatent"></div>
+
+Kill the KL term and you get a plain autoencoder: perfect reconstruction, posteriors collapsing to spikes, and a latent space that is mostly gaps — decode a $z$ from a gap and you get nonsense, which is precisely why an ordinary autoencoder cannot generate. Turn the KL term up too far and every input maps to the prior, $z$ carries no information about $x$, and the decoder learns to ignore it entirely. That second failure has a name — **posterior collapse** — and it is a live problem in practice, not a thought experiment.
+
+---
+
+## 6. How a Network Represents a Distribution
+
+A neural network is a deterministic function. The ELBO is written in terms of distributions. Two different conventions bridge that gap, and a VAE uses both — one in each half.
+
+<figure><img src="assets/svg/nn-distributions.svg" alt="A network emitting distribution parameters versus a network emitting a sample" style="max-width:100%;"><figcaption>Figure 7.2: Emit the parameters, or emit a sample. The VAE encoder does the first; the decoder and every GAN generator do the second.</figcaption></figure>
+
+**The probabilistic way — output the parameters.** The network does not predict a value; it predicts the *parameters of a distribution over* values. The VAE encoder takes $x$ and emits $\mu_\phi(x)$ and $\sigma_\phi(x)$, which define
+
+$$q_\phi(z \mid x) = \mathcal{N}\big(z;\, \mu_\phi(x),\, \mathrm{diag}(\sigma^2_\phi(x))\big)$$
+
+The diagonal covariance is a real modelling assumption, not just convenience: it says the latent coordinates are conditionally independent given $x$.
+
+**The deterministic way — output a sample.** The network maps a noise vector straight to an output, and the distribution exists only implicitly, through its samples. That is the VAE decoder, and it is exactly what a GAN generator does (Ch.3, §2).
+
+Two consequences of the encoder being probabilistic:
+
+**The same input gives a different output every time.** Since $z_i$ is *sampled* from $q_\phi(z \mid x_i)$, two forward passes on the identical $x_i$ draw different $z_i$ and therefore produce different reconstructions $\hat{x}_i$. This is not a bug and it does not go away after training — it is what distinguishes a probabilistic encoder from a deterministic one like an ordinary autoencoder or a BERT embedding, which return exactly one vector per input.
+
+**And that sampling step is where everything nearly falls apart.** In code it is a call to `torch.randn` or equivalent — trivial to execute. But sampling is **not a differentiable operation**. Draw $z$ directly from $\mathcal{N}(\mu_\phi, \Sigma_\phi)$ and there is no derivative of that draw with respect to $\phi$; the stochastic node sits in the middle of the graph and severs the backward path to the encoder. Part III is about repairing exactly that.
+
+---
+
+## 7. The VAE, Assembled
+
+Before the repair, the architecture in full:
+
+<figure><img src="assets/svg/vae-arch.svg" alt="The complete VAE: encoder to mu and sigma, reparameterised sampling, decoder, and the two loss terms" style="max-width:100%;"><figcaption>Figure 7.3: Encoder, sampling step, decoder — with the noise entering from the side rather than from within the graph.</figcaption></figure>
+
+1. **Encoder.** $x$ goes in, $\mu_\phi(x)$ and $\sigma_\phi(x)$ come out.
+2. **Sampling.** A latent $z$ is drawn from $\mathcal{N}(\mu_\phi(x), \mathrm{diag}\,\sigma^2_\phi(x))$.
+3. **Decoder.** $z$ goes in, the reconstruction $\hat{x}$ comes out.
+
+Both parameter sets are updated jointly by gradient ascent on the ELBO — one scalar objective, two collaborating networks. Note what is *not* here: an adversary. Nothing in this diagram competes with anything else, which will matter in §13.
+
+<div class="part-marker"><span class="part-label">Part III</span><span class="part-name">Reparameterisation and training</span><span class="part-sub">One obstacle stands between the architecture above and a working model. This part states both gradients in one place, shows which of them breaks, fixes it, and then assembles the training step.</span></div>
+
+## 8. Both Gradients, in One Place
+
+Everything from here is about differentiating one scalar,
+
+$$\mathcal{F}_{\theta,\phi}(x) = \mathbb{E}_{q_\phi(z \mid x)}\big[\log p_\theta(x \mid z)\big] - D_{KL}\big(q_\phi(z \mid x) \parallel p(z)\big)$$
+
+with respect to two parameter sets. It is worth writing both down together, because they behave completely differently and the whole rest of the chapter is about the second one.
+
+**The decoder, $\theta$.** It appears in the reconstruction term only — the KL compares $q_\phi$ against the prior, and neither mentions $\theta$. So that term drops, and the gradient moves straight inside the expectation, because *the distribution being averaged over does not depend on $\theta$*:
+
+$$\nabla_\theta \mathcal{F} = \mathbb{E}_{q_\phi(z \mid x)}\big[\nabla_\theta \log p_\theta(x \mid z)\big]$$
+
+Draw samples, average, done. Ordinary Monte Carlo, nothing to solve.
+
+**The encoder, $\phi$.** It appears in both terms, and they are not equally friendly.
+
+The KL half is the easy one, and easy for a reason worth noting: for a Gaussian $q_\phi$ against a Gaussian prior it has a **closed form**, so its gradient is plain calculus on $\mu_\phi$ and $\sigma_\phi$ with no sampling involved at all.
+
+The reconstruction half is the problem. Look at where $\phi$ sits:
+
+$$\nabla_\phi\, \mathbb{E}_{q_\phi(z \mid x)}\big[\log p_\theta(x \mid z)\big]$$
+
+$\phi$ is not in the integrand — it is in **the distribution the expectation is taken over**. Change $\phi$ and you change which $z$ values get drawn. The trick that worked for $\theta$ is unavailable, because pushing $\nabla_\phi$ inside is precisely the step that is not allowed.
+
+So: three of the four pieces are routine, and one is not. §9 shows exactly how it fails, §10 fixes it, and §12 puts all four back together.
+
+---
+
+## 9. Why the Naive Gradient Fails
+
+Strip the VAE notation away to see the general shape. Let $\psi$ be the parameter, $v$ the random variable, $f_\psi(v)$ the function — mapping back later via $\psi = \phi$, $v = z$, $f_\psi(v) = \log p_\theta(x \mid z)$. The generality is not decoration: the result is about *any* expectation whose distribution carries the parameter being differentiated, and the plain symbols keep the algebra from drowning in subscripts.
+
+$$\nabla_\psi \mathbb{E}_{p_\psi(v)}\big[f_\psi(v)\big] = \nabla_\psi \int_v p_\psi(v) f_\psi(v)\, dv$$
+
+Move the derivative inside the integral (Leibniz, under standard regularity conditions) and apply the product rule — **both factors depend on $\psi$**, which is the whole difficulty in one observation:
+
+$$= \int_v \Big( p_\psi(v)\, \nabla_\psi f_\psi(v) \;+\; f_\psi(v)\, \nabla_\psi p_\psi(v) \Big) dv$$
+
+Split it into two pieces:
+
+$$\nabla_\psi \mathbb{E}_{p_\psi(v)}\big[f_\psi(v)\big] = \underbrace{\int_v p_\psi(v) \nabla_\psi f_\psi(v)\, dv}_{\text{a genuine expectation}} \;+\; \underbrace{\int_v f_\psi(v) \nabla_\psi p_\psi(v)\, dv}_{\text{not an expectation}}$$
+
+The first piece is exactly $\mathbb{E}_{p_\psi(v)}[\nabla_\psi f_\psi(v)]$ — sample from $p_\psi$, average, fine.
+
+The second is not. The gradient is acting **on the density itself**, so there is no $p_\psi(v)$ multiplying an integrand and nothing to interpret as "average this quantity over samples". Monte Carlo has nothing to grip.
+
+There is a standard repair. Since $\nabla_\psi p_\psi = p_\psi \nabla_\psi \log p_\psi$, the second piece can be rewritten as
+
+$$\mathbb{E}_{p_\psi(v)}\big[f_\psi(v)\, \nabla_\psi \log p_\psi(v)\big]$$
+
+which *is* an expectation, and can be sampled. This is the **score-function estimator** — REINFORCE, in the reinforcement-learning literature. It is correct, it is unbiased, and it is used constantly in settings where nothing better exists.
+
+Here it is unusable, and the reason is variance rather than bias. That distinction matters: the estimator is not wrong, it is just so noisy that no reasonable number of samples pins it down. On a problem small enough to have an exact answer, the comparison is stark:
+
+<div class="dgm-widget" id="widget-reparam"></div>
+
+Both histograms centre on the true value — both estimators are unbiased, exactly as advertised. But the score-function estimator is several times wider at the gentlest settings and an order of magnitude wider at ordinary ones, and since the sample count needed scales with the *square* of that ratio, the gap is fatal for minibatch training of a deep network.
+
+---
+
+## 10. The Reparameterisation Trick
+
+The problem was that $\psi$ controlled the distribution being sampled. So arrange for it not to.
+
+Suppose we can find a base distribution $p_\epsilon$ that **does not depend on $\psi$**, together with a deterministic, differentiable map $g$, such that
+
+$$v = g(\epsilon, \psi), \qquad \epsilon \sim p_\epsilon$$
+
+gives $v$ exactly the distribution it was supposed to have. Then by the **Law of the Unconscious Statistician** — the change-of-variables identity letting you average a transformed variable under the original distribution, proved in §14 — the expectation is rewritten as
+
+$$\mathbb{E}_{p_\psi(v)}\big[f_\psi(v)\big] = \mathbb{E}_{p_\epsilon}\big[f_\psi(g(\epsilon, \psi))\big]$$
+
+Now differentiate. The distribution on the right contains no $\psi$, so the gradient passes straight inside — no product rule, no orphaned second term:
+
+$$\nabla_\psi \mathbb{E}_{p_\psi(v)}\big[f_\psi(v)\big] = \mathbb{E}_{p_\epsilon}\big[\nabla_\psi f_\psi(g(\epsilon, \psi))\big] \;\approx\; \frac{1}{M}\sum_{j=1}^M \nabla_\psi f_\psi(g(\epsilon_j, \psi)), \qquad \epsilon_j \sim p_\epsilon$$
+
+What remains is an ordinary chain rule through $g$ — the thing autograd was built for.
+
+<figure><img src="assets/svg/reparam-graph.svg" alt="The naive computation graph with a blocking stochastic node, and the reparameterised graph with noise entering from outside" style="max-width:100%;"><figcaption>Figure 7.4: The same sample, two graphs. Only one has an unbroken path from the loss back to φ.</figcaption></figure>
+
+**Has the randomness gone?** No, and this is the point most worth being clear about. We still sample on every forward pass and the model is exactly as stochastic as it was. What moved is *where* the randomness enters: it used to sit on the path between the loss and $\phi$, and now it enters from the side. The gradient was re-routed around the stochastic node, not rid of it.
+
+---
+
+## 11. Reparameterisation in a VAE
+
+For the Gaussian encoder $q_\phi(z \mid x) = \mathcal{N}(z; \mu_\phi(x), \Sigma_\phi(x))$ with diagonal covariance, the base distribution is standard normal and the map is affine:
+
+$$\epsilon \sim \mathcal{N}(0, I), \qquad \boxed{\; z = \mu_\phi(x) + \Sigma_\phi^{1/2}(x) \odot \epsilon \;}$$
+
+with $\odot$ element-wise. Shifting and scaling a standard normal produces exactly $\mathcal{N}(\mu, \Sigma)$, so $z$'s distribution is untouched — while $z$ is now a differentiable function of $\mu_\phi$ and $\sigma_\phi$, and the gradient reaches $\phi$ by the chain rule.
+
+**A more general option: the inverse CDF.** If $u \sim \mathrm{Unif}[0,1]$ and $F$ is the CDF of the target distribution, then $F^{-1}(u)$ has that distribution exactly. Taking $\epsilon = u$ and $g(u) = F^{-1}(u)$ reparameterises *any* one-dimensional distribution with an invertible CDF. It is strictly more general than shift-and-scale and much less used, because $F^{-1}$ is seldom available in closed form and seldom cheap — a large part of why Gaussian latents became the default.
+
+---
+
+## 12. Assembling the Training Step
+
+Now put the four pieces from §8 back together. Both networks are updated from the same scalar, and it is worth seeing the two updates side by side rather than as separate procedures.
+
+<figure><img src="assets/svg/vae-training.svg" alt="The VAE training loop showing the reconstruction gradient path and the analytic KL gradient path" style="max-width:100%;"><figcaption>Figure 7.5: Two gradient sources meet at the encoder — one travelling back through the decoder, one computed directly.</figcaption></figure>
+
+**First, make the reconstruction term concrete.** Assume the decoder's output distribution is Gaussian with identity covariance and mean $\mathcal{D}_\theta(z)$:
+
+$$p_\theta(x \mid z) = \mathcal{N}\big(x;\, \mathcal{D}_\theta(z),\, I\big)$$
+
+Take logs and drop everything free of the parameters:
+
+$$\log p_\theta(x \mid z) = \log\left[\frac{1}{(2\pi)^{d/2}} \exp\left(-\tfrac{1}{2}\|x - \mathcal{D}_\theta(z)\|_2^2\right)\right] \;\propto\; -\|x - \mathcal{D}_\theta(z)\|_2^2$$
+
+So **maximising the reconstruction term is minimising squared error** — the familiar loss arriving as a consequence of a modelling assumption rather than as a choice. Assume a Bernoulli decoder instead and the identical derivation hands you binary cross-entropy. "Which reconstruction loss should I use" is really "what did I assume $p_\theta(x \mid z)$ was".
+
+**Second, the KL term.** For $q_\phi = \mathcal{N}(\mu_\phi, \Sigma_\phi)$ against the prior $\mathcal{N}(0, I)$ it is analytic — §14 derives it:
+
+$$D_{KL}\big(q_\phi(z \mid x) \parallel p(z)\big) = -\frac{1}{2}\Big[\log|\Sigma_\phi(x)| + d - \mathrm{tr}\big(\Sigma_\phi(x)\big) - \|\mu_\phi(x)\|_2^2\Big]$$
+
+No sampling, no reparameterisation, no Monte Carlo — just a formula in $\mu_\phi$ and $\sigma_\phi$.
+
+### One forward pass, two updates
+
+Encode $x_i$ to get $\mu_\phi(x_i)$ and $\Sigma_\phi(x_i)$; draw $\epsilon_j \sim \mathcal{N}(0, I)$; form $z_j = \mu_\phi(x_i) + \Sigma_\phi^{1/2}(x_i) \odot \epsilon_j$; decode. From that single pass:
+
+$$\nabla_\theta \mathcal{F} \;\approx\; -\nabla_\theta\left[\frac{1}{M}\sum_{j=1}^M \big\|x_i - \mathcal{D}_\theta(z_j)\big\|_2^2\right]$$
+
+$$\nabla_\phi \mathcal{F} \;\approx\; \nabla_\phi\left[\frac{1}{M}\sum_{j=1}^M \log p_\theta\big(x_i \mid g(\epsilon_j, \phi)\big)\right] \;-\; \nabla_\phi D_{KL}\big(q_\phi(z \mid x_i) \parallel p(z)\big)$$
+
+Reading those two lines against §8: the decoder gets exactly one gradient, from reconstruction. The **encoder gets two**, from different directions and by different mechanisms —
+
+* the **reconstruction gradient**, which starts at the squared error, travels back through the decoder, and crosses $z$ into $\mu_\phi$ and $\sigma_\phi$. This is the path that needed §10; without reparameterisation it does not exist.
+* the **KL gradient**, computed analytically straight from the encoder's outputs, which never needed a sample in the first place.
+
+Those two are the tug-of-war of Figure 7.1, now in the form you would actually implement.
+
+**How many samples $M$?** For one input the encoder emits one $\mu$ and one $\Sigma$, but you may draw as many $\epsilon_j$ as you like and push all of them through the decoder — flexibility a probabilistic encoder buys over a deterministic one, which has exactly one embedding per input and no such choice. In practice almost every implementation takes **$M = 1$**. A single sample is a poor estimate of the expectation for any individual data point, but training averages over a minibatch and the noise washes out across it.
+
+---
+
+## 13. Why VAEs Train So Much More Easily Than GANs
+
+Worth stating plainly, because it is the practical payoff of all of the above. A GAN is a minimax game: generator and discriminator are adversaries, the target is a saddle point, and Ch.4, §12 showed there is no general convergence guarantee — hence mode collapse and oscillation.
+
+A VAE has **no adversary**. Encoder and decoder are collaborators maximising one joint objective, and as §12 makes concrete, both gradients push the same scalar the same way. That is why the loss curve behaves like ordinary supervised learning and why a VAE almost always converges to *something* without babysitting.
+
+The cost is well known: because the bound is never tight and the reconstruction term is an expected squared error over an uncertain latent, VAE samples come out characteristically blurrier than a GAN's. The field traded sharpness for stability — and it is the same "average of many valid answers" blur that Ch.5, §5 diagnosed, arriving here through the decoder's Gaussian assumption.
+
+---
+
+## 14. The Two Results We Leaned On
+
+Two things were used above without proof: the change-of-variables identity that made the reparameterisation trick legal, and the closed form for the Gaussian KL. Both are short, and both are worth doing once properly rather than taking on trust — the first is the entire justification for §10, and the second is the only part of the VAE loss that never touches a sample.
+
+### The Law of the Unconscious Statistician
+
+The claim from §10: if $v = g(\epsilon, \psi)$ with $\epsilon \sim p_\epsilon$, then
+
+$$\mathbb{E}_{p_\psi(v)}\big[f(v)\big] = \mathbb{E}_{p_\epsilon}\big[f\big(g(\epsilon, \psi)\big)\big]$$
+
+Take $g(\cdot, \psi)$ to be a differentiable bijection for each fixed $\psi$, which the VAE's affine map certainly is. The change-of-variables formula for densities says that if $v = g(\epsilon)$ then
+
+$$p_\psi(v) = p_\epsilon\big(g^{-1}(v)\big) \left|\det \frac{\partial g^{-1}}{\partial v}\right| \qquad\Longleftrightarrow\qquad p_\psi\big(g(\epsilon)\big)\left|\det \frac{\partial g}{\partial \epsilon}\right| = p_\epsilon(\epsilon)$$
+
+the two forms being the same statement, since the Jacobians of $g$ and $g^{-1}$ are inverses. Now start from the left-hand side and substitute $v = g(\epsilon, \psi)$, so that $dv = \left|\det \frac{\partial g}{\partial \epsilon}\right| d\epsilon$:
+
+$$\mathbb{E}_{p_\psi(v)}\big[f(v)\big] = \int f(v)\, p_\psi(v)\, dv = \int f\big(g(\epsilon,\psi)\big)\, \underbrace{p_\psi\big(g(\epsilon,\psi)\big) \left|\det \frac{\partial g}{\partial \epsilon}\right|}_{\;=\; p_\epsilon(\epsilon)}\, d\epsilon$$
+
+$$= \int f\big(g(\epsilon,\psi)\big)\, p_\epsilon(\epsilon)\, d\epsilon = \mathbb{E}_{p_\epsilon}\big[f\big(g(\epsilon,\psi)\big)\big] \qquad \blacksquare$$
+
+The Jacobian factor is doing all the work: it is exactly what converts the density of $v$ into the density of $\epsilon$, and it cancels against the volume change from the substitution. Nothing is approximated — the two expectations are *equal*, which is why §10 was allowed to swap one for the other and then differentiate.
+
+**Checking it on the VAE's own map.** With $g(\epsilon, \phi) = \mu + \sigma \odot \epsilon$ and $\epsilon \sim \mathcal{N}(0, I)$, the inverse is $\epsilon = (v - \mu)/\sigma$ element-wise and the Jacobian $\partial g/\partial \epsilon = \mathrm{diag}(\sigma)$, so $|\det| = \prod_i \sigma_i$. Substituting:
+
+$$p_\psi(v) = \prod_i \frac{1}{\sigma_i \sqrt{2\pi}} \exp\!\left(-\frac{(v_i - \mu_i)^2}{2\sigma_i^2}\right) = \mathcal{N}\big(v;\, \mu,\, \mathrm{diag}(\sigma^2)\big)$$
+
+which is precisely the distribution the encoder was supposed to produce. Shift-and-scale really does give the right $z$; nothing was quietly changed to make the gradient work.
+
+### The Gaussian KL in closed form
+
+The claim from §12: for $q = \mathcal{N}(\mu, \Sigma)$ with diagonal $\Sigma = \mathrm{diag}(\sigma_1^2, \dots, \sigma_d^2)$ and prior $p = \mathcal{N}(0, I)$, the divergence has no integral left in it.
+
+Start from the definition and write it as one expectation:
+
+$$D_{KL}(q \parallel p) = \mathbb{E}_q\big[\log q(z) - \log p(z)\big]$$
+
+Both log-densities are quadratics, and both share the same $-\frac{d}{2}\log 2\pi$ which will cancel:
+
+$$\log q(z) = -\frac{d}{2}\log 2\pi - \frac{1}{2}\sum_i \log \sigma_i^2 - \frac{1}{2}\sum_i \frac{(z_i - \mu_i)^2}{\sigma_i^2}, \qquad \log p(z) = -\frac{d}{2}\log 2\pi - \frac{1}{2}\sum_i z_i^2$$
+
+Take expectations term by term under $z \sim q$, using the only two moments needed — $\mathbb{E}[(z_i - \mu_i)^2] = \sigma_i^2$ and $\mathbb{E}[z_i^2] = \sigma_i^2 + \mu_i^2$:
+
+$$\mathbb{E}_q\big[\log q(z)\big] = -\frac{d}{2}\log 2\pi - \frac{1}{2}\sum_i \log \sigma_i^2 - \frac{1}{2}\sum_i \frac{\sigma_i^2}{\sigma_i^2} = -\frac{d}{2}\log 2\pi - \frac{1}{2}\sum_i \log \sigma_i^2 - \frac{d}{2}$$
+
+$$\mathbb{E}_q\big[\log p(z)\big] = -\frac{d}{2}\log 2\pi - \frac{1}{2}\sum_i \big(\sigma_i^2 + \mu_i^2\big)$$
+
+Subtract. The $\log 2\pi$ terms cancel, and what is left is
+
+$$\boxed{\; D_{KL}\big(q \parallel p\big) = \frac{1}{2}\sum_{i=1}^{d} \Big( \sigma_i^2 + \mu_i^2 - 1 - \log \sigma_i^2 \Big) \;}$$
+
+which is the matrix expression from §12 written out per coordinate, since $\mathrm{tr}(\Sigma) = \sum_i \sigma_i^2$, $\|\mu\|^2 = \sum_i \mu_i^2$ and $\log|\Sigma| = \sum_i \log \sigma_i^2$.
+
+Three things worth reading off it. Every term is a function of the encoder's own outputs, so **no sampling is involved anywhere** — this is why §12 could compute that gradient analytically. It is **zero exactly when $\mu_i = 0$ and $\sigma_i = 1$ for every $i$**, i.e. when $q$ is the prior, which is the posterior-collapse configuration from §5. And each coordinate contributes independently, which is the practical payoff of assuming a diagonal covariance: a $d$-dimensional latent costs a $d$-term sum rather than a determinant and a matrix inverse.
+
+## 15. Cheat Sheet
+
+| Result | Statement | Where |
+| :--- | :--- | :--- |
+| **LVM marginal** | $P_\theta(x) = \int P_\theta(x, z)\, dz$ | §1 |
+| **ELBO** | $\ell(\theta) \ge \mathbb{E}_q[\log \frac{P_\theta(x,z)}{q(z\mid x)}]$ | §2 |
+| **$P_\theta(x \mid z)$ is chosen** | the modeller picks the family; only parameters are learned | §3 |
+| **Why EM dies** | deep $g_\theta$ makes the posterior's normaliser intractable | §4 |
+| **ELBO split** | $\mathbb{E}_q[\log p_\theta(x\mid z)] - D_{KL}(q_\phi \parallel p(z))$ | §5 |
+| **The hidden $q_\phi$** | supplied by the expectation operator itself | §5 |
+| **Posterior collapse** | KL too strong ⟹ every $x$ maps to the prior | §5 |
+| **Probabilistic net** | outputs $\mu, \sigma$ — the encoder | §6 |
+| **Deterministic net** | outputs a sample — the decoder, and every GAN generator | §6 |
+| **$\nabla_\theta$** | easy: the distribution does not depend on $\theta$ | §8 |
+| **$\nabla_\phi$, KL half** | easy: closed form, no sampling | §8 |
+| **$\nabla_\phi$, reconstruction half** | the whole difficulty — $\phi$ is in the distribution | §8 |
+| **Naive attempt** | product rule leaves a term that is not an expectation | §9 |
+| **Score function** | $\mathbb{E}[f \nabla_\psi \log p_\psi]$ — unbiased, huge variance | §9 |
+| **Reparameterisation** | $v = g(\epsilon, \psi)$, with $\epsilon \sim p_\epsilon$ free of $\psi$ | §10 |
+| **In a VAE** | $z = \mu_\phi(x) + \Sigma^{1/2}_\phi(x) \odot \epsilon$ | §11 |
+| **Inverse CDF** | $g(u) = F^{-1}(u)$ — general, rarely cheap | §11 |
+| **Reconstruction loss** | Gaussian decoder ⟹ squared error | §12 |
+| **Encoder's two gradients** | one back through the decoder, one analytic | §12 |
+| **$M$ in practice** | 1, because the minibatch averages the noise | §12 |
+| **LOTUS** | $\mathbb{E}_{p_\psi}[f(v)] = \mathbb{E}_{p_\epsilon}[f(g(\epsilon,\psi))]$, by change of variables | §14 |
+| **Gaussian KL** | $\frac{1}{2}\sum_i (\sigma_i^2 + \mu_i^2 - 1 - \log\sigma_i^2)$ | §14 |
+
+---
+
+## 16. Key Takeaways
+
+1. **The VAE exists because the E-step became impossible.** A deep decoder makes the posterior's normalising integral intractable, so instead of computing $P_\theta(z \mid x)$ we train an encoder to approximate it.
+2. **The ELBO splits into reconstruction minus KL**, and the split is exact algebra, not an approximation. One term wants informative codes; the other wants a latent space you can actually sample from.
+3. **Both extremes fail concretely.** No KL gives a plain autoencoder with a gap-riddled latent space; too much KL gives posterior collapse, where $z$ carries no information at all.
+4. **A network represents a distribution in one of two ways** — by emitting its parameters, or by emitting a sample. A VAE uses the first for the encoder and the second for the decoder.
+5. **Of the four gradient pieces, three are routine.** $\nabla_\theta$ passes inside the expectation freely, and the KL half of $\nabla_\phi$ is closed form. Only the reconstruction half of $\nabla_\phi$ is hard, because there $\phi$ sits in the distribution rather than the integrand.
+6. **The naive attempt leaves a term that is not an expectation**, and rewriting it as the score-function estimator gives something unbiased but so high-variance that deep training is impractical.
+7. **The reparameterisation trick moves the randomness off the gradient path.** Write $z = \mu + \sigma \odot \epsilon$ with $\epsilon \sim \mathcal{N}(0,I)$: the distribution is unchanged and the model is just as stochastic, but the path from loss to $\phi$ is now unbroken arithmetic.
+8. **The encoder is updated from two directions at once** — the reconstruction gradient arriving back through the decoder, and the KL gradient computed analytically from $\mu$ and $\sigma$.
+9. **Squared-error reconstruction is a consequence, not a choice.** It falls out of assuming a Gaussian decoder; assume Bernoulli and you get cross-entropy instead.
+10. **No adversary means stable training.** Encoder and decoder collaborate on one objective, which is why VAEs converge where GANs oscillate — at the cost of blurrier samples.
+
+---
+
+*Next (Ch.8): what a trained VAE is actually for — embeddings and generation — the β knob that decides whether it can do either, and VQ-VAE, which removes the knob by making the latent discrete.*
+    </script>
+
+    <script src="dgm-notes.js"></script>
+    <script src="dgm-widgets.js"></script>
+</body>
+
+</html>

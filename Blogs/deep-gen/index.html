@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Personal study notes on deep generative models — probability foundations, discriminative vs. generative modeling, divergence minimization, and KL divergence. Built from IISc E1 286s lecture notes.">
+    <meta name="keywords"
+        content="Deep Generative Models, Probability Theory, Random Variables, KL Divergence, Divergence Minimization, VAE, GAN, Diffusion Models, Generative AI">
+    <meta name="author" content="Anshul Singh">
+    <title>Deep Generative Models Notes — Anshul Singh</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <!-- Social preview -->
+    <meta name="description" content="Chapter-by-chapter notes on deep generative models.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Deep Generative Models Notes — Anshul Singh">
+    <meta property="og:description" content="Chapter-by-chapter notes on deep generative models.">
+    <meta property="og:url" content="https://anshulsc.github.io/Blogs/deep-gen/index.html">
+    <meta property="og:image" content="https://anshulsc.github.io/images/og-card.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@anshulsc">
+    <meta name="twitter:title" content="Deep Generative Models Notes — Anshul Singh">
+    <meta name="twitter:description" content="Chapter-by-chapter notes on deep generative models.">
+    <meta name="twitter:image" content="https://anshulsc.github.io/images/og-card.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="dgm-notes-style.css">
+
+    <style>
+        .series-overview {
+            margin: 40px 0 48px;
+            padding: 24px 28px;
+            background: #fafafa;
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+
+        .series-overview h2 {
+            font-size: 1rem;
+            color: #333;
+            margin-top: 0;
+            border: none;
+            padding-bottom: 0;
+        }
+
+        .series-overview p {
+            font-size: 0.88rem;
+            color: #555;
+            line-height: 1.65;
+            margin-bottom: 0.8em;
+        }
+
+        .prereqs {
+            margin: 24px 0;
+            padding: 16px 20px;
+            border-left: 3px solid #f59e0b;
+            background: rgba(245, 158, 11, 0.04);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .prereqs strong {
+            color: #d97706;
+        }
+
+        .divider-label {
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #bbb;
+            margin: 48px 0 24px;
+            position: relative;
+        }
+
+        .divider-label::before,
+        .divider-label::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: calc(50% - 60px);
+            height: 1px;
+            background: #eee;
+        }
+
+        .divider-label::before {
+            left: 0;
+        }
+
+        .divider-label::after {
+            right: 0;
+        }
+    </style>
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../../css/theme.css">
+  <script src="../../js/theme.js"></script>
+  <!-- Passphrase gate for this notes series -->
+  <script src="../../js/gate.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/llm_arch.svg" class="scribble-svg"
+            style="top:150px; right:-240px; width:180px; opacity:0.1;">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <a class="brand-mark" href="../../index.html" aria-label="asca — home">
+                <img class="brand-avatar" src="../../images/avatar.png" alt="">
+                <img class="brand-wordmark" src="../../images/logo.png" alt="asca">
+            </a>
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <span style="font-weight:bold; color:#111;">DGM Notes</span>]
+            </p>
+        </header>
+
+        <main>
+            <div class="series-hero">
+                <div class="chapter-number">Lecture Notes • 11 Lectures (ongoing)</div>
+                <h1>Deep Generative Models Notes</h1>
+                <p class="series-subtitle">
+                    Personal study notes from IISc's E1 286s Deep Generative Models (Prof. Prathosh A. P.) —
+                    from probability foundations through GANs and VAEs to the diffusion models behind modern image generation, and how to steer and accelerate them.
+                </p>
+                <div class="series-meta">August 2026 · Anshul Singh · ~299 min total reading time</div>
+            </div>
+
+            <div class="series-overview">
+                <p style="margin-bottom:0;">
+                    My rewritten lecture notes, one chapter per lecture. Everything a generative model does — GPT
+                    sampling text, diffusion models painting images — reduces to one problem: <em>estimate an unknown
+                    probability distribution from finite samples, then learn to sample from it</em>. The first two
+                    lectures build that statement up from scratch and end with the standard training recipe; the next
+                    two turn it into a working algorithm, ending with the 2014 GAN derived line by line out of convex
+                    duality rather than intuition — and the fifth reads that same objective the opposite way round, as a
+                    generator tutored by a classifier, then builds out the practical family: DCGAN, conditional GANs and
+                    CycleGAN. The sixth repairs the flat-gradient problem with optimal transport and then turns toward latent
+                    variable models, the seventh builds the VAE on top of it, and the eighth puts it to work and then replaces its
+                    continuous latent with a discrete codebook. The ninth arrives at denoising diffusion, where the encoder is
+                    not learned at all, the tenth makes it steerable and fast, and the eleventh turns to the one family
+                    that keeps the exact likelihood — normalizing flows, built entirely out of the change-of-variables
+                    formula. More notes (flow matching, modern architectures) will follow as the course progresses.
+                </p>
+            </div>
+
+            <div class="prereqs">
+                <strong>Prerequisites:</strong> Linear algebra (vectors, matrices), basic calculus,
+                a first course in probability (expectations, distributions), and basic Python.
+                Roughly Chapters 2, 3, 5–6 of Goodfellow et al.'s <em>Deep Learning</em>.
+            </div>
+
+            <div class="series-overview" style="margin-top:24px;">
+                <h2>Series Concept Map</h2>
+                <figure><img src="assets/svg/dgm-concept-map.svg" alt="Deep Generative Models Notes Concept Map"
+                        style="max-width:100%;">
+                    <figcaption>Figure 0.1: What each lecture covers, and where the series is headed</figcaption>
+                </figure>
+            </div>
+
+            <div class="divider-label">Lectures</div>
+
+            <div class="learning-path">
+                <a href="ch-01.html" class="chapter-card">
+                    <div class="card-number">1</div>
+                    <div class="card-content">
+                        <div class="card-title">Why We Need Probability</div>
+                        <div class="card-desc">Why F = ma works but "pixels → gender" doesn't: three case studies
+                            where deterministic math fails. Then the first bricks of probability — measures, sample
+                            spaces, probability as a normalized measure, and why a "random variable" is neither
+                            random nor a variable. With a loaded die you can roll yourself.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Function Approximation</span>
+                            <span class="topic-tag">Uncertainty</span>
+                            <span class="topic-tag">Measures</span>
+                            <span class="topic-tag">Random Variables</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-02.html" class="chapter-card">
+                    <div class="card-number">2</div>
+                    <div class="card-content">
+                        <div class="card-title">Prediction, Sampling &amp; Divergence Minimization</div>
+                        <div class="card-desc">The central problem of ML in one line. σ-algebras done properly,
+                            prediction vs. sampling, the three-step divergence minimization recipe, and KL divergence
+                            derived from Shannon's axioms — with interactive demos: build your own σ-algebra, watch
+                            gradient descent fit a model, and poke at KL's asymmetry.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">σ-algebras</span>
+                            <span class="topic-tag">Conditional Density</span>
+                            <span class="topic-tag">Divergence Minimization</span>
+                            <span class="topic-tag">Entropy &amp; KL</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-03.html" class="chapter-card">
+                    <div class="card-number">3</div>
+                    <div class="card-content">
+                        <div class="card-title">Adversarial Models &amp; f-Divergences</div>
+                        <div class="card-desc">The generator as a noise-warping network, the f-divergence family
+                            (KL, JS, TV from one formula), and the convex-conjugate trick that lets you estimate a
+                            divergence from samples alone — the math that makes GANs trainable. With demos for the
+                            conjugate geometry, distribution warping, and the divergence family.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">GANs</span>
+                            <span class="topic-tag">f-Divergences</span>
+                            <span class="topic-tag">Convex Conjugate</span>
+                            <span class="topic-tag">Variational Bound</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-04.html" class="chapter-card">
+                    <div class="card-number">4</div>
+                    <div class="card-content">
+                        <div class="card-title">From f-Divergences to a Trainable GAN</div>
+                        <div class="card-desc">The chapter that proves everything. Why a divergence can't go negative,
+                            the Fenchel conjugate and its duality, and then one choice of <em>f</em> that turns the
+                            abstract bound into the exact 2014 GAN loss — sigmoid included, and the mysterious log 4
+                            explained. Ends with the optimal discriminator, the two-phase training loop, and a real GAN
+                            you can train in the page.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Fenchel Duality</span>
+                            <span class="topic-tag">Optimal Discriminator</span>
+                            <span class="topic-tag">Jensen-Shannon</span>
+                            <span class="topic-tag">GAN Training</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-05.html" class="chapter-card">
+                    <div class="card-number">5</div>
+                    <div class="card-content">
+                        <div class="card-title">The Classifier View, Conditional GANs &amp; CycleGAN</div>
+                        <div class="card-desc">The same objective read as a generator tutored by a classifier — which
+                            reveals why fooling a frozen critic proves nothing, and why retraining it inside the loop is
+                            mandatory. Then the practical half: mode collapse as a stationary point, DCGAN and transpose
+                            convolutions, conditioning as a control switch, and CycleGAN's round trip. Sixteen figures
+                            and five things to drag.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Mode Collapse</span>
+                            <span class="topic-tag">DCGAN</span>
+                            <span class="topic-tag">Conditional GANs</span>
+                            <span class="topic-tag">CycleGAN</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-06.html" class="chapter-card">
+                    <div class="card-number">6</div>
+                    <div class="card-content">
+                        <div class="card-title">Domain Adaptation, Wasserstein GANs &amp; Latent Variable Models</div>
+                        <div class="card-desc">Three movements, in the order the lecture took them. Adversarial training
+                            moved down into feature space, so a classifier trained on MNIST survives SVHN. Then the
+                            manifold argument for why Jensen-Shannon goes flat, and the earth-mover distance that
+                            repairs it — transport plans, Kantorovich-Rubinstein duality, and what the Lipschitz
+                            constraint really costs. Then no adversary at all: latent variables, the ELBO, and EM, with
+                            a mixture model you can step through by hand.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Domain Adaptation</span>
+                            <span class="topic-tag">Wasserstein GAN</span>
+                            <span class="topic-tag">Optimal Transport</span>
+                            <span class="topic-tag">ELBO &amp; EM</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-07.html" class="chapter-card">
+                    <div class="card-number">7</div>
+                    <div class="card-content">
+                        <div class="card-title">Variational Autoencoders</div>
+                        <div class="card-desc">What to do once the posterior is out of reach: train a network to
+                            approximate it. The ELBO splits cleanly into reconstruction and regularisation, and both
+                            extremes fail in ways you can watch happen. Then the one real obstacle — an expectation over
+                            a distribution you are differentiating — with the score-function estimator measured against
+                            the reparameterisation trick on a problem whose answer is known exactly.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">VAE</span>
+                            <span class="topic-tag">Reparameterisation</span>
+                            <span class="topic-tag">Posterior Collapse</span>
+                            <span class="topic-tag">Gradient Variance</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-08.html" class="chapter-card">
+                    <div class="card-number">8</div>
+                    <div class="card-content">
+                        <div class="card-title">Using a VAE: Embeddings, β-VAE &amp; VQ-VAE</div>
+                        <div class="card-desc">What the two halves are actually for once training ends, and the one
+                            question worth dwelling on: why does sampling a generic Gaussian work when the decoder only
+                            ever saw encoded inputs? Measured, not asserted — 0% of prior draws are decodable without the
+                            KL term, over 95% with it. Then β and its two degenerate extremes, and VQ-VAE, which drops
+                            the Gaussian for a codebook and pays for it with a biased gradient.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Embeddings</span>
+                            <span class="topic-tag">β-VAE</span>
+                            <span class="topic-tag">Posterior Collapse</span>
+                            <span class="topic-tag">VQ-VAE</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-09.html" class="chapter-card">
+                    <div class="card-number">9</div>
+                    <div class="card-content">
+                        <div class="card-title">Denoising Diffusion Probabilistic Models</div>
+                        <div class="card-desc">A VAE with three restrictions imposed — a chain of latents, no
+                            bottleneck, and a forward process with no parameters — and every restriction removes a
+                            difficulty. The ELBO telescopes into three terms, the denoising posterior comes out in closed
+                            form, and after all of it the training objective is: corrupt an image with known noise and
+                            ask a network what noise you added. With the forward chain, the posterior, and a reverse
+                            sampler you can run.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Diffusion</span>
+                            <span class="topic-tag">Forward &amp; Reverse</span>
+                            <span class="topic-tag">Denoising Posterior</span>
+                            <span class="topic-tag">Noise Prediction</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-10.html" class="chapter-card">
+                    <div class="card-number">10</div>
+                    <div class="card-content">
+                        <div class="card-title">Score Matching, Guidance &amp; DDIM</div>
+                        <div class="card-desc">Two results that each give something for nothing. Tweedie's formula
+                            reveals the noise predictor was a score estimator all along, so conditioning becomes one line
+                            of Bayes — an unconditional model plus a classifier's gradient. And the training loss turns
+                            out never to have constrained the sampling path, only the marginals, which buys a fifty-fold
+                            speed-up and a deterministic, invertible map from weights you already trained.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Tweedie &amp; Score</span>
+                            <span class="topic-tag">Classifier Guidance</span>
+                            <span class="topic-tag">DDIM</span>
+                            <span class="topic-tag">Time Embedding</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="path-connector"></div>
+
+                <a href="ch-11.html" class="chapter-card">
+                    <div class="card-number">11</div>
+                    <div class="card-content">
+                        <div class="card-title">Normalizing Flows</div>
+                        <div class="card-desc">The family that refuses every trade: exact likelihood, one-pass
+                            sampling, plain maximum likelihood with no adversary and no bound. All of it falls out of one
+                            conservation law — probability mass is preserved, volume is not — so the density picks up a
+                            Jacobian determinant. The whole field is then the search for invertible layers whose
+                            determinant you can read off: triangular maps, coupling layers, Glow's LU trick. The bill
+                            arrives as a latent that can never be smaller than the image.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Change of Variables</span>
+                            <span class="topic-tag">Triangular Maps</span>
+                            <span class="topic-tag">Real-NVP</span>
+                            <span class="topic-tag">Glow</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        </main>
+
+        <footer
+            style="margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+            &copy; 2026 Anshul Singh.
+        </footer>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 280" font-family="Inter, -apple-system, sans-serif">
+  <defs><marker id="nd-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker></defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">a network is a deterministic function — so how does it "output a distribution"?</text>
+
+  <rect x="16" y="38" width="358" height="216" rx="10" fill="#fcfcfc" stroke="#dfe8ea"/>
+  <text x="34" y="58" font-size="11.5" font-weight="700" fill="#0e7490">probabilistic — emit the parameters</text>
+  <rect x="40" y="76" width="52" height="40" rx="7" fill="rgba(14,116,144,0.12)" stroke="#0e7490" stroke-width="1.3"/>
+  <text x="66" y="101" text-anchor="middle" font-size="10.6" fill="#0e7490">x</text>
+  <path d="M 94 96 L 120 96" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#nd-t)"/>
+  <rect x="122" y="74" width="76" height="44" rx="8" fill="#fff" stroke="#0e7490" stroke-width="1.5"/>
+  <text x="160" y="100" text-anchor="middle" font-size="10.6" font-weight="600" fill="#0e7490">net</text>
+  <path d="M 200 96 L 226 96" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#nd-t)"/>
+  <text x="248" y="92" font-size="11" fill="#333">μ(x), σ(x)</text>
+  <text x="248" y="108" font-size="9.4" fill="#888">two numbers</text>
+  <line x1="40" y1="140" x2="346" y2="140" stroke="#eee"/>
+  <path d="M 60 208 C 110 208, 116 158, 152 158 C 188 158, 194 208, 244 208" fill="rgba(14,116,144,0.12)" stroke="#0e7490" stroke-width="2"/>
+  <line x1="152" y1="208" x2="152" y2="158" stroke="#0e7490" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="152" y="222" text-anchor="middle" font-size="9.4" fill="#0e7490">μ</text>
+  <text x="272" y="186" font-size="10" fill="#555">the distribution is</text>
+  <text x="272" y="200" font-size="10" fill="#555">whatever those two</text>
+  <text x="272" y="214" font-size="10" fill="#555">numbers define</text>
+  <text x="34" y="244" font-size="10" fill="#0e7490">used by the VAE <tspan font-weight="600">encoder</tspan>: q_φ(z|x) = 𝒩(z; μ_φ(x), diag σ²_φ(x))</text>
+
+  <rect x="386" y="38" width="358" height="216" rx="10" fill="#fcfcfc" stroke="#e8e2d5"/>
+  <text x="404" y="58" font-size="11.5" font-weight="700" fill="#d97706">deterministic — emit a sample</text>
+  <rect x="410" y="76" width="52" height="40" rx="7" fill="#f4f4f4" stroke="#888" stroke-width="1.3"/>
+  <text x="436" y="95" text-anchor="middle" font-size="9.6" fill="#666">z ~</text>
+  <text x="436" y="108" text-anchor="middle" font-size="9" fill="#666">𝒩(0,I)</text>
+  <path d="M 464 96 L 490 96" stroke="#d97706" stroke-width="1.5" fill="none" marker-end="url(#nd-t)"/>
+  <rect x="492" y="74" width="76" height="44" rx="8" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="530" y="100" text-anchor="middle" font-size="10.6" font-weight="600" fill="#d97706">net</text>
+  <path d="M 570 96 L 596 96" stroke="#d97706" stroke-width="1.5" fill="none" marker-end="url(#nd-t)"/>
+  <text x="618" y="92" font-size="11" fill="#333">x̂</text>
+  <text x="618" y="108" font-size="9.4" fill="#888">one sample</text>
+  <line x1="410" y1="140" x2="716" y2="140" stroke="#eee"/>
+  <g fill="rgba(217,119,6,0.5)">
+    <circle cx="470" cy="178" r="4"/><circle cx="502" cy="192" r="4"/><circle cx="536" cy="170" r="4"/>
+    <circle cx="490" cy="204" r="4"/><circle cx="556" cy="196" r="4"/><circle cx="520" cy="186" r="4"/>
+  </g>
+  <ellipse cx="512" cy="187" rx="62" ry="30" fill="none" stroke="#d97706" stroke-width="1.3" stroke-dasharray="5 4"/>
+  <text x="596" y="182" font-size="10" fill="#555">the distribution is</text>
+  <text x="596" y="196" font-size="10" fill="#555">implicit — only its</text>
+  <text x="596" y="210" font-size="10" fill="#555">samples ever exist</text>
+  <text x="404" y="244" font-size="10" fill="#d97706">used by the VAE <tspan font-weight="600">decoder</tspan> and by every GAN generator (Ch.3)</text>
+</svg>

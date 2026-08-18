@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" font-family="Inter, -apple-system, sans-serif">
+  <defs><marker id="lv-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#c0392b"/></marker>
+  <marker id="lv-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker></defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">why you may sample from 𝒩(0, I) at test time even though the decoder never saw it</text>
+
+  <rect x="16" y="38" width="358" height="230" rx="10" fill="#fcfcfc" stroke="#e8d5d5"/>
+  <text x="34" y="58" font-size="11.5" font-weight="700" fill="#c0392b">plain autoencoder — nothing constrains where codes go</text>
+  <rect x="40" y="70" width="310" height="150" rx="6" fill="#fff" stroke="#eee"/>
+  <g fill="rgba(14,116,144,0.75)">
+    <circle cx="62" cy="92" r="4"/><circle cx="70" cy="100" r="4"/><circle cx="58" cy="106" r="4"/>
+    <circle cx="322" cy="196" r="4"/><circle cx="330" cy="188" r="4"/><circle cx="316" cy="204" r="4"/>
+    <circle cx="196" cy="84" r="4"/><circle cx="204" cy="92" r="4"/>
+    <circle cx="90" cy="200" r="4"/><circle cx="98" cy="192" r="4"/>
+    <circle cx="286" cy="96" r="4"/><circle cx="278" cy="104" r="4"/>
+  </g>
+  <text x="176" y="150" text-anchor="middle" font-size="11" font-weight="600" fill="#c0392b">voids</text>
+  <text x="176" y="166" text-anchor="middle" font-size="9.6" fill="#c0392b">the decoder has never seen anything here</text>
+  <circle cx="176" cy="128" r="5.5" fill="none" stroke="#c0392b" stroke-width="2"/>
+  <path d="M 176 108 L 176 122" stroke="#c0392b" stroke-width="1.6" fill="none" marker-end="url(#lv-r)"/>
+  <text x="176" y="102" text-anchor="middle" font-size="9.4" fill="#c0392b">a prior sample lands here</text>
+  <text x="34" y="242" font-size="10" fill="#c0392b">Codes cluster wherever reconstruction found convenient. Decode</text>
+  <text x="34" y="257" font-size="10" fill="#c0392b">a random z and you get noise — which is why an AE cannot generate.</text>
+
+  <rect x="386" y="38" width="358" height="230" rx="10" fill="#fcfcfc" stroke="#dfe8ea"/>
+  <text x="404" y="58" font-size="11.5" font-weight="700" fill="#0e7490">VAE — the KL term pulls every posterior onto the prior</text>
+  <rect x="410" y="70" width="310" height="150" rx="6" fill="#fff" stroke="#eee"/>
+  <ellipse cx="565" cy="145" rx="118" ry="62" fill="rgba(124,58,237,0.06)" stroke="#7c3aed" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <text x="565" y="92" text-anchor="middle" font-size="9.4" fill="#7c3aed">𝒩(0, I)</text>
+  <g fill="rgba(14,116,144,0.30)" stroke="#0e7490" stroke-width="1">
+    <circle cx="520" cy="126" r="15"/><circle cx="556" cy="118" r="15"/><circle cx="592" cy="130" r="15"/>
+    <circle cx="536" cy="158" r="15"/><circle cx="574" cy="164" r="15"/><circle cx="610" cy="152" r="15"/>
+    <circle cx="500" cy="152" r="15"/><circle cx="596" cy="176" r="15"/>
+  </g>
+  <circle cx="558" cy="142" r="5.5" fill="none" stroke="#0e7490" stroke-width="2"/>
+  <path d="M 558 104 L 558 134" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#lv-t)"/>
+  <text x="558" y="100" text-anchor="middle" font-size="9.4" fill="#0e7490">a prior sample lands inside a region the decoder knows</text>
+  <text x="404" y="242" font-size="10" fill="#0e7490">Every posterior is penalised for drifting from 𝒩(0, I), so together</text>
+  <text x="404" y="257" font-size="10" fill="#0e7490">they tile the prior's bulk. Sampling the prior is then in-distribution.</text>
+
+  <text x="380" y="294" text-anchor="middle" font-size="10.6" fill="#555">The KL term is not there to make the maths tidy. It is what makes the latent space <tspan font-style="italic">samplable</tspan>, which is the entire</text>
+  <text x="380" y="310" text-anchor="middle" font-size="10.6" fill="#555">difference between a compressor and a generative model.</text>
+</svg>

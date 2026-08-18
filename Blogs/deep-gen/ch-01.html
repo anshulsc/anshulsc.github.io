@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lecture 1 notes: why machine learning needs probability — function approximation, where deterministic modeling fails, measures, sample spaces, and random variables.">
+    <meta name="keywords"
+        content="Deep Generative Models, Function Approximation, Statistical Modeling, Probability, Sample Space, Measure, Random Variable">
+    <meta name="author" content="Anshul Singh">
+    <title>Lecture 1: Why We Need Probability — DGM Notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="dgm-notes-style.css">
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../../css/theme.css">
+  <script src="../../js/theme.js"></script>
+  <!-- Passphrase gate for this notes series -->
+  <script src="../../js/gate.js"></script>
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">DGM Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Lecture 1</div>
+                <h1>Why We Need Probability</h1>
+                <div class="chapter-meta">
+                    <span>August 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">12 min read</span>
+                    <span class="dot">●</span>
+                    <span>Foundations</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target">
+                    <!-- Rendered markdown goes here -->
+                </article>
+
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <div class="nav-placeholder"></div>
+                <a href="ch-02.html" class="nav-next">
+                    <div class="nav-label">Next Lecture →</div>
+                    <div class="nav-title">Prediction, Sampling &amp; Divergence Minimization</div>
+                </a>
+            </div>
+        </main>
+
+        <footer
+            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*My notes from the first lecture of E1 286s (Deep Generative Models, IISc). The big idea I took away: branches of mathematics get invented out of necessity — Newton built integration because nothing existing could recover distance from a time-varying speed. Probability theory sits inside machine learning for the same reason. It's not "force-fitted" onto computer science; it's the only language that survives the problems we actually care about. This lecture builds that case, then lays the first bricks of probability theory itself.*
+
+---
+
+## 1. Everything Starts With a Function
+
+At the heart of nearly every science and engineering problem is a **function** — a rule mapping each element of one set to exactly one element of another:
+
+$$f: A \rightarrow B$$
+
+* $A$ is the **domain** (the input set).
+* $B$ is the **range** (the output set).
+
+Two examples to fix notation:
+
+1. **Scalar real-valued function:** $f(x) = x^2$ or $f(x) = |x|$, mapping $f: \mathbb{R} \rightarrow \mathbb{R}^+$.
+2. **Vector-to-scalar function (inner product):** $f(x) = x^T x$, mapping $f: \mathbb{R}^d \rightarrow \mathbb{R}$.
+
+> **On $\mathbb{R}^d$:** just the generalization of the 2D Cartesian plane. In $\mathbb{R}^2$ every point is a pair $(x_1, x_2)$; in $\mathbb{R}^d$ every point is a $d$-tuple $(x_1, \dots, x_d)$. Images, documents, and audio clips will all live in spaces like this.
+
+---
+
+## 2. The Function Approximation Problem
+
+In practice nobody hands us $f$. We get **data** — a finite set of input-output pairs:
+
+$$\mathcal{D} = \{(x_1, y_1), (x_2, y_2), \dots, (x_n, y_n)\}, \quad x_i \in A, \; y_i \in B$$
+
+**Function approximation** is the problem of recovering the hidden $f$ that generated these pairs.
+
+Why bother? Because an estimate $\hat{f}$ buys us **prediction**: for a brand-new input $x^*$ we've never seen,
+
+$$y^* = \hat{f}(x^*)$$
+
+That one sentence — *find the element of $B$ corresponding to an arbitrary unseen element of $A$* — is most of supervised machine learning.
+
+---
+
+## 3. When Simple Models Are Enough
+
+For simple physical systems the mapping is deterministic, low-dimensional, and analytic. No machine learning needed:
+
+* **Newton's second law:** domain = acceleration $a \in \mathbb{R}$, range = force $F \in \mathbb{R}$, relationship linear: $F = ma$. **One parameter** — the mass $m$.
+* **Kinetic energy:** domain = velocity $v \in \mathbb{R}$, range = energy $E \in \mathbb{R}^+$, quadratic: $E = \frac{1}{2}mv^2$. Again a single parameter.
+
+A handful of measurements pins down $m$, and the equation predicts perfectly forever. Algebra and differential equations are the right tools here.
+
+<figure><img src="assets/svg/classical-vs-ml.svg" alt="Classical modeling vs machine learning" style="max-width:100%;"><figcaption>Figure 1.1: The same function-approximation template, two wildly different regimes</figcaption></figure>
+
+---
+
+## 4. Three Case Studies Where Classical Tools Fail
+
+The moment the domain becomes high-dimensional and the range becomes *abstract*, deterministic modeling collapses. Three canonical examples from the lecture:
+
+### Case A: Image → Gender
+
+* **Domain:** a digital image — a grid of $P \times Q$ pixel intensities, a point $x_i \in \mathbb{R}^{P \times Q}$. A $1000 \times 1000$ image lives in a **million-dimensional** space.
+* **Range:** an abstract discrete set, $y_i \in \{0, 1\}$.
+
+Why no equation exists:
+
+1. **High dimensionality** — the input space is astronomically vast.
+2. **Messy physical generation** — pixel values come from light bouncing off skin, through a lens, onto a sensor; exquisitely sensitive to lighting, pose, angle, expression, background.
+3. **Abstract target** — "gender" is a cognitive concept. No deterministic physical law maps pixel intensities to it.
+
+Early computer vision actually tried **rule-based systems** ("a rectangle with a triangle on top is a house"). Brittle: a flat-roofed modern house, or simply rotating the image, breaks the rule. You cannot enumerate geometric rules for all faces under all conditions.
+
+### Case B: Document → Emotion
+
+* **Domain:** a document $D = (w_1, \dots, w_k)$, each word embedded as a $d$-dimensional vector, so $x_i \in \mathbb{R}^{d \times k}$.
+* **Range:** $y_i \in \{\text{Sad}, \text{Angry}, \text{Happy}, \text{Neutral}, \dots\}$.
+
+Emotion is **subjective and context-dependent** — one reader's "happy" is another's "sarcastic." Words are discrete symbols; there's no algebraic or differential equation from symbol sequences to feelings.
+
+### Case C: Speech → Phonemes
+
+* **Domain:** a continuous acoustic waveform $s(t)$, sampled and chunked into $P$-dimensional vectors.
+* **Range:** a discrete set of phonemes $\{a, b, e, \dots\}$.
+
+My favorite historical lesson here: early researchers *did* try physics. They modeled the vocal tract as an acoustic tube and wrote genuine differential equations for speech production. Elegant — and it failed to generalize, because vocal tracts differ across people, environments add noise and reverb, and accents and speaking rates reshape the signal completely.
+
+> **The pattern:** in all three cases the input is a high-dimensional point produced by a messy physical process, and the output is an abstract category with no measuring instrument. Deterministic math needs both ends to be clean; here neither is.
+
+---
+
+## 5. The Transition: Neural Networks + Probability
+
+Two ideas replace the classical toolkit.
+
+**Neural networks as universal approximators.** Instead of hand-crafting a low-parameter physical model or a brittle rule set, we use heavily overparameterized models. Neural networks are provably capable of approximating any continuous function to arbitrary accuracy, given enough capacity. They supply the *expressiveness* these problems demand.
+
+**Probability as the language of uncertainty.** Expressiveness alone isn't enough, because the mapping itself isn't deterministic — same face under different lighting, same sentence read by different people. So we stop chasing an exact $f$ and model the relationship as a **conditional distribution**:
+
+$$P(Y \mid X)$$
+
+— the probability that image $X$ shows gender $Y$. This one move lets models absorb noise, variability, and subjectivity instead of being broken by them.
+
+As George Box put it:
+
+> *"All models are wrong, but some are useful."*
+
+A statistical model gives up on capturing the exact physical truth of the universe, and in exchange becomes robust and practically useful.
+
+**Uncertainty is also what enables generation.** For this course there's a second, less obvious payoff. Treating functions as carrying uncertainty does two things:
+
+1. **Makes function learning feasible** — we can cope with the inherent unpredictability in data.
+2. **Enables "creativity"** — a model that represents a *distribution* over images can produce *new* images by sampling. A deterministic function can only echo; a distribution can generate.
+
+This forces a shift in how I see a dataset: the points $x_1, \dots, x_n$ are no longer fixed vectors in $\mathbb{R}^d$ — they are **instantiations of a random variable**. The rest of the lecture makes that phrase precise.
+
+---
+
+## 6. Random Experiments and the Sample Space
+
+Everything in probability starts with a **random experiment** (or trial): any process whose outcome isn't known in advance. The theory never bothers to define "random" itself — it only needs the outcome to be uncertain.
+
+| Random experiment | Sample space $\Omega$ (all possible outcomes) |
+| :--- | :--- |
+| Tossing a coin | $\{H, T\}$ |
+| Rolling an $n$-faced die | $\{1, 2, \dots, n\}$ |
+| Photographing a person | $\{p_1, p_2, \dots, p_{7B}\}$ — every person on Earth |
+| Recording a spoken sentence | $\{s_1, s_2, \dots, s_\infty\}$ — infinitely many possible sentences |
+
+The **sample space $\Omega$** is the complete set of possible outcomes. Notice how fast it stops being a textbook toy: for image data, $\Omega$ is *the set of all people in the world*. Abstract, enormous, and not numerical at all — that mismatch gets resolved by the random variable in §9.
+
+---
+
+## 7. What Is a Measure?
+
+Before probability comes its parent concept. Say I want to compare two subsets of an infinite set like $\mathbb{R}$ — which of two intervals is "bigger"? Counting elements won't work (both are uncountable). The tool for this is a **measure**.
+
+A **measure** $\mu$ assigns a non-negative scalar to subsets of a set $S$:
+
+$$\mu: \text{subsets of } S \rightarrow \mathbb{R}^+$$
+
+subject to three axioms:
+
+1. **Non-negativity:** $\mu(A) \geq 0$
+2. **Null empty set:** $\mu(\emptyset) = 0$
+3. **Additivity:** for disjoint $A, B$ (i.e. $A \cap B = \emptyset$): $\mu(A \cup B) = \mu(A) + \mu(B)$
+
+The everyday instance is the **Lebesgue measure**:
+
+* on $\mathbb{R}$ → **length** ($[0,5]$ measures 5, $[0,2]$ measures 2 — now "bigger" is well-defined),
+* on $\mathbb{R}^2$ → **area**,
+* on $\mathbb{R}^3$ → **volume**, and hyper-volume beyond.
+
+---
+
+## 8. Probability Is Just a Normalized Measure
+
+A **probability measure** $\mathbb{P}$ is a measure whose output is squeezed into $[0, 1]$, defined on subsets of the *sample space* $\Omega$. A subset $A \subseteq \Omega$ (living in a collection of subsets $\mathcal{F}$) is called an **event**, and
+
+$$\mathbb{P}(A) \in [0, 1]$$
+
+is read as the **uncertainty** associated with that event occurring.
+
+This is the link I'd never seen stated so plainly before: *probability is not a new kind of object — it's a measure, exactly like length or area, just normalized and applied to outcome sets.*
+
+(That collection $\mathcal{F}$ of "allowed" event sets is doing quiet but serious work here — not every collection of subsets qualifies. It has to be a **σ-algebra**, and the next lecture digs into exactly what that means → Ch.2.)
+
+---
+
+## 9. The Random Variable — Neither Random Nor a Variable
+
+Now the practical problem: raw outcomes in $\Omega$ (a specific person $p_i$, the symbol "Heads") are not numbers. What we *actually observe* are numerical measurements of those outcomes — elements of a different space, the **range space**. The bridge is the **random variable**:
+
+$$X: \Omega \rightarrow \mathbb{R}^d$$
+
+<figure><img src="assets/svg/rv-mapping.svg" alt="Random variable mapping from sample space to range space" style="max-width:100%;"><figcaption>Figure 1.2: A random variable is a fixed function from abstract outcomes to observable vectors — it drags the probability measure along with it</figcaption></figure>
+
+**The name is a historical misnomer**, and remembering this cleared up years of low-grade confusion for me. A random variable is:
+
+* **not random** — it's a fixed, deterministic function;
+* **not a variable** — it's a function, not a changing value.
+
+All the randomness lives in the **experiment**, which produces some outcome $\omega \in \Omega$; the function $X$ merely translates that outcome into something we can compute with.
+
+**Examples:**
+
+* **Coin toss:** $\Omega = \{H, T\}$; $X$ maps $H \mapsto 0$, $T \mapsto 1$.
+* **Photographing a person:** $\Omega = \{p_1, \dots, p_{7B}\}$; $X$ maps person $p_i$ to their $P \times Q$ pixel image in $\mathbb{R}^{P \times Q}$. We never observe the person as an element of $\Omega$ — we observe the *image*.
+
+So "a dataset is a set of instantiations of a random variable" now reads literally: each $x_i$ in my training set is $X(\omega_i)$ for some outcome $\omega_i$ of an underlying random experiment I never get to see directly.
+
+The whole pipeline — experiment → outcome → $X(\omega)$ → distribution — is easier felt than read. So, roll a die:
+
+<div class="dgm-widget" id="widget-experiment"></div>
+
+---
+
+## 10. Key Takeaways
+
+1. **ML is function approximation** — recover an unknown $f: A \to B$ from finite pairs, to predict on unseen inputs.
+2. **Classical modeling wins when both ends are measurable** and the relation is simple ($F = ma$: one parameter, done). It fails when the domain is high-dimensional and the range is abstract — images→gender, text→emotion, speech→phonemes.
+3. **The fix is a pair:** neural networks for expressiveness, probability for uncertainty — model $P(Y \mid X)$ instead of chasing an exact $f$. Uncertainty is also precisely what makes *generation* possible.
+4. **Probability is a normalized measure** — the same species of object as length, area, volume — defined over subsets (events) of a sample space $\Omega$.
+5. **A random variable is a fixed function $X: \Omega \to \mathbb{R}^d$**, neither random nor a variable; the randomness lives in the experiment. Every dataset is a bag of $X(\omega_i)$'s.
+
+---
+
+*Next lecture picks this machinery up and states the central problem of ML in one line: given finite samples from an unknown distribution, estimate it. Supervised learning wants to **predict** with it, generative modeling wants to **sample** from it — and the training recipe for the latter is divergence minimization → Ch.2.*
+    </script>
+
+    <script src="dgm-notes.js"></script>
+    <script src="dgm-widgets.js"></script>
+</body>
+
+</html>

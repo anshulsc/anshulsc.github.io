@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="Inter, -apple-system, sans-serif">
+  <text x="380" y="30" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">Why the critic must be strong: richer T → tighter bound</text>
+
+  <!-- ceiling: true divergence -->
+  <line x1="80" y1="70" x2="700" y2="70" stroke="#d97706" stroke-width="2" stroke-dasharray="8 5"/>
+  <text x="695" y="58" text-anchor="end" font-size="11.5" font-weight="600" fill="#d97706">true D_f(P&#8339; ‖ P_θ) — unreachable ceiling</text>
+
+  <!-- axis -->
+  <line x1="80" y1="250" x2="700" y2="250" stroke="#999" stroke-width="1.2"/>
+  <text x="70" y="254" text-anchor="end" font-size="10.5" fill="#777">0</text>
+
+  <!-- bars -->
+  <rect x="130" y="200" width="110" height="50" rx="4" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.4"/>
+  <text x="185" y="270" text-anchor="middle" font-size="11" fill="#555">T = linear function</text>
+  <text x="185" y="192" text-anchor="middle" font-size="10.5" fill="#0e7490">loose bound</text>
+
+  <rect x="330" y="140" width="110" height="110" rx="4" fill="rgba(14,116,144,0.14)" stroke="#0e7490" stroke-width="1.4"/>
+  <text x="385" y="270" text-anchor="middle" font-size="11" fill="#555">T_ω = small network</text>
+  <text x="385" y="132" text-anchor="middle" font-size="10.5" fill="#0e7490">better</text>
+
+  <rect x="530" y="84" width="110" height="166" rx="4" fill="rgba(14,116,144,0.18)" stroke="#0e7490" stroke-width="1.4"/>
+  <text x="585" y="270" text-anchor="middle" font-size="11" fill="#555">T_ω = expressive network</text>
+  <text x="585" y="79" text-anchor="middle" font-size="10.5" fill="#0e7490">nearly tight ✓</text>
+
+  <text x="380" y="294" text-anchor="middle" font-size="11" fill="#666">Minimizing a loose bound says nothing about the true divergence — a weak critic gives the generator meaningless feedback.</text>
+</svg>

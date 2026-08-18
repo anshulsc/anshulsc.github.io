@@ -6,6 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Writings & Research - Anshul Singh</title>
 
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+
+    <!-- Social preview -->
+    <meta name="description" content="Notes on my experiences, life, and sometimes machine learning.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Writing & Research — Anshul Singh">
+    <meta property="og:description" content="Notes on my experiences, life, and sometimes machine learning.">
+    <meta property="og:url" content="https://anshulsc.github.io/Blogs/blog-index.html">
+    <meta property="og:image" content="https://anshulsc.github.io/images/og-card.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@anshulsc">
+    <meta name="twitter:title" content="Writing & Research — Anshul Singh">
+    <meta name="twitter:description" content="Notes on my experiences, life, and sometimes machine learning.">
+    <meta name="twitter:image" content="https://anshulsc.github.io/images/og-card.png">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,12 +32,20 @@
     <link rel="stylesheet" href="research-style.css">
 
 
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../css/theme.css">
+  <script src="../js/theme.js"></script>
 </head>
 
 <body>
 
     <div class="container">
         <header class="site-header">
+            <a class="brand-mark" href="../index.html" aria-label="asca — home">
+                <img class="brand-avatar" src="../images/avatar.png" alt="">
+                <img class="brand-wordmark" src="../images/logo.png" alt="asca">
+            </a>
             <p style="text-align:center">
                 [<a href="../index.html">Home</a> /
                 <a href="blog-index.html" class="active"
@@ -68,27 +92,10 @@
                 <button class="filter-btn" data-filter="engineering">Engineering</button>
             </div>
 
-            <div class="article-list" id="articleList">
+            <section class="writing-section">
+                <h2 class="section-label">Writing</h2>
 
                 <div class="article-list" id="articleList" style="max-width: 800px; margin: 0 auto;">
-
-                    <!-- Article 0: RL for LLMs Notes Series -->
-                    <div class="article-item"
-                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
-                        data-category="research machine-learning engineering">
-                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">June 2026 • Notes Series</div>
-                        <a href="reinforce_LLMs/index.html" class="article-title"
-                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">RL Notes Series</a>
-                        <p class="article-excerpt"
-                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
-                            Personal study notes tracing RL from Bellman equations to PPO/GRPO alignment for LLMs.
-                        </p>
-                        <div class="tags">
-                            <span class="tag">Research</span>
-                            <span class="tag">Machine Learning</span>
-                            <span class="tag">LLMs</span>
-                        </div>
-                    </div>
 
                     <!-- Article 1: Federated Learning -->
                     <div class="article-item"
@@ -173,11 +180,77 @@
                     </div>
 
                 </div>
+            </section>
 
                 <div id="noResults"
                     style="display: none; text-align: center; color: var(--text-muted); margin-top: 40px;">
                     No articles found matching your search.
                 </div>
+
+            <details class="notes-vault" id="notesVault">
+                <summary>· lecture notes ·</summary>
+                <p class="section-note">Course notes, one chapter per lecture — rough, long, and
+                    mostly written for me. Series marked 🔒 open with a passphrase.</p>
+
+                <div class="article-list" style="max-width: 800px; margin: 0 auto;">
+                    <!-- Article 0: RL for LLMs Notes Series -->
+                    <div class="article-item"
+                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
+                        data-category="research machine-learning engineering">
+                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">June 2026 • Notes Series</div>
+                        <a href="reinforce_LLMs/index.html" class="article-title"
+                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">RL Notes Series</a>
+                        <p class="article-excerpt"
+                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
+                            Personal study notes tracing RL from Bellman equations to PPO/GRPO alignment for LLMs.
+                        </p>
+                        <div class="tags">
+                            <span class="tag">Research</span>
+                            <span class="tag">Machine Learning</span>
+                            <span class="tag">LLMs</span>
+                        </div>
+                    </div>
+
+                    <!-- Article 00: Deep Generative Models Notes Series -->
+                    <div class="article-item"
+                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
+                        data-category="research machine-learning">
+                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">August 2026 • Notes Series</div>
+                        <a href="deep-gen/index.html" class="article-title"
+                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">Deep Generative Models Notes</a>
+                        <p class="article-excerpt"
+                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
+                            Lecture-by-lecture notes from IISc's DGM course — probability foundations, the divergence minimization recipe behind every generative model, the convex-duality derivation that turns it into a working GAN, the practical family that follows (DCGAN, conditional GANs, CycleGAN), the optimal-transport repair behind Wasserstein GANs, and the variational autoencoder — through to discrete latent codes with VQ-VAE and the denoising diffusion models behind modern image generation, score matching, classifier guidance and DDIM — and normalizing flows, the one family that keeps an exact likelihood.
+                        </p>
+                        <span class="lock-badge">🔒 Locked</span>
+                        <div class="tags">
+                            <span class="tag">Research</span>
+                            <span class="tag">Machine Learning</span>
+                            <span class="tag">Generative Models</span>
+                        </div>
+                    </div>
+
+                    <!-- Article 00: CS294-158 Deep Unsupervised Learning Notes -->
+                    <div class="article-item"
+                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
+                        data-category="research machine-learning">
+                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">August 2026 • Notes Series</div>
+                        <a href="cs294-158/index.html" class="article-title"
+                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #1a4f7a;">Deep Unsupervised Learning — CS294-158 Notes</a>
+                        <p class="article-excerpt"
+                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
+                            Lecture-by-lecture notes from UC Berkeley's CS294-158 (Abbeel, Yan, Frans, Wu). Starting with the argument for learning without labels at all — Hinton's parameter budget worked as arithmetic, LeCun's cake with the bits attached, and the case that compression, likelihood and understanding are one quantity — then the map of the generative families and why masked autoencoders have to hide 75% of the image.
+                        </p>
+                        <span class="lock-badge">🔒 Locked</span>
+                        <div class="tags">
+                            <span class="tag">Generative Models</span>
+                            <span class="tag">Self-Supervised Learning</span>
+                            <span class="tag">Information Theory</span>
+                        </div>
+                    </div>
+
+                </div>
+            </details>
 
         </main>
 
@@ -221,6 +294,20 @@
                     article.style.display = 'none';
                 }
             });
+
+            // a section whose every entry is filtered out should take its heading with it
+            document.querySelectorAll('.writing-section').forEach(section => {
+                const anyVisible = Array.from(section.querySelectorAll('.article-item'))
+                    .some(item => item.style.display !== 'none');
+                section.style.display = anyVisible ? 'block' : 'none';
+            });
+
+            // the notes vault stays shut until something you searched for is in it
+            const vault = document.getElementById('notesVault');
+            const vaultHit = Array.from(vault.querySelectorAll('.article-item'))
+                .some(item => item.style.display !== 'none');
+            if (searchTerm && vaultHit) vault.open = true;
+            vault.style.display = (searchTerm && !vaultHit) ? 'none' : 'block';
 
             noResults.style.display = visibleCount === 0 ? 'block' : 'none';
         }

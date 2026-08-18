@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="Inter, -apple-system, sans-serif">
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">the critic must not be allowed to be steep — and clipping is a blunt way to arrange it</text>
+
+  <rect x="16" y="36" width="238" height="200" rx="10" fill="#fcfcfc" stroke="#e8d5d5"/>
+  <text x="135" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="#c0392b">unconstrained critic</text>
+  <line x1="40" y1="196" x2="234" y2="196" stroke="#bbb"/>
+  <path d="M 46 190 L 120 190 L 128 76 L 228 70" fill="none" stroke="#c0392b" stroke-width="2.4"/>
+  <text x="135" y="216" text-anchor="middle" font-size="9.6" fill="#c0392b">a near-vertical wall</text>
+  <text x="135" y="230" text-anchor="middle" font-size="9.6" fill="#c0392b">slope → ∞, W is unbounded</text>
+
+  <rect x="262" y="36" width="238" height="200" rx="10" fill="#fcfcfc" stroke="#dfe8ea"/>
+  <text x="381" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7490">1-Lipschitz critic</text>
+  <line x1="286" y1="196" x2="480" y2="196" stroke="#bbb"/>
+  <path d="M 292 190 L 340 172 L 400 118 L 474 86" fill="none" stroke="#0e7490" stroke-width="2.4"/>
+  <g stroke="#7c3aed" stroke-width="1.2" stroke-dasharray="3 3">
+    <path d="M 400 118 L 440 118 M 440 118 L 440 78"/>
+  </g>
+  <text x="446" y="112" font-size="9" fill="#7c3aed">rise ≤ run</text>
+  <text x="381" y="216" text-anchor="middle" font-size="9.6" fill="#0e7490">|f(x₁) − f(x₂)| ≤ ‖x₁ − x₂‖</text>
+  <text x="381" y="230" text-anchor="middle" font-size="9.6" fill="#0e7490">so ‖∇f‖ ≤ 1 everywhere</text>
+
+  <rect x="508" y="36" width="236" height="200" rx="10" fill="#fcfcfc" stroke="#e8e2d5"/>
+  <text x="626" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="#d97706">weight clipping, w ← clip(w, −c, c)</text>
+  <line x1="530" y1="150" x2="724" y2="150" stroke="#bbb"/>
+  <rect x="592" y="112" width="70" height="76" fill="rgba(217,119,6,0.10)" stroke="#d97706" stroke-width="1.3" stroke-dasharray="4 3"/>
+  <text x="592" y="106" text-anchor="middle" font-size="9" fill="#d97706">−c</text>
+  <text x="662" y="106" text-anchor="middle" font-size="9" fill="#d97706">+c</text>
+  <g fill="#d97706">
+    <circle cx="594" cy="126" r="4"/><circle cx="660" cy="132" r="4"/><circle cx="595" cy="170" r="4"/>
+    <circle cx="659" cy="160" r="4"/><circle cx="661" cy="176" r="4"/><circle cx="593" cy="148" r="4"/>
+  </g>
+  <text x="626" y="206" text-anchor="middle" font-size="9.6" fill="#d97706">weights pile up on the boundary</text>
+  <text x="626" y="220" text-anchor="middle" font-size="9.6" fill="#d97706">the critic loses capacity</text>
+
+  <text x="380" y="262" text-anchor="middle" font-size="10.6" fill="#555">Bounded weights do force <tspan font-style="italic">some</tspan> Lipschitz constant, which is all the proof needs — but the constant is not 1, and it is not controlled.</text>
+  <text x="380" y="280" text-anchor="middle" font-size="10.6" fill="#555">Too large a c and the critic trains slowly; too small and gradients die through depth. This is what the gradient penalty was invented to replace.</text>
+</svg>

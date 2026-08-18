@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lecture 8 notes: using a trained VAE — posterior inference and embeddings, why sampling from the prior works at all, the beta-VAE trade-off and posterior collapse, and VQ-VAE with its discrete codebook and straight-through gradients.">
+    <meta name="keywords"
+        content="VAE Inference, Latent Embedding, Variational Posterior Inference, Data Generation, beta-VAE, Posterior Collapse, VQ-VAE, Vector Quantization, Codebook, Straight-Through Estimator, Commitment Loss, Higgins, van den Oord">
+    <meta name="author" content="Anshul Singh">
+    <title>Lecture 8: Using a VAE — Embeddings, β-VAE &amp; VQ-VAE — DGM Notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="dgm-notes-style.css">
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../../css/theme.css">
+  <script src="../../js/theme.js"></script>
+  <!-- Passphrase gate for this notes series -->
+  <script src="../../js/gate.js"></script>
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">DGM Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Lecture 8</div>
+                <h1>Using a VAE: Embeddings, β-VAE &amp; VQ-VAE</h1>
+                <div class="chapter-meta">
+                    <span>August 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">26 min read</span>
+                    <span class="dot">●</span>
+                    <span>β-VAE &amp; VQ-VAE</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target">
+                    <!-- Rendered markdown goes here -->
+                </article>
+
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <a href="ch-07.html" class="nav-prev">
+                    <div class="nav-label">← Previous Lecture</div>
+                    <div class="nav-title">Variational Autoencoders</div>
+                </a>
+                <a href="ch-09.html" class="nav-next">
+                    <div class="nav-label">Next Lecture →</div>
+                    <div class="nav-title">Denoising Diffusion Probabilistic Models</div>
+                </a>
+            </div>
+        </main>
+
+        <footer
+            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*Ch.7 built the VAE and stopped at the training loop. This lecture is about what you actually do with the thing once it has converged — the two jobs the two halves are for, the knob that decides whether it can do either of them, and finally a different design that sidesteps the knob entirely by making the latent space discrete.*
+
+<div class="part-marker"><span class="part-label">Part I</span><span class="part-name">Using a trained VAE</span><span class="part-sub">Two separate jobs, and they use opposite halves of the network. Neither one runs the full loop.</span></div>
+
+## 1. What You Have After Training
+
+Training leaves you with two fitted networks: an encoder $q_{\phi^*}(z \mid x)$ and a decoder $p_{\theta^*}(x \mid z)$, the stars marking the converged parameters. They were trained together on one objective, and from here they are used **apart**, for two jobs that have almost nothing in common:
+
+* **Posterior inference** — you have an $x$ and want its code. Encoder only.
+* **Generation** — you have no $x$ at all and want a new one. Decoder only.
+
+<figure><img src="assets/svg/inference-vs-generation.svg" alt="Inference uses only the encoder; generation uses only the decoder" style="max-width:100%;"><figcaption>Figure 8.1: Two jobs, two halves. Neither path runs the whole autoencoder.</figcaption></figure>
+
+---
+
+## 2. Posterior Inference: Getting an Embedding
+
+The question is: given a fresh, unseen $x_{\text{test}}$, what is its representation in the latent space?
+
+Push it through the encoder. Because the encoder is probabilistic (Ch.7, §6) it does not hand back a vector — it hands back the parameters of a distribution: the mean $\mu_{\phi^*}(x_{\text{test}})$ and the diagonal covariance $\Sigma_{\phi^*}(x_{\text{test}})$. To get an actual embedding you then choose one of two things.
+
+**Take the mean.**
+
+$$\text{embedding}(x_{\text{test}}) = \mu_{\phi^*}(x_{\text{test}})$$
+
+This is what almost everyone does for downstream work. It is deterministic — the same input always gives the same vector — and it is the centre of what the encoder believes about this input.
+
+**Or sample, with reparameterisation.**
+
+$$z_{\text{test}} = \mu_{\phi^*}(x_{\text{test}}) + \epsilon_t \odot \Sigma^{1/2}_{\phi^*}(x_{\text{test}}), \qquad \epsilon_t \sim \mathcal{N}(0, I)$$
+
+This keeps the stochasticity, which you want if you are propagating uncertainty or generating variations around a real input, and do not want if you are handing vectors to a classifier that expects one answer per input.
+
+**A square-root worth watching.** Whether that exponent is really there depends entirely on what your encoder's output head emits, and getting it wrong is a silent bug rather than a crash. If the head outputs the **variance** $\sigma^2$, you must take the square root to get a standard deviation before scaling $\epsilon$. In practice heads rarely output raw variance, because it must be strictly positive and an unconstrained linear layer will happily produce a negative number. The two common designs are to emit $\log \sigma^2$ — unconstrained, exponentiate and halve — or to emit $\sigma$ directly through a softplus. If the network already gives you $\sigma$, there is no square root to take. It is a parameterisation choice, not a mathematical one, and the only rule is that the code must agree with itself.
+
+---
+
+## 3. What the Embedding Is Good For
+
+The point of a $\mu$ vector is that it is small and it is organised.
+
+Take MNIST. The raw input is $28 \times 28 = 784$ dimensions, and the standard approach is to feed those pixels to a CNN that predicts the digit. With a trained VAE you have another option: encode every image to its mean, giving a latent of maybe $d = 10$, and train a classifier **on those ten numbers instead**. Because the VAE was pushed to place semantically similar inputs near each other, the latent space is often well enough clustered that a small MLP — sometimes a linear model — does the job.
+
+The comparison worth actually running is between those two pipelines, on both axes at once: a CNN on 784-dimensional pixels against an MLP on 10-dimensional codes, measured on accuracy *and* on parameter count. The second is dramatically smaller and typically gives up some accuracy; how much it gives up is a property of how good the representation is, which is exactly what you would be measuring.
+
+Note what makes this possible and is easy to take for granted: the encoder was never told about labels. The structure it found is a by-product of being asked to compress and reconstruct — which is the whole promise of unsupervised representation learning, and the thing a GAN cannot offer, since a GAN has no encoder at all (Ch.6, §14).
+
+---
+
+## 4. Why This Is Called Variational Inference
+
+The name is not decoration and it is worth unpacking once, because it connects this chapter back to Ch.7's derivation.
+
+In Bayesian terms, what we want is the true posterior over latents given the data, $p_{\theta^*}(z \mid x)$. Ch.7, §4 established it is intractable — its normalising constant is an integral over all of $\mathbb{R}^K$ with a deep network inside. So instead of computing it, we pick a family of tractable distributions $q_\phi(z \mid x)$ — the encoder — and search within that family for the member closest to the true posterior, measuring closeness by
+
+$$D_{KL}\big(q_\phi(z \mid x) \,\|\, p_\theta(z \mid x)\big)$$
+
+Searching over a family of functions for the best approximation is what "variational" means, and it is the same sense as the variational bound in Ch.4, §8.
+
+We cannot minimise that divergence directly — it mentions the very posterior we cannot compute. But rearranging Ch.7, §5's decomposition gives
+
+$$\log p_\theta(x) - D_{KL}\big(q_\phi(z \mid x) \,\|\, p_\theta(z \mid x)\big) = \text{ELBO}(\theta, \phi)$$
+
+and now everything is visible. The left-hand side is a fixed quantity minus the thing we want small; the right-hand side is the thing we can compute. Since $D_{KL} \ge 0$, maximising the ELBO simultaneously pushes the log-likelihood up **and** squeezes the divergence between the approximate and true posteriors down, without ever evaluating the true posterior. So running $x_{\text{test}}$ through the encoder is not a heuristic feature extraction — it is evaluating an approximate posterior that training deliberately fitted, and the name **variational posterior inference** is literal.
+
+---
+
+## 5. Generation: Sampling From the Prior
+
+The other job. There is no input:
+
+1. **Sample the prior.** Draw $z \sim \mathcal{N}(0, I)$ — the same prior the KL term referenced during training.
+2. **Decode.** Push it through the decoder to get $\hat{x} \sim p_{\theta^*}(x \mid z)$.
+
+That is all. The encoder is not involved, and nothing about this path traces back to any training image.
+
+**Reconstruction is a different operation, and the two get confused constantly.** Reconstruction starts from an $x$ you already have, encodes it, decodes it, and asks whether $\hat{x} \approx x$ — a round trip, with a right answer to compare against:
+
+$$x \;\longrightarrow\; \text{encoder} \;\longrightarrow\; z \;\longrightarrow\; \text{decoder} \;\longrightarrow\; \hat{x} \approx x$$
+
+Generation starts from noise, uses only the decoder, and has no right answer at all:
+
+$$z \sim \mathcal{N}(0, I) \;\longrightarrow\; \text{decoder} \;\longrightarrow\; \hat{x}_{\text{new}}$$
+
+Good reconstruction does not imply good generation. A plain autoencoder reconstructs beautifully and generates nothing, which is the subject of the next section.
+
+---
+
+## 6. Why Sampling From 𝒩(0, I) Works At All
+
+Here is the question that deserves the most attention in this lecture, because the answer is the entire reason the KL term exists.
+
+During training the decoder only ever saw latents produced by the encoder — vectors of the form $\mu_\phi(x) + \sigma_\phi(x) \odot \epsilon$ for actual training images $x$. At generation time we hand it a draw from a generic Gaussian that was never conditioned on anything. Why should it know what to do with that?
+
+For a **plain autoencoder, it does not.** Nothing in a reconstruction loss constrains *where* codes go. The encoder is free to scatter them into whatever isolated pockets make reconstruction easiest, and the space between those pockets is territory the decoder has never been trained on. Sample there and you get noise. This is not a tuning problem; it is a structural one.
+
+For a **VAE**, the loss contains
+
+$$D_{KL}\big(q_\phi(z \mid x) \,\|\, \mathcal{N}(0, I)\big)$$
+
+which penalises every single posterior for drifting away from the prior. It acts as a restoring force, pulling all the encoded distributions toward the same standard normal bulk and inflating them until they overlap. The consequence is that the region the decoder was trained on and the region the prior samples from become **the same region** — so a prior draw is an in-distribution input rather than an extrapolation.
+
+<figure><img src="assets/svg/latent-voids.svg" alt="An autoencoder latent space full of voids versus a VAE latent space tiling the prior" style="max-width:100%;"><figcaption>Figure 8.2: The KL term is what makes prior samples land somewhere the decoder understands.</figcaption></figure>
+
+That claim is measurable rather than rhetorical, and the demo below measures it — the optimum is closed form, so nothing is being trained or approximated:
+
+<div class="dgm-widget" id="widget-priorcover"></div>
+
+At $\beta = 0$ essentially **zero percent** of prior draws land in a region any posterior covers. Turn the KL term on and coverage climbs past 95%. That number is precisely what the KL term is buying, and it is why a VAE can generate and an autoencoder cannot.
+
+<div class="part-marker"><span class="part-label">Part II</span><span class="part-name">The trade-off, and the knob</span><span class="part-sub">The two loss terms want opposite things. β decides who wins, and both extremes are degenerate.</span></div>
+
+## 7. Reconstruction Against Regularisation
+
+Written as a minimisation, the VAE objective is
+
+$$\mathcal{L}_{\text{VAE}} = \underbrace{\text{reconstruction loss}}_{\text{keep information about } x} + \underbrace{D_{KL}\big(q_\phi(z \mid x) \,\|\, \mathcal{N}(0, I)\big)}_{\text{look like the prior}}$$
+
+and the two terms are in genuine tension, not merely different.
+
+**Reconstruction** wants the encoder to preserve everything about $x$, which means posteriors that are narrow and far apart — distinct inputs must get distinguishable codes or the decoder cannot tell them apart.
+
+**Regularisation** wants every posterior to be $\mathcal{N}(0, I)$. Taken alone, its optimum is for the encoder to map *every* input to the same distribution, which destroys all information about which input it was.
+
+One term is pushing the posteriors apart and the other is pulling them together onto a common target. §6 showed why you cannot simply drop the second one.
+
+---
+
+## 8. Posterior Collapse
+
+Push the regularisation too hard — or give the decoder enough power that it can do well without the latent at all, which happens with strongly autoregressive decoders — and the model finds a degenerate solution:
+
+$$q_\phi(z \mid x) \approx \mathcal{N}(0, I) \qquad \text{for every } x$$
+
+The KL term drops to zero, which the optimiser reads as excellent progress. But $z$ now carries **no information about $x$ whatsoever** — the encoder has stopped listening to its input, the decoder has learned to ignore the latent, and the model has quietly become an unconditional density model with a vestigial encoder bolted on. This is **posterior collapse**, and the reason it is dangerous is that the loss looks fine while it happens.
+
+---
+
+## 9. The β-VAE
+
+Higgins et al. made the balance explicit by putting a coefficient on the regularisation term:
+
+$$\mathcal{L}_{\beta\text{-VAE}} = \|x - \hat{x}\|_2^2 + \beta\, D_{KL}\big(q_\phi(z \mid x) \,\|\, \mathcal{N}(0, I)\big), \qquad \beta \ge 0$$
+
+$\beta = 1$ recovers the standard VAE and the honest ELBO; anything else is deliberately optimising something that is no longer a bound on the likelihood, in exchange for control.
+
+<figure><img src="assets/svg/beta-spectrum.svg" alt="The behaviour of the latent space at four settings of beta" style="max-width:100%;"><figcaption>Figure 8.3: Both ends of the dial are degenerate, and only the middle is a generative model.</figcaption></figure>
+
+| $\beta$ | what is optimised | latent space | what you see |
+| :--- | :--- | :--- | :--- |
+| $\beta = 0$ | reconstruction only | unregularised — a plain autoencoder | sharp reconstructions; generation impossible |
+| $0 < \beta < 1$ | reconstruction-heavy | non-Gaussian, fine detail retained | sharp reconstructions; some samples unrealistic |
+| $\beta = 1$ | the true ELBO | the standard trade-off | a workable balance of both |
+| $\beta > 1$ | regularisation-heavy | strictly Gaussian, factors disentangled | blurry reconstructions; coherent but detail-poor samples, and collapse if pushed |
+
+**Does $\beta = 0$ really give back a plain autoencoder?** Yes, completely. With the KL penalty gone, the cheapest way to minimise reconstruction error is to make each posterior a spike — variance driven to zero — parked wherever is convenient. A distribution with zero variance is a point, so the sampling step becomes a no-op, the reparameterisation does nothing, and the probabilistic machinery is dead weight. What remains is an encoder mapping $x$ to a point and a decoder mapping it back: an autoencoder, arrived at not by changing the architecture but by turning one coefficient to zero.
+
+The genuinely useful thing about the $\beta > 1$ end is **disentanglement** — forcing the posterior hard toward a factorised prior pressures individual latent coordinates to capture independent factors of variation, so one might control rotation and another lighting. That is the property $\beta$-VAE was introduced for, and it is bought with reconstruction fidelity.
+
+<div class="part-marker"><span class="part-label">Part III</span><span class="part-name">VQ-VAE: removing the knob</span><span class="part-sub">If the trouble comes from forcing a continuous latent to match a Gaussian, stop doing that. Make the latent discrete instead.</span></div>
+
+## 10. A Discrete Latent Space
+
+Everything in Part II followed from one design decision: the latent is continuous and must be shaped toward a Gaussian prior. van den Oord et al.'s **VQ-VAE** abandons that decision.
+
+The motivation is that much of what we model is discrete anyway. Speech is a sequence drawn from a finite set of phonemes; images decompose into a vocabulary of textures, edges and parts. Forcing that onto a smooth Gaussian is a mismatch we have been paying for.
+
+So replace the prior with a **codebook** — a learned dictionary of $M$ vectors, each of dimension $K$:
+
+$$\mathbf{C} = \{z_1, z_2, \dots, z_M\}, \qquad z_j \in \mathbb{R}^K$$
+
+The pipeline becomes:
+
+1. **Encode.** $E(x)$ produces a continuous latent $z_e(x)$ — in practice a whole *grid* of vectors, one per spatial position.
+2. **Quantise.** Snap each vector to its nearest codebook entry by Euclidean distance:
+
+$$z_q(x) = z_{j^*}, \qquad j^* = \arg\min_{j \in \{1, \dots, M\}} \big\| z_e(x) - z_j \big\|_2$$
+
+3. **Decode.** Feed $z_q(x)$ to the decoder.
+
+<figure><img src="assets/svg/vqvae-pipeline.svg" alt="The VQ-VAE pipeline: encoder to a grid, nearest-neighbour lookup in the codebook, then decoder" style="max-width:100%;"><figcaption>Figure 8.4: The Gaussian sampling step is replaced by a dictionary lookup.</figcaption></figure>
+
+Notice what has disappeared. There is no Gaussian, so there is no KL term pulling codes toward a prior, so **posterior collapse cannot occur** — the failure mode of §8 is not mitigated but structurally absent, because nothing in the objective ever rewards ignoring the input. The $\beta$ knob is gone with it.
+
+---
+
+## 11. Why a Small Codebook Is Enough
+
+The obvious objection: a few hundred vectors to represent ImageNet? Surely that is hopeless.
+
+It would be, if the codebook had to describe a whole image with one entry. It does not. The encoder maps a $256 \times 256 \times 3$ image to a **grid** — say $32 \times 32$ spatial positions, each a $K$-dimensional vector — and quantisation happens **independently at every position**. The image ends up as a $32 \times 32$ array of integers, each in $\{1, \dots, M\}$.
+
+So the capacity is not $M$. It is $M$ raised to the number of positions:
+
+$$M^{H \times W} \;=\; 512^{32 \times 32} \;=\; 512^{1024}$$
+
+for a modest codebook of 512. That is an absurdly large number of distinct configurations, which is why VQ-VAE reconstructions are sharp rather than posterised. The codebook is a vocabulary, and the grid is a sentence written in it — a vocabulary of a few hundred words gives you effectively unlimited sentences.
+
+<div class="dgm-widget" id="widget-vq"></div>
+
+---
+
+## 12. What the Quantisation Costs
+
+The draft version of this stops at "the KL term is gone, problem solved". It is worth pushing on, because $\arg\min$ should immediately look suspicious after Ch.5, §16 and Ch.7, §9: **it is a discrete selection, and discrete selections have no useful derivative.**
+
+The quantiser is piecewise constant. Nudge $z_e(x)$ slightly and either the nearest codebook entry is unchanged — so $z_q$ does not move at all and the gradient is zero — or it flips to a different entry and $z_q$ jumps. Formally $\partial z_q / \partial z_e = 0$ almost everywhere, which is exactly the condition that killed GANs on text. The encoder would receive nothing.
+
+The fix is the **straight-through estimator**: in the backward pass, pretend the quantiser was the identity and copy the gradient arriving at $z_q$ straight onto $z_e$ unchanged.
+
+<figure><img src="assets/svg/straight-through.svg" alt="The straight-through estimator copying the gradient across the non-differentiable quantiser" style="max-width:100%;"><figcaption>Figure 8.5: The forward pass quantises; the backward pass pretends it did not.</figcaption></figure>
+
+This is worth being honest about: it is a **deliberate lie**. The true Jacobian is zero and we substitute the identity, so the resulting gradient is **biased** — unlike Ch.7's reparameterisation trick, which was an exact rewriting with no approximation anywhere. It works well in practice, and it works because $z_q$ is close to $z_e$ by construction, so the identity is a reasonable stand-in over short distances. But it is an engineering approximation, not a theorem.
+
+Two extra loss terms clean up after it, and both exist only because of the lie. The codebook receives no gradient from the reconstruction path at all — the straight-through estimator routes around it — so it needs its own:
+
+$$\underbrace{\big\| \mathrm{sg}[z_e(x)] - z_q \big\|_2^2}_{\text{codebook loss}} \;+\; \underbrace{\beta \big\| z_e(x) - \mathrm{sg}[z_q] \big\|_2^2}_{\text{commitment loss}}$$
+
+where $\mathrm{sg}[\cdot]$ is stop-gradient. The first pulls each codebook entry toward the encoder outputs that selected it — this is what actually trains the dictionary, and it is essentially an online $k$-means update. The second pulls the encoder's outputs toward the entries they chose, stopping it from drifting freely between codebook vectors and making the quantisation error, and therefore the straight-through lie, worse over time.
+
+A $\beta$ has reappeared, which is worth noticing. It is not the $\beta$ of §9 — it weights commitment, not a KL against a prior, and it does not trade reconstruction against sampling quality. But the claim that VQ-VAE removes all hyperparameter balancing is too strong; it removes *that particular* trade-off, and the failure mode it removes with it is posterior collapse.
+
+One more consequence, and it is a real one. Sampling is no longer free. In a standard VAE you generate by drawing $z \sim \mathcal{N}(0, I)$, because §6 arranged for that to be meaningful. VQ-VAE has no such prior — the codebook indices have some complicated joint distribution over the grid that nothing in training made simple. To generate you must **fit a second model over the discrete indices**, typically an autoregressive one such as PixelCNN, and sample from that instead. VQ-VAE gives you an excellent discrete representation and hands the generation problem to another model, which is exactly why it pairs so naturally with the autoregressive and diffusion methods coming next.
+
+---
+
+## 13. Where This Leaves Us
+
+Worth stating the arc plainly, because these two lectures have been about the same tension throughout.
+
+The goal was never to copy training data — it was to build a **structured latent space**, a compressed internal representation that is organised enough to be useful for something other than reconstruction. A standard VAE achieves that by regularising a continuous latent toward a Gaussian, which works, and comes with a delicate balance: too little regularisation and you cannot sample, too much and the latent stops meaning anything. VQ-VAE sidesteps the balance by discretising — no prior to match, no collapse to fear — and pays for it with a biased gradient estimator and the need for a separate model to sample indices.
+
+Neither is strictly better. They are different answers to the question of how you make a latent space that is both informative and navigable, and both answers feed directly into what comes next: autoregressive models, which are exactly the tool VQ-VAE needs for sampling, and diffusion models, which build on the same latent-representation principles.
+
+---
+
+## 14. Cheat Sheet
+
+| Result | Statement | Where |
+| :--- | :--- | :--- |
+| **Two jobs, two halves** | inference uses the encoder; generation uses the decoder | §1 |
+| **Embedding** | $\mu_{\phi^*}(x)$, or $\mu + \epsilon \odot \Sigma^{1/2}$ if you want it stochastic | §2 |
+| **The square root** | only if the head emits variance; heads usually emit $\log\sigma^2$ or $\sigma$ | §2 |
+| **Why embeddings help** | 784 pixels → 10 latents, so a small MLP replaces a CNN | §3 |
+| **Variational inference** | fit $q_\phi$ to minimise $D_{KL}(q_\phi \parallel p_\theta(z\mid x))$ over a family | §4 |
+| **The ELBO identity** | $\log p_\theta(x) - D_{KL}(q_\phi \parallel p_\theta(z\mid x)) = \text{ELBO}$ | §4 |
+| **Reconstruction vs generation** | round trip from a real $x$, versus decoder-only from noise | §5 |
+| **Why prior sampling works** | the KL term makes the encoded region and the prior region coincide | §6 |
+| **Posterior collapse** | $q_\phi(z\mid x) \approx \mathcal{N}(0,I)$ for all $x$; KL hits 0, $z$ carries nothing | §8 |
+| **β-VAE** | $\|x - \hat{x}\|^2 + \beta D_{KL}$; $\beta = 1$ is the true ELBO | §9 |
+| **β = 0** | posteriors become spikes — a plain autoencoder | §9 |
+| **β > 1** | disentangled factors, blurrier reconstructions | §9 |
+| **Quantisation** | $z_q = z_{j^*}$, $j^* = \arg\min_j \|z_e - z_j\|_2$ | §10 |
+| **VQ capacity** | $M^{H \times W}$, not $M$ — a vocabulary, not a word | §11 |
+| **Straight-through** | copy $\partial L/\partial z_q$ onto $z_e$; biased, unlike reparameterisation | §12 |
+| **Codebook + commitment** | $\|\mathrm{sg}[z_e] - z_q\|^2 + \beta\|z_e - \mathrm{sg}[z_q]\|^2$ | §12 |
+| **VQ sampling** | needs a second model over the indices, e.g. PixelCNN | §12 |
+
+---
+
+## 15. Key Takeaways
+
+1. **The two halves are used separately after training.** Inference is encoder-only and gives you a code; generation is decoder-only and starts from noise. Neither runs the full round trip.
+2. **Take the mean for downstream tasks.** It is deterministic and central; sample only when you actually want the uncertainty.
+3. **Check what your variance head emits.** Variance, log-variance and standard deviation all appear in real code, and the square root in the reparameterisation is there or not depending on which — a silent bug either way.
+4. **"Variational inference" is literal.** The encoder is an approximate posterior fitted by searching a family of distributions, and maximising the ELBO minimises its divergence from the true posterior without ever computing that posterior.
+5. **Reconstruction and generation are different operations**, and being good at the first implies nothing about the second.
+6. **The KL term exists to make the prior samplable.** Without it the latent space is pockets and voids, prior draws land in territory the decoder has never seen, and generation produces noise — measurably, near 0% coverage at $\beta = 0$ against over 95% at $\beta = 1$.
+7. **Both ends of the β dial are degenerate.** At zero the posteriors become spikes and you have a plain autoencoder; pushed high you get posterior collapse, where the KL reads zero and the latent means nothing.
+8. **VQ-VAE removes the trade-off by removing the Gaussian.** A discrete codebook has no prior to match, so posterior collapse is structurally impossible rather than merely avoided.
+9. **A small codebook is not a small model.** Quantisation happens per grid position, so capacity is $M^{H\times W}$ — 512 entries on a 32×32 grid is $512^{1024}$ configurations.
+10. **The quantiser has no gradient, and the fix is honest but approximate.** Straight-through copies the gradient across the $\arg\min$, which is biased where Ch.7's reparameterisation was exact, and needs codebook and commitment losses to hold the pieces together.
+11. **VQ-VAE hands the sampling problem downstream.** With no prior over indices, generation requires a second autoregressive model — which is precisely the subject of the next lecture.
+
+---
+
+*Next (Ch.9): denoising diffusion — a VAE with a chain of latents, a forward process nobody has to learn, and a final objective that turns out to be plain regression on noise.*
+    </script>
+
+    <script src="dgm-notes.js"></script>
+    <script src="dgm-widgets.js"></script>
+</body>
+
+</html>

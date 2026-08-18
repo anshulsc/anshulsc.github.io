@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 260" font-family="Inter, -apple-system, sans-serif">
+  <defs><marker id="el-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker></defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">expectation–maximisation: alternate which argument of F you optimise</text>
+
+  <rect x="60" y="52" width="230" height="94" rx="10" fill="rgba(14,116,144,0.07)" stroke="#0e7490" stroke-width="1.6"/>
+  <text x="175" y="76" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0e7490">E-step — optimise q</text>
+  <text x="76" y="96" font-size="10" fill="#555">q⁽ᵗ⁺¹⁾ = argmax_q F_θ⁽ᵗ⁾(q)</text>
+  <text x="76" y="113" font-size="10" fill="#555">and the answer is exact:</text>
+  <text x="76" y="130" font-size="10" font-weight="600" fill="#0e7490">q*(z|x) = P_θ⁽ᵗ⁾(z | x)</text>
+  <text x="175" y="160" text-anchor="middle" font-size="9.6" font-style="italic" fill="#0e7490">bound becomes tight</text>
+
+  <rect x="470" y="52" width="230" height="94" rx="10" fill="rgba(217,119,6,0.07)" stroke="#d97706" stroke-width="1.6"/>
+  <text x="585" y="76" text-anchor="middle" font-size="11.5" font-weight="700" fill="#d97706">M-step — optimise θ</text>
+  <text x="486" y="96" font-size="10" fill="#555">θ⁽ᵗ⁺¹⁾ = argmax_θ F_θ(q⁽ᵗ⁺¹⁾)</text>
+  <text x="486" y="113" font-size="10" fill="#555">with q frozen, the log sits</text>
+  <text x="486" y="130" font-size="10" fill="#555">inside the sum — parameters</text>
+  <text x="585" y="160" text-anchor="middle" font-size="9.6" font-style="italic" fill="#d97706">decouple, closed form</text>
+
+  <path d="M 292 82 L 466 82" stroke="#0e7490" stroke-width="1.8" fill="none" marker-end="url(#el-t)"/>
+  <path d="M 466 122 L 292 122" stroke="#0e7490" stroke-width="1.8" fill="none" marker-end="url(#el-t)"/>
+  <text x="379" y="74" text-anchor="middle" font-size="9.6" fill="#0e7490">hand q over</text>
+  <text x="379" y="138" text-anchor="middle" font-size="9.6" fill="#0e7490">hand θ back</text>
+
+  <rect x="60" y="180" width="640" height="62" rx="9" fill="#fbfbfb" stroke="#ddd"/>
+  <text x="380" y="200" text-anchor="middle" font-size="10.6" font-weight="700" fill="#444">why not just differentiate ℓ(θ) directly?</text>
+  <text x="380" y="219" text-anchor="middle" font-size="10" fill="#555">Because the sum sits inside the logarithm: ∂/∂μⱼ log Σᵢ αᵢ 𝒩(x; μᵢ, Σᵢ) = 0 couples every component to every other.</text>
+  <text x="380" y="235" text-anchor="middle" font-size="10" fill="#555">Jensen's inequality pushes the log <tspan font-style="italic">inside</tspan> the sum. That single move decouples the parameters and hands you closed-form updates.</text>
+</svg>

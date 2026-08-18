@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 280" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="ds-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#c0392b"/></marker>
+    <g id="d3" fill="none" stroke-width="9" stroke-linecap="round"><path d="M 8 8 Q 34 0 34 20 Q 34 34 18 34 Q 34 34 34 52 Q 34 70 6 62"/></g>
+    <pattern id="noisy" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect width="8" height="8" fill="#7c3aed" opacity="0.30"/>
+      <circle cx="2" cy="2" r="2.4" fill="#d97706" opacity="0.55"/>
+      <circle cx="6" cy="6" r="2" fill="#0e7490" opacity="0.5"/>
+      <circle cx="6" cy="2" r="1.4" fill="#c0392b" opacity="0.4"/>
+    </pattern>
+  </defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">the task is identical; the pixels are not</text>
+
+  <rect x="46" y="44" width="120" height="120" rx="6" fill="#111" stroke="#0e7490" stroke-width="1.6"/>
+  <g transform="translate(78,66)" stroke="#fff"><use href="#d3"/></g>
+  <text x="106" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7490">MNIST — source</text>
+  <text x="106" y="200" text-anchor="middle" font-size="9.6" fill="#777">grayscale, black background</text>
+  <text x="106" y="216" text-anchor="middle" font-size="9.6" font-weight="600" fill="#0e7490">fully labelled</text>
+
+  <rect x="226" y="44" width="120" height="120" rx="6" fill="url(#noisy)" stroke="#d97706" stroke-width="1.6"/>
+  <g transform="translate(258,66)" stroke="#fff" opacity="0.95"><use href="#d3"/></g>
+  <text x="286" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#d97706">MNIST-M — target</text>
+  <text x="286" y="200" text-anchor="middle" font-size="9.6" fill="#777">digits blended onto colour patches</text>
+  <text x="286" y="216" text-anchor="middle" font-size="9.6" font-weight="600" fill="#c0392b">no labels at all</text>
+
+  <rect x="406" y="44" width="120" height="120" rx="6" fill="#6b7b8c" stroke="#d97706" stroke-width="1.6"/>
+  <rect x="418" y="70" width="96" height="68" rx="3" fill="#c8ccd0"/>
+  <g transform="translate(450,78)" stroke="#2c3138"><use href="#d3"/></g>
+  <text x="466" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#d97706">SVHN — target</text>
+  <text x="466" y="200" text-anchor="middle" font-size="9.6" fill="#777">photographed house numbers</text>
+  <text x="466" y="216" text-anchor="middle" font-size="9.6" font-weight="600" fill="#c0392b">no labels at all</text>
+
+  <rect x="560" y="60" width="180" height="104" rx="9" fill="rgba(200,60,60,0.06)" stroke="#c0392b" stroke-width="1.3"/>
+  <text x="650" y="80" text-anchor="middle" font-size="10.8" font-weight="700" fill="#c0392b">what goes wrong</text>
+  <text x="574" y="99" font-size="9.8" fill="#c0392b">A CNN trained only on the left</text>
+  <text x="574" y="113" font-size="9.8" fill="#c0392b">learns "bright pixels on pure</text>
+  <text x="574" y="127" font-size="9.8" fill="#c0392b">black" — a property of the</text>
+  <text x="574" y="141" font-size="9.8" fill="#c0392b"><tspan font-style="italic">domain</tspan>, not of the digit.</text>
+  <text x="574" y="156" font-size="9.8" font-weight="600" fill="#c0392b">Accuracy collapses on the right.</text>
+  <path d="M 556 112 L 534 112" stroke="#c0392b" stroke-width="1.4" fill="none" marker-end="url(#ds-r)"/>
+
+  <text x="380" y="252" text-anchor="middle" font-size="11" fill="#555">All three are the digit three. We need a representation that keeps "three" and discards "which dataset this came from".</text>
+  <text x="380" y="270" text-anchor="middle" font-size="10.4" fill="#999">Labels exist only for the source, so nothing can be supervised on the target directly — hence <tspan font-style="italic">unsupervised</tspan> domain adaptation.</text>
+</svg>

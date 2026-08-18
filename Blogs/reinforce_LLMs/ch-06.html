@@ -11,6 +11,9 @@
     <meta name="author" content="Anshul Singh">
     <title>Ch 6: Policy Gradients — RL Notes</title>
 
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,6 +37,10 @@
     <!-- Styles -->
     <link rel="stylesheet" href="../research-style.css">
     <link rel="stylesheet" href="rl-notes-style.css">
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../../css/theme.css">
+  <script src="../../js/theme.js"></script>
 </head>
 
 <body>
@@ -150,20 +157,21 @@ The expected return starting from the initial state under policy $\pi_\theta$. W
 $$\theta_{t+1} = \theta_t + \alpha \nabla_\theta J(\theta_t)$$
 
 ### The Fundamental Challenge
-$J(\theta)$ depends on two things, **both** affected by $\theta$:
-1. **Action probabilities**: $\pi(a|s,\theta)$ — directly controlled by $\theta$.
-2. **State distribution**: $\mu(s)$ — which states the agent visits. Changes implicitly when $\theta$ changes the policy's behavior.
+Our objective is to maximize the expected return starting from the initial state $s_0$:
+$$J(\theta) \doteq v_{\pi_\theta}(s_0)$$
 
-Expanding $J(\theta)$:
-$$J(\theta) = \sum_{s} \mu(s) \sum_{a} \pi(a|s,\theta) q_\pi(s,a)$$
+By expanding the value function recursively, we can write $J(\theta)$ in terms of the rewards and transition probabilities of the future states visited by the policy:
+$$J(\theta) = \sum_{a} \pi(a \mid s_0, \theta) \left( R(s_0, a) + \gamma \sum_{s'} P(s' \mid s_0, a) v_{\pi_\theta}(s') \right)$$
 
-Taking the gradient via product rule:
-$$\nabla_\theta J = \sum_s \left[ \nabla_\theta \mu(s) \sum_a \pi(a|s,\theta) q_\pi(s,a) + \mu(s) \nabla_\theta \left(\sum_a \pi(a|s,\theta) q_\pi(s,a)\right) \right]$$
+When we take the gradient $\nabla_\theta J(\theta)$, the policy parameters $\theta$ affect the objective in two ways:
+1. **Direct Action Selection**: $\theta$ directly changes the action probabilities $\pi(a \mid s, \theta)$ at each state.
+2. **Indirect State Distribution Shift**: By changing the action selection, $\theta$ implicitly shifts the probability of which future states the agent will visit (the **state visitation distribution** $\mu(s)$).
 
-The term $\nabla_\theta \mu(s)$ is **intractable** — it depends on the unknown environment dynamics $P(s'|s,a)$.
+Therefore, taking the gradient $\nabla_\theta J(\theta)$ analytically would seem to require computing the gradient of the future state visitation frequency with respect to the policy parameters ($\nabla_\theta \mu(s)$). 
+This term $\nabla_\theta \mu(s)$ is **intractable** in a model-free setting because it depends entirely on the unknown environment transition dynamics $P(s' \mid s, a)$. 
 
 ### The Theorem
-The **Policy Gradient Theorem** proves that under expectation, we don't need $\nabla_\theta \mu(s)$:
+The **Policy Gradient Theorem** resolves this challenge. It proves that despite this dependency, the gradient of the objective simplifies under expectation to a form that does not require calculating $\nabla_\theta \mu(s)$ at all:
 
 $$\nabla_\theta J(\theta) \propto \sum_{s} \mu(s) \sum_{a} q_\pi(s,a) \nabla_\theta \pi(a|s,\theta)$$
 
@@ -442,15 +450,22 @@ This approximation is highly effective locally because at the point of expansion
    This ensures that taking a small step to maximize $L_\pi(\pi')$ is guaranteed to also improve the true objective $\eta(\pi')$.
 
 ### Monotonic Improvement Bound
-How far can $\pi'$ deviate from $\pi$ before the approximation breaks?
+How far can the new policy $\pi'$ deviate from the old policy $\pi$ before the linear approximation breaks? The policy performance difference theorem yields a lower bound guaranteeing monotonic improvement:
 
 $$\eta(\pi') \geq L_\pi(\pi') - C \cdot D_{KL}^{\max}(\pi, \pi')$$
 
 where $C = \frac{4\epsilon\gamma}{(1-\gamma)^2}$ and $\epsilon = \max_{s,a} |A_\pi(s,a)|$.
 
-### From Penalty to Constraint
+### The Theoretical Unconstrained Penalty Problem
+This bound suggests that the actual theory of monotonic improvement recommends using a **penalty** instead of a constraint, maximizing the lower bound directly as an unconstrained optimization problem:
 
-The penalty constant $C$ is enormous, restricting parameter steps to microscopic, impractical sizes. TRPO reformulates the objective as a **constrained** optimization problem:
+$$\max_{\theta} \mathbb{E}_{s \sim \rho_{\theta_{old}}, a \sim \pi_{\theta_{old}}} \left[ \frac{\pi_\theta(a \mid s)}{\pi_{\theta_{old}}(a \mid s)} A_{\theta_{old}}(s,a) - \beta D_{KL}^{\max}(\pi_{\theta_{old}}, \pi_\theta) \right]$$
+
+where $\beta$ is a penalty coefficient (derived from the constant $C$).
+
+### From Penalty to Constraint
+In practice, the theoretical penalty constant $C$ (or $\beta$) is **enormous**, restricting parameter steps to microscopic, impractical sizes during gradient descent. To bypass this issue and allow larger updates, TRPO reformulates the objective as a **constrained** optimization problem inside a trust region:
+
 $$\max_{\pi'} L_\pi(\pi') \quad \text{s.t.} \quad D_{KL}^{\max}(\pi, \pi') \le \delta$$
 
 #### The Practical (Sample-Based) TRPO Optimization Problem
@@ -460,20 +475,31 @@ In a real reinforcement learning system, we cannot compute the theoretical surro
 
 To make the optimization problem practically solvable, TRPO applies two critical mathematical transformations:
 
-##### 1. Bypassing Off-Distribution Actions via Importance Sampling
-Instead of calculating the action summation $\sum_a \pi'(a|s) A_\pi(s, a)$ over all possible actions, we rewrite it as an expectation over the actions actually taken by our old policy $\pi_{\theta_{old}}$. 
-Recall the **Importance Sampling Identity** from statistics: for any function $f(a)$ and target distribution $P(a)$, we can estimate the expectation under $P$ using samples from a proposal distribution $Q(a)$ by scaling with the likelihood ratio:
-$$\mathbb{E}_{a \sim P}[f(a)] = \sum_a P(a) f(a) = \sum_a Q(a) \frac{P(a)}{Q(a)} f(a) = \mathbb{E}_{a \sim Q}\left[ \frac{P(a)}{Q(a)} f(a] \right]$$
+##### 1. Connecting Policy Space to Parameter Space & Bypassing Off-Distribution Actions
+To optimize the policy, we translate our policy-space expressions ($\pi$ and $\pi'$) into parameter-space expressions ($\theta_{old}$ and $\theta$):
+*   Let the old policy $\pi$ be parameterized by the active weights: $\pi \to \pi_{\theta_{old}}$.
+*   Let the candidate new policy $\pi'$ be parameterized by the candidate weights: $\pi' \to \pi_\theta$.
+
+Substituting these parameters into the theoretical surrogate objective $L_\pi(\pi')$ yields:
+$$L_{\theta_{old}}(\theta) = \eta(\theta_{old}) + \sum_{s} \rho_{\theta_{old}}(s) \sum_{a} \pi_\theta(a|s) A_{\theta_{old}}(s, a)$$
+
+Now, to bypass the chicken-and-egg evaluation problem (where we need to evaluate candidate policy $\pi_\theta$ using actions collected under our old policy $\pi_{\theta_{old}}$), we apply the **Importance Sampling Identity** from statistics. For any function $f(a)$ and target distribution $P(a)$, we can estimate the expectation under $P$ using samples from a proposal distribution $Q(a)$ by scaling with the likelihood ratio:
+$$\mathbb{E}_{a \sim P}[f(a)] = \sum_a P(a) f(a) = \sum_a Q(a) \frac{P(a)}{Q(a)} f(a) = \mathbb{E}_{a \sim Q}\left[ \frac{P(a)}{Q(a)} f(a) \right]$$
 
 Applying this to our action summation, where the target distribution is the new policy $\pi_\theta$ and the proposal distribution is the old policy $\pi_{\theta_{old}}$:
 $$\sum_a \pi_\theta(a|s) A_{\theta_{old}}(s, a) = \mathbb{E}_{a \sim \pi_\theta}[A_{\theta_{old}}(s, a)] = \mathbb{E}_{a \sim \pi_{\theta_{old}}}\left[ \frac{\pi_\theta(a|s)}{\pi_{\theta_{old}}(a|s)} A_{\theta_{old}}(s,a) \right]$$
 
 The term $w(s, a) = \frac{\pi_\theta(a|s)}{\pi_{\theta_{old}}(a|s)}$ is the **importance sampling ratio (or weight)**:
-* **If $w(s, a) > 1$**: The action is more likely under the candidate new policy than the old policy. Its positive or negative advantage impact is scaled up.
-* **If $w(s, a) < 1$**: The action is less likely under the new policy. Its impact is scaled down.
+*   **If $w(s, a) > 1$**: The action is more likely under the candidate new policy than the old policy. Its positive or negative advantage impact is scaled up.
+*   **If $w(s, a) < 1$**: The action is less likely under the new policy. Its impact is scaled down.
 
-This yields the expected surrogate objective:
-$$L(\theta_{old}, \theta) = \mathbb{E}_{s \sim \rho_{\theta_{old}}, a \sim \pi_{\theta_{old}}} \left[ \frac{\pi_\theta(a|s)}{\pi_{\theta_{old}}(a|s)} A_{\theta_{old}}(s,a) \right]$$
+Substituting this expectation back into the parameterized surrogate $L_{\theta_{old}}(\theta)$ gives:
+$$L_{\theta_{old}}(\theta) = \eta(\theta_{old}) + \mathbb{E}_{s \sim \rho_{\theta_{old}}, a \sim \pi_{\theta_{old}}} \left[ \frac{\pi_\theta(a|s)}{\pi_{\theta_{old}}(a|s)} A_{\theta_{old}}(s,a) \right]$$
+
+Finally, since the first term $\eta(\theta_{old})$ depends only on the old parameters and is a constant with respect to our optimization variable $\theta$, its gradient is zero ($\nabla_\theta \eta(\theta_{old}) = 0$). Maximizing $L_{\theta_{old}}(\theta)$ is therefore mathematically equivalent to maximizing only the second term. 
+
+This yields the expected surrogate objective maximized by TRPO and PPO:
+$$L(\theta_{old}, \theta) \doteq \mathbb{E}_{s \sim \rho_{\theta_{old}}, a \sim \pi_{\theta_{old}}} \left[ \frac{\pi_\theta(a|s)}{\pi_{\theta_{old}}(a|s)} A_{\theta_{old}}(s,a) \right]$$
 
 ##### 2. Softening the KL Constraint via Average KL Divergence
 The supremum constraint $D_{KL}^{\max}(\pi, \pi') \le \delta$ requires that the KL divergence is bounded by $\delta$ in *every single possible state*. Evaluating this supremum is mathematically intractable.

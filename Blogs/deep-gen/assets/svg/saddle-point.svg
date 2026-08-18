@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="sp-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/>
+    </marker>
+    <marker id="sp-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/>
+    </marker>
+  </defs>
+
+  <text x="380" y="26" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">
+    J(θ, ω) is a saddle — not a valley, not a hill
+  </text>
+
+  <g transform="translate(60,14)">
+    <!-- faint companion ridges -->
+    <path d="M 232 308 Q 482 143 732 198" fill="none" stroke="rgba(14,116,144,0.18)" stroke-width="1.4"/>
+    <path d="M 48 252 Q 298 87 548 142" fill="none" stroke="rgba(14,116,144,0.18)" stroke-width="1.4"/>
+
+    <!-- theta cross-section: a valley (min at centre) -->
+    <path d="M 160 86 Q 390 205 620 224" fill="none" stroke="#d97706" stroke-width="2.6"/>
+    <!-- omega cross-section: a ridge (max at centre) -->
+    <path d="M 140 290 Q 390 125 640 180" fill="none" stroke="#0e7490" stroke-width="2.6"/>
+
+    <!-- saddle point -->
+    <circle cx="390" cy="180" r="5.5" fill="#111"/>
+    <circle cx="390" cy="180" r="11" fill="none" stroke="#111" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="390" y="163" text-anchor="middle" font-size="11" font-weight="700" fill="#111">saddle point</text>
+
+    <!-- direction arrows on the ridge (omega): climb toward centre -->
+    <path d="M 186 268 L 246 232" stroke="#0e7490" stroke-width="2" fill="none" marker-end="url(#sp-t)"/>
+    <path d="M 596 196 L 536 178" stroke="#0e7490" stroke-width="2" fill="none" marker-end="url(#sp-t)"/>
+    <text x="150" y="316" font-size="11" font-weight="600" fill="#0e7490">ω  (critic)</text>
+    <text x="150" y="332" font-size="10.2" fill="#0e7490">climbs UP the ridge → max</text>
+
+    <!-- direction arrows on the valley (theta): descend toward centre -->
+    <path d="M 206 122 L 262 152" stroke="#d97706" stroke-width="2" fill="none" marker-end="url(#sp-o)"/>
+    <path d="M 566 216 L 506 204" stroke="#d97706" stroke-width="2" fill="none" marker-end="url(#sp-o)"/>
+    <text x="596" y="252" font-size="11" font-weight="600" fill="#d97706">θ  (generator)</text>
+    <text x="596" y="268" font-size="10.2" fill="#d97706">slides DOWN the valley → min</text>
+  </g>
+
+  <line x1="40" y1="330" x2="720" y2="330" stroke="#eee"/>
+  <text x="380" y="350" text-anchor="middle" font-size="10.5" fill="#888">
+    Ordinary training walks downhill to a minimum. Here two players walk in perpendicular directions at once — which is why GAN training oscillates.
+  </text>
+</svg>

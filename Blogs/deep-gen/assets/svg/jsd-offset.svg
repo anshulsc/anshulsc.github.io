@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="jo-s" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/>
+    </marker>
+    <marker id="jo-e" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/>
+    </marker>
+  </defs>
+
+  <text x="360" y="24" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">
+    the vanilla GAN value is the Jensen–Shannon divergence, shifted by a constant
+  </text>
+
+  <!-- axes -->
+  <line x1="90" y1="250" x2="672" y2="250" stroke="#999" stroke-width="1"/>
+  <line x1="90" y1="52" x2="90" y2="258" stroke="#999" stroke-width="1"/>
+  <text x="380" y="272" text-anchor="middle" font-size="10.5" fill="#777">how far P_θ sits from P_x  ⟶</text>
+
+  <!-- zero line -->
+  <line x1="90" y1="155" x2="672" y2="155" stroke="#ddd" stroke-dasharray="4 4"/>
+  <text x="84" y="159" text-anchor="end" font-size="10" fill="#aaa">0</text>
+  <text x="84" y="77" text-anchor="end" font-size="10" fill="#aaa">log 4</text>
+  <text x="84" y="241" text-anchor="end" font-size="10" fill="#aaa">−log 4</text>
+
+  <!-- upper curve: 2 * JS -->
+  <path d="M 90 155 C 240 90, 400 75, 660 73" fill="none" stroke="#0e7490" stroke-width="2.6"/>
+  <text x="452" y="64" font-size="11" font-weight="600" fill="#0e7490">2 · D_JS(P_x ‖ P_θ)     — a real divergence, ≥ 0</text>
+
+  <!-- lower curve: max_D V -->
+  <path d="M 90 237 C 240 172, 400 157, 660 155" fill="none" stroke="#d97706" stroke-width="2.6" stroke-dasharray="7 4"/>
+  <text x="418" y="180" font-size="11" font-weight="600" fill="#d97706">max_D V(D)  =  2 · D_JS − log 4</text>
+
+  <!-- the constant gap -->
+  <line x1="250" y1="103" x2="250" y2="185" stroke="#7c3aed" stroke-width="1.6"
+        marker-start="url(#jo-s)" marker-end="url(#jo-e)"/>
+  <text x="258" y="132" font-size="10.5" font-weight="600" fill="#7c3aed">log 4</text>
+  <text x="258" y="147" font-size="9.8" fill="#7c3aed">≈ 1.386</text>
+
+  <line x1="560" y1="76" x2="560" y2="152" stroke="#7c3aed" stroke-width="1.6"
+        marker-start="url(#jo-s)" marker-end="url(#jo-e)"/>
+  <text x="568" y="118" font-size="10.5" font-weight="600" fill="#7c3aed">log 4</text>
+
+  <!-- perfect match marker -->
+  <circle cx="90" cy="155" r="4" fill="#0e7490"/>
+  <circle cx="90" cy="237" r="4" fill="#d97706"/>
+  <text x="98" y="298" font-size="10" fill="#777">P_θ = P_x here:  divergence 0, GAN value −log 4</text>
+
+  <text x="360" y="316" text-anchor="middle" font-size="10.5" fill="#888">
+    Same curve, same slopes, same minimiser. A constant has zero gradient — which is why the "wrong" f never hurt anybody.
+  </text>
+</svg>

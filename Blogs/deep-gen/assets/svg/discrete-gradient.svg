@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="dg-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/>
+    </marker>
+    <marker id="dg-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/>
+    </marker>
+  </defs>
+
+  <!-- ══ LEFT: images (continuous) ══ -->
+  <rect x="16" y="16" width="352" height="298" rx="12" fill="#fcfcfc" stroke="#ddd" stroke-width="1.3"/>
+  <text x="192" y="42" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0e7490">images: pixels are real numbers</text>
+
+  <rect x="60" y="60" width="264" height="36" rx="8" fill="rgba(217,119,6,0.10)" stroke="#d97706" stroke-width="1.4"/>
+  <text x="192" y="83" text-anchor="middle" font-size="11" fill="#8a5104">G_θ(z)  ⟶  x̂ ∈ ℝᵈ  directly</text>
+
+  <!-- smooth curve -->
+  <line x1="60" y1="210" x2="324" y2="210" stroke="#bbb" stroke-width="1"/>
+  <path d="M 68 200 C 130 130, 200 250, 316 140" fill="none" stroke="#0e7490" stroke-width="2.4"/>
+  <text x="70" y="122" font-size="10.5" fill="#0e7490">D_ω(x̂) as x̂ moves</text>
+  <!-- tangent -->
+  <line x1="196" y1="215" x2="260" y2="175" stroke="#d97706" stroke-width="2"/>
+  <circle cx="228" cy="195" r="4" fill="#d97706"/>
+  <text x="236" y="222" font-size="10.5" fill="#d97706">slope ≠ 0</text>
+
+  <path d="M 192 240 L 192 268" stroke="#7c3aed" stroke-width="1.8" fill="none" marker-end="url(#dg-p)"/>
+  <text x="192" y="288" text-anchor="middle" font-size="11" font-weight="600" fill="#7c3aed">gradient flows into θ ✓</text>
+  <text x="192" y="304" text-anchor="middle" font-size="9.8" fill="#888">nudge a pixel a little, the critic's score moves a little</text>
+
+  <!-- ══ RIGHT: text (discrete) ══ -->
+  <rect x="392" y="16" width="352" height="298" rx="12" fill="#fcfcfc" stroke="#ddd" stroke-width="1.3"/>
+  <text x="568" y="42" text-anchor="middle" font-size="12.5" font-weight="700" fill="#c0392b">text: tokens are discrete choices</text>
+
+  <rect x="410" y="60" width="130" height="36" rx="8" fill="rgba(217,119,6,0.10)" stroke="#d97706" stroke-width="1.4"/>
+  <text x="475" y="83" text-anchor="middle" font-size="11" fill="#8a5104">G_θ(z) ⟶ logits</text>
+  <path d="M 540 78 L 566 78" stroke="#888" stroke-width="1.4" fill="none" marker-end="url(#dg-o)"/>
+  <rect x="568" y="60" width="158" height="36" rx="8" fill="rgba(200,60,60,0.08)" stroke="#c0392b" stroke-width="1.4"/>
+  <text x="647" y="83" text-anchor="middle" font-size="11" fill="#c0392b">argmax / sample ⟶ token</text>
+
+  <!-- staircase -->
+  <line x1="416" y1="210" x2="726" y2="210" stroke="#bbb" stroke-width="1"/>
+  <path d="M 424 236 L 500 236 M 500 190 L 576 190 M 576 218 L 652 218 M 652 160 L 722 160"
+        fill="none" stroke="#c0392b" stroke-width="2.6"/>
+  <circle cx="500" cy="236" r="3" fill="#fff" stroke="#c0392b" stroke-width="1.6"/>
+  <circle cx="500" cy="190" r="3" fill="#c0392b"/>
+  <circle cx="576" cy="190" r="3" fill="#fff" stroke="#c0392b" stroke-width="1.6"/>
+  <circle cx="576" cy="218" r="3" fill="#c0392b"/>
+  <circle cx="652" cy="218" r="3" fill="#fff" stroke="#c0392b" stroke-width="1.6"/>
+  <circle cx="652" cy="160" r="3" fill="#c0392b"/>
+  <text x="420" y="128" font-size="10.5" fill="#c0392b">D_ω(x̂) as the logits move</text>
+  <text x="420" y="144" font-size="10" fill="#999">flat, then a jump, then flat</text>
+  <text x="430" y="254" font-size="10.5" fill="#c0392b">slope = 0 almost everywhere</text>
+
+  <path d="M 568 240 L 568 262" stroke="#7c3aed" stroke-width="1.8" fill="none" stroke-dasharray="5 3"/>
+  <line x1="556" y1="266" x2="580" y2="290" stroke="#c0392b" stroke-width="2.6"/>
+  <line x1="580" y1="266" x2="556" y2="290" stroke="#c0392b" stroke-width="2.6"/>
+  <text x="568" y="308" text-anchor="middle" font-size="11" font-weight="600" fill="#c0392b">gradient never reaches θ</text>
+</svg>

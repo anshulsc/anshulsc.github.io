@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lecture 11 notes: normalizing flows from first principles — why kernel density estimation dies in high dimensions, the change-of-variables formula derived from mass bookkeeping and from the CDF, increasing triangular maps and the Knothe–Rosenblatt theorem, MAF, Real-NVP affine coupling layers, NAF and SOS polynomial flows, multi-scale factorisation, Glow's invertible 1x1 convolutions and LU trick, latent-space arithmetic, conditional flows, and a comparison with StyleGAN and Pix2Pix.">
+    <meta name="keywords"
+        content="Normalizing Flows, Change of Variables, Jacobian Determinant, Triangular Maps, Knothe-Rosenblatt, MAF, Masked Autoregressive Flow, IAF, Real-NVP, Affine Coupling, NICE, NAF, SOS Polynomial Flows, Glow, Invertible 1x1 Convolution, LU Decomposition, Kernel Density Estimation, Curse of Dimensionality, StyleGAN, Disentanglement, Pix2Pix">
+    <meta name="author" content="Anshul Singh">
+    <title>Lecture 11: Normalizing Flows — DGM Notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="dgm-notes-style.css">
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../../css/theme.css">
+  <script src="../../js/theme.js"></script>
+  <!-- Passphrase gate for this notes series -->
+  <script src="../../js/gate.js"></script>
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">DGM Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Lecture 11</div>
+                <h1>Normalizing Flows</h1>
+                <div class="chapter-meta">
+                    <span>August 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">60 min read</span>
+                    <span class="dot">●</span>
+                    <span>Exact Likelihood</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target">
+                    <!-- Rendered markdown goes here -->
+                </article>
+
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <a href="ch-10.html" class="nav-prev">
+                    <div class="nav-label">← Previous Lecture</div>
+                    <div class="nav-title">Score Matching, Guidance &amp; DDIM</div>
+                </a>
+                <div class="nav-placeholder"></div>
+            </div>
+        </main>
+
+        <footer
+            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*Every model so far has given something up. GANs abandon the density entirely — they sample beautifully and cannot tell you the probability of anything. VAEs abandon exactness — they optimise a bound and never touch the likelihood itself. Diffusion models abandon speed. This lecture is about the one family that refuses all three trades at once: exact likelihood, one-shot sampling, ordinary maximum-likelihood training, no adversary. The bill still arrives, but it arrives somewhere unexpected — not in the objective, which is as plain as it gets, but in the shape of the network, which must be invertible and can never compress. And the entire construction rests on one line of first-year calculus, taken more seriously than it usually is.*
+
+<div class="part-marker"><span class="part-label">Part I</span><span class="part-name">What a flow is for</span><span class="part-sub">the two jobs, and why the obvious methods fail at them</span></div>
+
+## 1. The two things a generative model has to do
+
+Strip away the architectures and generative modelling is one sentence: I am handed a pile of samples $x^{(1)}, \dots, x^{(N)}$ drawn from some distribution $p_{\text{data}}$ that nobody has written down, and I want a model $p_\theta$ that behaves like it.
+
+Notice what is *not* in that sentence: labels. Nobody tells me which images are cats. The supervision signal is the data's own structure — I am asking the model to predict the data from the data. That is what "self-supervised" means here, and it is the reason this whole field can consume the internet's worth of unlabelled images while a classifier sits waiting for someone to annotate ten thousand of them.
+
+"Behaves like it" turns out to mean two separate capabilities, and it is worth being precise about them because different model families deliver one and not the other.
+
+**Density estimation.** Given any point $x$ — one I made up, one from a different dataset, one that has never existed — return $p_\theta(x)$, a number. Why would I want that? Three concrete reasons.
+
+*Anomaly detection.* A hospital trains a model on healthy chest X-rays. A new scan arrives and the model reports a log-likelihood far below anything in the training set. That is a flag: this image is unlike what the model has seen. No classifier was trained, no pathology was labelled, and the system still notices that something is off. This generalises to out-of-distribution detection everywhere — fraud, sensor faults, a self-driving car meeting a road sign it has no concept of.
+
+*Compression.* Shannon's source coding theorem says the optimal code length for a symbol is $-\log_2 p(x)$ bits. A model that gives you $p(x)$ *is* a compressor, exactly. This is not an analogy; arithmetic coding turns a density model into a codec mechanically.
+
+*Comparison.* If I want to know whether model A is better than model B, held-out log-likelihood is a single number that both can be scored on. GANs cannot produce it, which is why the field around them had to invent FID and argue about it for years (Ch.5).
+
+**Tractable sampling.** Given nothing, produce a fresh $x$ that looks like it came from $p_{\text{data}}$, quickly and independently of the last one. This is the job everyone thinks of first, and it is genuinely separate from the one above — I will show in a moment a model that does density estimation exactly and samples uselessly, and Ch.3 was about models that sample brilliantly and cannot do density at all.
+
+The whole design space of generative modelling comes from the fact that these two demands pull in different directions. A flow is the family that refuses to choose.
+
+## 2. Kernel density estimation, and exactly where it stops working
+
+My first instinct, before any neural network, is that this problem is already solved. Statistics has had non-parametric density estimation for seventy years. Why not just use it?
+
+Start with the crudest version. I have data on a line; I chop the line into bins, count how many points fall in each, divide by the total and by the bin width. A histogram. It is a density estimate, it costs nothing, and it has an obvious defect: it is a staircase. Move a data point a hair across a bin boundary and the estimate jumps. The bin edges are arbitrary and the answer depends on them.
+
+Kernel density estimation is the fix, and the idea is almost embarrassingly simple. Instead of dropping each data point into a bin, drop a small smooth bump centred on it, and add up all the bumps:
+
+$$\hat{p}_h(x) = \frac{1}{N} \sum_{i=1}^{N} \frac{1}{h} K\!\left(\frac{x - x^{(i)}}{h}\right) \tag{1}$$
+
+Here $K$ is the **kernel** — any function that is non-negative and integrates to one — and $h > 0$ is the **bandwidth**, the width of each bump. The $1/h$ out front is there so that each individual bump still integrates to one after being stretched by $h$; without it, widening the kernel would quietly add probability mass out of nowhere. Since each of the $N$ bumps integrates to $1$ and we divide by $N$, the whole estimate integrates to $1$ and is a genuine density.
+
+Common choices for $K$: the Gaussian $K(u) = \frac{1}{\sqrt{2\pi}} e^{-u^2/2}$, which is smooth everywhere and has infinite support; the Epanechnikov $K(u) = \frac{3}{4}(1 - u^2)$ for $\lvert u \rvert \le 1$, which is optimal in a mean-squared-error sense and has compact support so far-away points cost nothing; the uniform box, which recovers something histogram-like but with the bin centred on each point instead of on an arbitrary grid.
+
+There are no parameters to fit. That is the appeal. There is *one* number to choose, $h$, and it turns out to carry the entire modelling burden.
+
+### The bandwidth is the whole model
+
+Make $h$ tiny and every bump becomes a spike sitting on its own data point. The estimate says: probability is concentrated exactly where I have seen data, and essentially zero everywhere else. That is memorisation. It is overfitting made visible — the estimate cannot say anything about a point one step away from a training example.
+
+Make $h$ large and every bump becomes a wide low mound. All the mounds overlap, the estimate becomes a single smooth blob, and structure the data plainly had — two clusters, a gap between them — is smoothed away. That is underfitting. But there is a sharper way for it to fail than merely being vague, and it is worth seeing rather than being told.
+
+Take six points in two tight groups: $\{2.0,\, 2.1,\, 2.2,\, 8.0,\, 8.1,\, 8.2\}$. There is no data anywhere near $x = 5$; the sample says loudly that the region around 5 is empty. Now fit a KDE with a large bandwidth and evaluate it at 5. With $h = 4$, the density at $x = 5$ comes out to $0.0753$, while the density at $x = 2.1$ — sitting on top of three actual observations — comes out to $0.0661$. The estimate assigns *more* probability to the empty gap than to the clusters. Slide the bandwidth in the widget and watch the crossover happen.
+
+<div class="dgm-widget" id="widget-kde"></div>
+
+This is the failure mode to file away. Over-smoothing does not just blur the answer; it manufactures probability mass in regions the data explicitly avoided. If I sampled from that estimate I would routinely produce points near 5, which correspond to nothing.
+
+### Sampling from a KDE, and why it is not enough
+
+Sampling is trivial, which is a nice surprise. The estimate (1) is a uniform mixture over $N$ components, so to draw from it:
+
+1. Pick a training point $x^{(i)}$ uniformly at random from the $N$ of them.
+2. Draw noise $\epsilon$ from the kernel — for a Gaussian kernel, $\epsilon \sim \mathcal{N}(0, h^2)$.
+3. Return $\hat{x} = x^{(i)} + \epsilon$.
+
+So KDE gives exact density *and* exact sampling. Both boxes ticked. And yet nobody generates faces this way, for a reason that has nothing to do with the algorithm and everything to do with the number of dimensions.
+
+Look at what step 3 actually produces: a training image with Gaussian noise added to it. If $h$ is small, that is a training image — the model has no ability to generate anything new, only to hand back what it memorised with a bit of static on top. If $h$ is large enough to interpolate meaningfully between images, the noise added is large enough to destroy the image. There is no setting of $h$ that produces a new coherent face.
+
+### Why high dimensions kill it
+
+The deeper problem is geometric, and it is worth computing rather than gesturing at. A face image at $256 \times 256$ resolution with three colour channels is a point in $d = 196{,}608$ dimensions. Something strange happens to distance in a space that large.
+
+Take two independent draws from a standard Gaussian in $d$ dimensions. The squared distance between them is $\|x - y\|^2 = \sum_{i=1}^{d} (x_i - y_i)^2$, a sum of $d$ independent terms each with expectation $2$. So $\mathbb{E}\|x - y\|^2 = 2d$, and because it is a sum of $d$ independent contributions, its relative fluctuation shrinks like $1/\sqrt{d}$ — the distance *concentrates*. Every pair of points is essentially the same distance apart, namely $\sqrt{2d}$.
+
+For $d = 65{,}536$ (a $256 \times 256$ greyscale image) that distance is $\sqrt{131072} \approx 362$. I checked this by simulation and got $362.11$ against a predicted $362.04$. Now feed that into the Gaussian kernel. A bump of bandwidth $h$ evaluated at distance $r$ contributes a factor $e^{-r^2 / 2h^2}$:
+
+| bandwidth $h$ | contribution $e^{-r^2/2h^2}$ at $r = 362$ |
+| :--- | :--- |
+| $1$ | $0$ (underflows) |
+| $3$ | $0$ (underflows) |
+| $10$ | $2.4 \times 10^{-285}$ |
+| $100$ | $1.4 \times 10^{-3}$ |
+
+With any bandwidth small enough to preserve image detail, every training point contributes numerically nothing to the density at any other point. The estimate is a set of infinitely sharp needles in an infinite void. To make the bumps overlap I would need $h \sim 100$, which in pixel terms means smearing each image over a ball so large it contains every other image in the dataset — the estimate degenerates into one featureless blob.
+
+Said in terms of counting rather than distance: to cover a $d$-dimensional space at even a coarse resolution of 10 levels per axis takes $10^d$ cells, so with $d$ in the tens of thousands, no dataset that will ever exist populates more than a vanishing fraction of them. KDE needs its samples to be dense enough that neighbouring bumps overlap. In high dimensions nothing is ever dense.
+
+**What this section established.** KDE is an exact density estimator with an exact sampler and zero training, and it is useless for images. Not because of a fixable inefficiency, but because it works by measuring local neighbourhoods, and in high dimensions no point has any neighbours. Whatever replaces it must build in structure rather than counting local mass — which is precisely what a parametric model with a learned transformation does.
+
+## 3. MCMC exists, so why invent another sampler?
+
+The other reflex, once density estimation comes up, is: sampling is also a solved problem. Markov chain Monte Carlo will draw from essentially any distribution you can write down. Metropolis–Hastings needs nothing but the ability to evaluate the target up to a constant. Why build a special-purpose sampler?
+
+Because MCMC solves a different problem than the one I have. MCMC is a machine that takes a density you already possess and produces samples from it. I do not possess a density — that is the thing I am trying to learn from the data. MCMC has nothing to consume. It is the second half of a pipeline whose first half is missing.
+
+Suppose I patch that by learning an unnormalised density $\tilde{p}_\theta(x)$ — an energy-based model — and running MCMC on it. Now the sampler is available, and three costs arrive with it:
+
+*It is iterative.* Each sample requires a chain of many steps, each a forward and backward pass. For images, samples routinely need hundreds to thousands of steps. A flow needs one.
+
+*The samples are correlated, and you cannot easily tell when they stop being.* A Markov chain starts wherever you initialised it and only gradually forgets. The burn-in period must be discarded, and how long it is depends on the target's geometry in a way that has no general answer. There is no certificate that says "the chain has now converged"; there are only diagnostics that can fail to detect a problem.
+
+*Multimodality breaks it.* If the target has two well-separated modes with a low-density valley between them, a local-proposal chain that starts in one mode has to cross the valley to reach the other, and the probability of doing so is exponentially small in the depth of the valley. The chain will happily report a beautifully converged-looking sample from a single mode and never mention the other one. Real data distributions are aggressively multimodal — that is what "different kinds of object" means.
+
+There is a family resemblance to something already familiar. Diffusion sampling (Ch.9, which built the $T$-step denoising chain, and Ch.10, which showed DDIM can skip most of it) is also an iterative walk from noise to data, and it is slow for exactly this structural reason. Flows sit at the opposite corner: one forward pass, one sample, exactly independent of the last one, with no chain, no burn-in and no mixing question to ask.
+
+## 4. Where flows sit, and the autoencoder that nearly works
+
+<figure><img src="assets/svg/flow-landscape.svg" alt="Comparison of GAN, VAE, normalizing flow and diffusion trade-offs"><figcaption>Figure 1. What each family gives you and what it takes. Flows are the only column with an exact density and a one-pass sampler at the same time — and the only one whose latent has to be as large as the image.</figcaption></figure>
+
+The useful way to organise generative models is by what they say about $p(x)$.
+
+**Implicit models** never represent the density at all. A GAN's generator is a map from noise to images; the induced density exists mathematically and is not available in any form you can evaluate (Ch.3, which set up the minimax game, and Ch.4, which showed the discriminator is estimating a divergence rather than a density). You can sample and you cannot score.
+
+**Explicit but approximate.** A VAE writes down a latent-variable model $p_\theta(x) = \int p_\theta(x \mid z)\, p(z)\, dz$, and that integral is intractable, so it optimises the ELBO instead — a lower bound (Ch.7, where the bound came from Jensen's inequality applied to an importance-weighted expectation). You get a number, and the number is not the log-likelihood; it is below it by an unknown gap, the KL between the approximate and true posterior. Diffusion models are in this box too — Ch.9 derived their variational bound.
+
+**Explicit and exact.** Autoregressive models factor $p(x) = \prod_j p(x_j \mid x_{<j})$ and evaluate the density exactly, but sampling is $d$ sequential passes, one per dimension. Normalizing flows are the other member: exact density, and sampling in a single pass.
+
+That taxonomy answers a question worth being able to answer cleanly: if a task demands the *exact* likelihood of an arbitrary point, only the third box qualifies, and if it also demands fast sampling, only flows do.
+
+### The autoencoder that gets so close
+
+Before flows, the natural thing to reach for is an autoencoder: an encoder $f_\theta$ compressing $x$ to a small code $z$, a decoder $g_\phi$ reconstructing $x' \approx x$, trained to minimise $\|x - x'\|^2$. Train it well and reconstructions are perfect.
+
+So it is a generative model, surely? Draw $z \sim \mathcal{N}(0, I)$, run the decoder, get an image?
+
+No, and the reason is worth stating precisely because it is the exact hole that both VAEs and flows are built to plug. Training constrains the decoder only on the codes the encoder actually produces. Nothing anywhere in the objective says those codes should be spread out like a Gaussian — or spread out at all. Minimising reconstruction error is perfectly happy with an encoder that scatters the training set into a thin, curved, fractured set somewhere in latent space, with vast empty regions between the pieces. The decoder learned a map defined on *that* set. Sampling $z \sim \mathcal{N}(0, I)$ lands almost surely in a region the decoder never saw during training, and the output is garbage. Perfect reconstruction is a statement about a measure-zero set of inputs; generation is a statement about everywhere.
+
+A VAE plugs this with a KL term that pushes the aggregate code distribution toward the prior — approximately, and at the cost of the bound. A flow plugs it differently and more brutally: it makes the encoder and decoder the *same function run in two directions*, and it forces the code distribution to match the prior exactly, by construction rather than by penalty. The three things it is trying to do simultaneously are:
+
+1. sample in one pass,
+2. evaluate $\log p_\theta(x)$ exactly,
+3. train by plain maximum likelihood with no adversary and no bound.
+
+The rest of this chapter is how.
+
+<div class="part-marker"><span class="part-label">Part II</span><span class="part-name">Change of variables</span><span class="part-sub">the one calculus fact the entire field is built on</span></div>
+
+## 5. A substitution you already know how to do
+
+Before any probability, here is the idea in a setting with no probability in it at all. Solve:
+
+$$x^6 - 9x^3 + 8 = 0$$
+
+A sixth-degree polynomial. There is no formula for the roots of a general sextic. But *this* one has structure, and the move is to change the variable. Let $u = x^3$. In terms of $u$ the equation reads
+
+$$u^2 - 9u + 8 = 0 \quad \Longrightarrow \quad (u - 1)(u - 8) = 0 \quad \Longrightarrow \quad u \in \{1, 8\}$$
+
+which is a quadratic that anyone can solve. Then change back: $x^3 = 1$ gives $x = 1$, and $x^3 = 8$ gives $x = 2$.
+
+That is the whole strategy, and it has three parts. Move to a coordinate system where the problem is easy. Solve it there. Come back. The substitution has to be reversible — $u = x^3$ is fine because $x = u^{1/3}$ recovers $x$ uniquely — or you cannot complete the third step.
+
+A normalizing flow does exactly this to a probability distribution. The distribution of natural images is hopelessly complicated in pixel coordinates. So: find a reversible change of variable that carries it to a standard Gaussian, where everything is easy — sampling is one line, the density is a formula — and then come back. The map is learned rather than guessed, and the "coming back" is what generates the image.
+
+The word *normalizing* is the forward direction: the map normalises the data into a Gaussian. The word *flow* is what you get by composing many such maps in sequence, each doing a little of the work.
+
+### Notation for the rest of the chapter
+
+| symbol | meaning |
+| :--- | :--- |
+| $x \in \mathbb{R}^d$ | a data point — an image, flattened; $d$ is large |
+| $z \in \mathbb{R}^d$ | the latent code, **exactly the same dimension as $x$** |
+| $p_z$ | the base density, fixed, not learned; almost always $\mathcal{N}(0, I_d)$ |
+| $p_\theta(x)$ | the model density on data space; what we want |
+| $T_\theta$ | the **generator** direction, $z \mapsto x$; learned; must be invertible |
+| $f_\theta = T_\theta^{-1}$ | the **normaliser** direction, $x \mapsto z$; the same function backwards |
+| $J_f(x) = \frac{\partial f}{\partial x}$ | the Jacobian of $f$ at $x$: the $d \times d$ matrix of partials |
+| $K$ | how many layers are composed into the flow |
+| $h$ | bandwidth in §2; nothing to do with the flow |
+
+The direction convention trips me up every time, so: **$f$ goes toward the Gaussian, $T$ goes toward the image.** Density evaluation runs $f$; sampling runs $T$. They are one invertible network read in two directions.
+
+## 6. What happens to a density when you change the variable
+
+Start in one dimension, with numbers, and with no calculus at all.
+
+Let $z$ be uniform on $[0, 1]$, so $p(z) = 1$ there. Apply $x = 2z$, which stretches the interval to $[0, 2]$. What is the density of $x$?
+
+It cannot still be $1$, because $1$ over an interval of length $2$ integrates to $2$, and densities integrate to $1$. The mass was conserved — every unit of probability that was in $[0,1]$ is now in $[0,2]$, none created, none destroyed — but it has been spread over twice the ground. So the density must be half as tall: $q(x) = 1/2$ on $[0,2]$. Check: $2 \times \tfrac{1}{2} = 1$. Correct.
+
+That is the entire idea, and everything that follows is the same sentence said carefully.
+
+<figure><img src="assets/svg/change-of-vars.svg" alt="Mass bookkeeping under a change of variables, and why the absolute value appears"><figcaption>Figure 2. A thin slab of probability under the map. The slab's mass is unchanged; its width is multiplied by the local stretch factor; therefore its height is divided by the same factor. That is the change-of-variables formula, and it is all of it.</figcaption></figure>
+
+### The general statement, by bookkeeping
+
+Take a tiny interval $[z, z + \Delta z]$. The probability that a draw lands in it is approximately $p(z)\, \Delta z$ — height times width — with the approximation exact in the limit $\Delta z \to 0$.
+
+Apply an invertible map $x = f^{-1}(z)$... no, let me keep the directions straight and write the map as $x = T(z)$. The interval $[z, z + \Delta z]$ is carried to an interval starting at $T(z)$ of width $\Delta x \approx \lvert T'(z) \rvert\, \Delta z$, because that is what a derivative *is*: the local stretch factor.
+
+Every draw that landed in the input interval lands in the output interval, and no other draw does, because $T$ is invertible. So the two intervals hold the same probability:
+
+$$q(x)\, \Delta x = p(z)\, \Delta z$$
+
+Divide by $\Delta x$ and take the limit:
+
+$$q(x) = p(z) \frac{dz}{dx} \quad \text{where } z = T^{-1}(x) = f(x)$$
+
+Or, written in the direction we will actually compute it — with the density of $x$ expressed through the normaliser $f$:
+
+$$p_\theta(x) = p_z\big(f(x)\big) \left\lvert \frac{df}{dx} \right\rvert \tag{2}$$
+
+The absolute value has appeared without justification. §7 earns it.
+
+Sanity check against the uniform example: $T(z) = 2z$, so $f(x) = x/2$ and $df/dx = 1/2$. Then $q(x) = 1 \cdot \tfrac{1}{2} = \tfrac{1}{2}$, matching what the mass argument gave. The formula reproduces the answer I already knew.
+
+The widget below computes both sides independently — the teal curve is formula (2) evaluated point by point, the orange histogram is ten thousand samples actually pushed through the map — so the agreement is a check rather than a restatement.
+
+<div class="dgm-widget" id="widget-changevars"></div>
+
+### Why this immediately gives both jobs from §1
+
+This is the moment the whole design becomes clear, so it is worth spelling out.
+
+**Sampling.** Draw $z \sim p_z$ — one line, since $p_z$ is a Gaussian — and return $x = T_\theta(z)$. One forward pass. The samples are exactly independent. Nothing iterative anywhere.
+
+**Density estimation.** Given any $x$ whatsoever, run $z = f_\theta(x)$, evaluate the Gaussian density at $z$ (a closed-form formula), multiply by the derivative correction, done. Exact. Not a bound, not an estimate, not a Monte Carlo average.
+
+Both jobs, from one invertible function. That is the entire pitch, and everything remaining in this chapter is the engineering needed to make it work when $d$ is not $1$.
+
+## 7. Why the absolute value is not optional
+
+I wrote $\lvert \cdot \rvert$ in (2) without earning it. My first instinct was that it is a technicality for tidying up sign conventions. It is not — without it the formula returns negative numbers for perfectly ordinary maps, and a negative probability density is not a thing that exists.
+
+The clean way to see it is to derive (2) a second time, from cumulative distribution functions instead of mass slabs, because CDFs handle direction honestly.
+
+**Case one: $T$ is increasing.** Then $x \le x_0$ happens exactly when $z \le f(x_0)$, since applying an increasing map to both sides of an inequality preserves it. So the CDFs agree:
+
+$$Q(x) = \Pr[X \le x] \overset{T \text{ increasing}}{=} \Pr[Z \le f(x)] = P\big(f(x)\big)$$
+
+Differentiate with the chain rule: $q(x) = p(f(x))\, f'(x)$. And $f' > 0$ here, since the inverse of an increasing function is increasing.
+
+**Case two: $T$ is decreasing.** Now the inequality flips: $x \le x_0$ happens exactly when $z \ge f(x_0)$. So
+
+$$Q(x) \overset{T \text{ decreasing}}{=} \Pr[Z \ge f(x)] = 1 - P\big(f(x)\big)$$
+
+Differentiate: $q(x) = -p(f(x))\, f'(x)$. Here $f' < 0$, so the minus sign makes $q$ positive — as it must be.
+
+The two cases differ by a sign, and both are covered at once by writing $\lvert f'(x) \rvert$. So (2) is not one formula with a defensive absolute value bolted on; it is two formulas merged, and the bars are the merge.
+
+The underlying reason, in one sentence: the *signed* derivative carries two pieces of information — how much the map stretches, and whether it reverses orientation. Density only cares about the first. Stretching an interval by a factor of two halves the density whether the interval was flipped end-for-end in the process or not.
+
+Concretely, take $T(z) = -2z$ applied to $z \sim \mathcal{N}(0,1)$. Then $f(x) = -x/2$ and $f'(x) = -1/2$. Without the bars, formula (2) hands back a density that is negative everywhere. With them, it gives $\mathcal{N}(0, 4)$, which is right — flipping a symmetric distribution and scaling it by two does exactly that. Drag the slider on the widget in §6 into negative territory and the transformed density stays firmly above the axis while the map reverses.
+
+## 8. More than one dimension: the Jacobian determinant
+
+In one dimension the local stretch factor is a number. In $d$ dimensions a map can stretch along one axis, squash along another, rotate, and shear, all at once. The object that captures all of that is the Jacobian matrix, and the single number measuring "how much did volume change" is its determinant.
+
+**Start with the smallest case that has any content: a linear map in two dimensions.**
+
+Take $A = \begin{pmatrix} 2 & 0 \\ 0 & 3 \end{pmatrix}$. It sends the unit square to a $2 \times 3$ rectangle. Area went from $1$ to $6$, and $\det A = 6$. Take a shear $B = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}$. It slides the top of the unit square sideways, turning it into a parallelogram with the same base and the same height, so the area is unchanged — and $\det B = 1$. Take a reflection $C = \begin{pmatrix} -1 & 0 \\ 0 & 1 \end{pmatrix}$: areas are preserved, but $\det C = -1$. The sign is the orientation flip, exactly as in one dimension, and exactly as irrelevant to density.
+
+So: **for a linear map, $\lvert \det \rvert$ is the factor by which volumes are multiplied.** That is not a coincidence of notation; it is what the determinant was invented to measure.
+
+**Now the general case.** A nonlinear map is not a single linear map, but near any point it is *approximately* one — that is the definition of differentiability. Around $x$, the map $f$ behaves like its Jacobian
+
+$$J_f(x) = \frac{\partial f}{\partial x} = \begin{pmatrix} \partial f_1 / \partial x_1 & \cdots & \partial f_1 / \partial x_d \\ \vdots & \ddots & \vdots \\ \partial f_d / \partial x_1 & \cdots & \partial f_d / \partial x_d \end{pmatrix}$$
+
+Take a tiny box of volume $\Delta V$ around $x$. Its image is, to first order, the box transformed by $J_f(x)$, so its volume is $\lvert \det J_f(x) \rvert\, \Delta V$. The mass argument from §6 runs unchanged with "width" replaced by "volume":
+
+$$p_\theta(x) \cdot \Delta V_x \overset{\text{mass conserved}}{=} p_z(f(x)) \cdot \Delta V_z \overset{\text{volume rule}}{=} p_z(f(x)) \cdot \underbrace{\lvert \det J_f(x) \rvert\, \Delta V_x}_{\Delta V_z \text{, the image volume}}$$
+
+Cancel $\Delta V_x$:
+
+$$p_\theta(x) = p_z\big(f_\theta(x)\big) \cdot \big\lvert \det J_{f}(x) \big\rvert \tag{3}$$
+
+In practice everything is done in logs — products become sums, underflow disappears, and the training objective is a log-likelihood anyway:
+
+$$\log p_\theta(x) = \log p_z\big(f_\theta(x)\big) + \log \big\lvert \det J_{f}(x) \big\rvert \tag{4}$$
+
+Equation (4) is the one to remember. Two terms, and they have distinct jobs. The first says *the code must look Gaussian* — it rewards $f$ for putting the data where the base density is high. The second says *do not cheat by collapsing everything*. Without it, $f$ could map every input to the origin, where the Gaussian density peaks, and claim a spectacular likelihood; the log-determinant term punishes that by going to $-\infty$ as the map contracts volume to nothing. The two terms are in tension, and the balance is a density model.
+
+One convention worth pinning down, since both appear in papers: because $T = f^{-1}$, the inverse function theorem gives $J_T(z) = J_f(x)^{-1}$, and determinants of inverses are reciprocals, so $\log\lvert\det J_T(z)\rvert = -\log\lvert\det J_f(x)\rvert$. Whether you see a plus or a minus depends on which direction the author called the flow. Same equation.
+
+## 9. Composing maps into a flow
+
+One invertible layer with a tractable determinant is not going to turn face images into a Gaussian. But invertible maps compose, and so do their determinants, which is what makes depth free.
+
+**The smallest case first: two layers.** Let $f = f_2 \circ f_1$, so $x \xrightarrow{f_1} h \xrightarrow{f_2} z$. The chain rule for Jacobians is matrix multiplication:
+
+$$J_f(x) = J_{f_2}(h) \cdot J_{f_1}(x)$$
+
+and determinants are multiplicative over matrix products, $\det(AB) = \det A \det B$, so
+
+$$\begin{aligned} \log \lvert \det J_f(x) \rvert &\overset{\text{chain rule}}{=} \log \big\lvert \det \big( J_{f_2}(h) \, J_{f_1}(x) \big) \big\rvert & \\ &\overset{\det(AB) = \det A \det B}{=} \log \lvert \det J_{f_2}(h) \rvert + \log \lvert \det J_{f_1}(x) \rvert & \text{(log turns the product into a sum)} \end{aligned}$$
+
+The logs turn the product into a sum. Nothing about the two layers had to be related.
+
+**The general case is the same statement $K$ times.** Write $h_0 = x$, $h_k = f_k(h_{k-1})$, $h_K = z$. Then
+
+$$\log p_\theta(x) = \log p_z(z) + \sum_{k=1}^{K} \log \left\lvert \det \frac{\partial f_k}{\partial h_{k-1}} \right\rvert \tag{5}$$
+
+This is the property that makes the whole approach viable. I never have to compute the determinant of the composed map — a horrifying object — only one determinant per layer, and then add them. Each layer can be individually feeble as long as it is invertible and its determinant is cheap; expressiveness comes from stacking, exactly as it does in an ordinary deep network.
+
+And invertibility composes too: $f^{-1} = f_1^{-1} \circ \cdots \circ f_K^{-1}$, run in reverse order. So the sampler is the same stack of layers, inverted individually, traversed backwards.
+
+## 10. Training a flow: the two situations you can be in
+
+Equation (5) is a computable function of $\theta$. What do I do with it? That depends on which of two situations I am in, and the two lead to genuinely different objectives — which turns out to explain why two mirror-image architectures both exist.
+
+### Scenario A: I have samples but no density
+
+The usual case. I have a folder of images drawn from $p_{\text{data}}$ and no formula for it. The natural objective is to make $p_\theta$ close to $p_{\text{data}}$ in KL divergence, in the order that only needs samples from the data:
+
+$$\begin{aligned} D_{KL}(p_{\text{data}} \parallel p_\theta) &= \mathbb{E}_{x \sim p_{\text{data}}}\left[\log \frac{p_{\text{data}}(x)}{p_\theta(x)}\right] & \text{(definition of KL)} \\ &= \underbrace{\mathbb{E}_{x \sim p_{\text{data}}}\big[\log p_{\text{data}}(x)\big]}_{\text{no } \theta \text{ in here}} - \mathbb{E}_{x \sim p_{\text{data}}}\big[\log p_\theta(x)\big] & \text{(log of a quotient, linearity)} \end{aligned}$$
+
+The first term does not contain $\theta$ — it is the (unknown, and irrelevant) negative entropy of the data. So minimising the KL is exactly maximising the second term, which is estimated by an average over the dataset:
+
+$$\hat{\theta} = \arg\max_\theta \; \frac{1}{N}\sum_{i=1}^{N} \left[ \log p_z\big(f_\theta(x^{(i)})\big) + \log \left\lvert \det J_{f_\theta}(x^{(i)}) \right\rvert \right] \tag{6}$$
+
+That is maximum likelihood, plainly. No bound, no adversary, no sampling during training, no reparameterisation trick, no variance-reduction machinery. Differentiate (6) and run Adam. After Ch.3 through Ch.10 this is a startlingly quiet objective.
+
+Note carefully what (6) needs to be fast: the **normalising** direction $f_\theta$, evaluated on data, once per example per step. It never runs $T_\theta$ during training at all. Sampling speed does not affect training speed one bit.
+
+### Scenario B: I have a density but cannot sample from it
+
+The other case shows up in statistical physics, Bayesian posterior inference and variational inference generally: I can *evaluate* a target $\tilde{p}(x)$ up to an unknown normalising constant, and I cannot draw from it. Now I have no dataset, so (6) has nothing to average over. The available objective is the KL in the other order, which needs samples from the *model* — and those I can produce:
+
+$$\begin{aligned} D_{KL}(p_\theta \parallel p) &= \mathbb{E}_{x \sim p_\theta}\left[\log \frac{p_\theta(x)}{p(x)}\right] & \text{(definition of KL)} \\ &\overset{p = \tilde{p}/Z}{=} \mathbb{E}_{x \sim p_\theta}\big[\log p_\theta(x) - \log \tilde{p}(x)\big] + \underbrace{\log Z}_{\text{constant in } \theta} & \text{(the unknown constant factors out)} \end{aligned}$$
+
+The constant $\log Z$ does not depend on $\theta$ and drops out of the gradient. And since $x = T_\theta(z)$ with $z \sim p_z$, the expectation over $p_\theta$ becomes an expectation over the base — a change of variables inside the expectation, which is free:
+
+$$\mathcal{L}(\theta) = \mathbb{E}_{z \sim p_z}\Big[ \underbrace{\log p_z(z) - \log \lvert \det J_{T_\theta}(z) \rvert}_{\text{the model's own log-density at } T_\theta(z)} - \log \tilde{p}\big(T_\theta(z)\big) \Big] \tag{7}$$
+
+This time the **generator** direction $T_\theta$ must be fast, and $f_\theta$ is never called.
+
+That asymmetry is not a curiosity — it is the reason the literature contains pairs of architectures that are each other's mirror image, one fast forward and slow backward, the other the reverse. §14 gets to the pair by name. When choosing an architecture, the first question is which of these two scenarios you are in, because the answer determines which direction you are allowed to make slow.
+
+**What Part II established.** A density transported by an invertible map picks up the absolute Jacobian determinant of that map, in any number of dimensions, for the sole reason that probability mass is conserved while volume is not. Composing maps adds their log-determinants. Given a map whose determinant is computable, training is plain maximum likelihood. Everything from here is about that one word: *computable*.
+
+<div class="part-marker"><span class="part-label">Part III</span><span class="part-name">Making the determinant cheap</span><span class="part-sub">triangular maps, and the architectures built on them</span></div>
+
+## 11. The determinant is the entire problem
+
+Equation (4) is correct and, taken naively, unusable.
+
+Computing the determinant of an arbitrary $d \times d$ matrix costs $\mathcal{O}(d^3)$ by LU decomposition. For CIFAR-10, $d = 32 \times 32 \times 3 = 3072$, so $d^3 \approx 2.9 \times 10^{10}$ floating-point operations — per example, per layer, per gradient step. Before that, I would have to actually *form* the Jacobian, which means $d$ separate backward passes to get $d$ rows. For a $256\times256$ colour image, $d = 196{,}608$ and $d^3$ is around $7.6 \times 10^{15}$. This is not a constant-factor problem.
+
+So the real design question of the field is: **which invertible maps have a determinant you can read off?** And there is a beautiful answer.
+
+<figure><img src="assets/svg/triangular-jacobian.svg" alt="Full versus triangular Jacobian, and the Knothe–Rosenblatt existence theorem"><figcaption>Figure 3. Restricting which inputs each output is allowed to see makes the Jacobian triangular, and a triangular determinant is a product of $d$ numbers. The theorem on the right says this restriction costs no expressiveness at all.</figcaption></figure>
+
+A matrix is **lower triangular** if every entry above the diagonal is zero. Its determinant is the product of its diagonal entries — one multiplication per dimension, $\mathcal{O}(d)$. (Expand along the top row: only one entry is non-zero, and the minor is again triangular. Induction does the rest.)
+
+For the Jacobian $\partial f / \partial x$ to be triangular, I need $\partial f_j / \partial x_i = 0$ whenever $i > j$ — that is, **output $j$ must not depend on inputs after $j$.** A map with that property is called a **triangular map**:
+
+$$f_j(x) = f_j(x_1, x_2, \dots, x_j) \quad \text{for every } j$$
+
+and then
+
+$$\log \left\lvert \det J_f \right\rvert = \sum_{j=1}^{d} \log \left\lvert \frac{\partial f_j}{\partial x_j} \right\rvert \tag{8}$$
+
+The off-diagonal entries can be arbitrarily complicated — the outputs of a large neural network — and they never appear in (8). Only the $d$ diagonal derivatives matter. Cost has gone from $\mathcal{O}(d^3)$ to $\mathcal{O}(d)$, and no Jacobian is ever formed.
+
+A triangular map is called **increasing** if additionally $\partial f_j / \partial x_j > 0$ for all $j$. That extra condition is what makes it invertible, which is the subject of the next section.
+
+## 12. Does the map really have to be a bijection?
+
+Every derivation so far assumed $f$ is invertible. That is a heavy restriction — it rules out every pooling layer, every ReLU, every architecture that changes dimension. Is it genuinely necessary, or is it a convenience of the proof?
+
+It is genuinely necessary, and the cleanest way to see why is to break it and watch the formula give a wrong answer.
+
+Take $z \sim \mathcal{N}(0,1)$ and the map $x = T(z) = z^2$, which is not injective: $+a$ and $-a$ both land on $a^2$. Apply formula (2) mechanically, picking the branch $z = \sqrt{x}$:
+
+$$q_{\text{naive}}(x) = p(\sqrt{x}) \left\lvert \frac{d\sqrt{x}}{dx} \right\rvert = \frac{1}{\sqrt{2\pi}} e^{-x/2} \cdot \frac{1}{2\sqrt{x}} = \frac{e^{-x/2}}{2\sqrt{2\pi x}}$$
+
+The true density of $z^2$ for standard normal $z$ is the chi-squared with one degree of freedom, $e^{-x/2} / \sqrt{2\pi x}$. At $x = 2$: the naive formula says $0.05189$, the truth says $0.10378$, and a two-million-sample histogram says $0.10476$. The naive answer is exactly half.
+
+Exactly half, because exactly two branches of the map feed that point and I counted one. The correct statement for a non-injective map sums over all preimages,
+
+$$q(x) = \sum_{z \,:\, T(z) = x} p(z)\, \lvert T'(z) \rvert^{-1}$$
+
+and for a neural network with millions of parameters, enumerating the preimages of a point is not something anyone will be doing. So injectivity is not a technicality; it is what reduces that sum to a single term.
+
+The other half of bijectivity, surjectivity onto the region of interest, matters for a different reason: if $T$ cannot reach some part of data space, the model assigns density zero there, and if a real data point lands in that region the log-likelihood is $-\infty$ and training explodes.
+
+There is also a reason the determinant must be non-zero everywhere, not merely on average. If $\det J_f(x) = 0$ at some point, the map crushes a direction flat there, the inverse function theorem fails, and (4) contains $\log 0$. Requiring $\partial f_j / \partial x_j > 0$ for a triangular map delivers exactly this: the determinant is a product of strictly positive numbers, hence strictly positive, hence never zero. And it delivers invertibility too, constructively — given the target $z$, solve $f_1(x_1) = z_1$ for $x_1$, which has a unique solution because $f_1$ is a strictly increasing function of one variable; then solve $f_2(x_1, x_2) = z_2$ for $x_2$ with $x_1$ now known; and so on down the diagonal. Every step is a one-dimensional root-find on a strictly increasing function, and the ordering guarantees the needed inputs are already available.
+
+So "increasing triangular" is not one restriction but three properties bundled: cheap determinant, guaranteed invertibility, and a constructive inversion procedure.
+
+## 13. The theorem that says the restriction costs nothing
+
+Triangular maps look severely limited. Output 1 depends on a single input. Output 2 depends on two. A map like that seems far too rigid to turn images into Gaussians.
+
+It is not, and there is a theorem saying so. Under mild conditions — both densities positive and absolutely continuous — for any two distributions on $\mathbb{R}^d$ and any fixed ordering of the coordinates, there **exists** an increasing triangular map taking one to the other, and it is **unique**. This is the Knothe–Rosenblatt rearrangement; the version usually cited in the flow literature is [Bogachev, Kolesnikov & Medvedev (2005)](https://doi.org/10.1070/SM2005v196n03ABEH000882).
+
+The theorem is much less mysterious once you see the map, because the construction is explicit — and building it is worth doing, since it also explains why the ordering appears in the statement.
+
+Work in two dimensions, going from $z \sim \mathcal{N}(0, I_2)$ to a target with density $p(x_1, x_2)$. Let $\Phi$ be the standard normal CDF, let $F_1$ be the CDF of the target's first marginal $p(x_1)$, and let $F_{2 \mid 1}(\cdot \mid x_1)$ be the CDF of the target's conditional $p(x_2 \mid x_1)$.
+
+*First coordinate.* $u_1 = \Phi(z_1)$ is uniform on $(0,1)$ — the probability integral transform, which holds because
+
+$$\begin{aligned} \Pr[\Phi(Z) \le u] &\overset{\Phi \text{ increasing}}{=} \Pr\big[Z \le \Phi^{-1}(u)\big] & \text{(apply } \Phi^{-1} \text{ to both sides)} \\ &= \Phi\big(\Phi^{-1}(u)\big) & \text{(that is what a CDF returns)} \\ &= u & \text{(which is the uniform CDF)} \end{aligned}$$
+
+Then set
+
+$$x_1 = F_1^{-1}\big(\Phi(z_1)\big)$$
+
+By the same computation run backwards, $\Pr[X_1 \le t] = \Pr[U_1 \le F_1(t)] = F_1(t)$, so $x_1$ has exactly the target's first marginal.
+
+*Second coordinate.* With $x_1$ now fixed, do the same thing to the conditional:
+
+$$x_2 = F_{2\mid 1}^{-1}\big(\Phi(z_2) \,\big\vert\, x_1\big)$$
+
+so that $x_2 \mid x_1$ has exactly the right conditional distribution. Since the joint factors as $p(x_1)\, p(x_2 \mid x_1)$ and both factors are now correct, the joint is correct.
+
+Look at the shape of what was built. $x_1$ depends only on $z_1$; $x_2$ depends on $z_1$ and $z_2$. Triangular. And each coordinate map is a composition of increasing functions (a CDF and an inverse CDF), hence increasing. The construction generalises to $d$ dimensions by peeling off one conditional at a time, and it depends on the ordering because the factorisation does — a different ordering gives a different, equally valid map.
+
+So the cheap family is already the fully expressive family. Restricting to increasing triangular maps costs *no* representational power whatsoever. What it costs is convenience: the theorem asserts the map exists and is unique, but the construction above needs conditional CDFs of the target, which is exactly the thing I do not have. The theorem licenses the search; it does not conduct it. That is what the neural network is for.
+
+## 14. Autoregressive flows with Gaussian conditionals
+
+The Knothe–Rosenblatt construction suggests the architecture almost directly: factor the density by the chain rule and model each conditional.
+
+$$p(x) = \prod_{j=1}^{d} p(x_j \mid x_{<j})$$
+
+Make each conditional Gaussian, with a mean and a standard deviation computed by a network from the preceding coordinates:
+
+$$p(x_j \mid x_{<j}) = \mathcal{N}\big(x_j; \; \mu_j(x_{<j}), \; \exp(\alpha_j(x_{<j}))^2\big)$$
+
+The $\exp$ is there so that the scale is positive for any real network output — no constraint on the weights, and $\alpha_j$ can be any unconstrained value.
+
+Now read this as a map rather than a factorisation. Sampling from a Gaussian with that mean and scale is the same as taking $z_j \sim \mathcal{N}(0,1)$ and setting
+
+$$x_j = \mu_j(x_{<j}) + \exp\big(\alpha_j(x_{<j})\big) \cdot z_j \tag{9}$$
+
+which is the reparameterisation trick from Ch.7, §11, where writing a Gaussian sample as a deterministic function of a fixed noise draw was what let gradients pass through the sampling step.
+
+Equation (9) *is* a triangular map, because $x_j$ depends only on $z_j$ and on coordinates before it. Its diagonal Jacobian entry is
+
+$$\frac{\partial x_j}{\partial z_j} = \exp\big(\alpha_j(x_{<j})\big)$$
+
+so by (8) the log-determinant is simply $\sum_j \alpha_j(x_{<j})$ — a sum of network outputs, with no derivative of the network ever needed. All the complexity lives in $\mu_j$ and $\alpha_j$, which can be as deep as you like, and none of it enters the determinant.
+
+### MAF: doing all $d$ conditionals in one pass
+
+The obvious implementation runs a separate network per coordinate, which is $d$ networks. [Masked Autoregressive Flow](https://arxiv.org/abs/1705.07057) (Papamakarios et al., 2017) does better by borrowing the masking idea from [MADE](https://arxiv.org/abs/1502.03509): take one network, and zero out weights so that output $j$ has no computational path from input $j$ or later. A single forward pass then produces all $d$ pairs $(\mu_j, \alpha_j)$ at once, each correctly depending only on what it is allowed to see.
+
+Inverting (9) is straightforward algebra:
+
+$$z_j = \big(x_j - \mu_j(x_{<j})\big) \cdot \exp\big(-\alpha_j(x_{<j})\big)$$
+
+and note what this needs: to compute $z_j$ I need $\mu_j$ and $\alpha_j$, which need $x_{<j}$ — which are the *inputs*, all available at once. So the normalising direction is one pass. The generating direction is not: to compute $x_1$ I need $\mu_1$; then $x_2$ needs $\mu_2(x_1)$, which needs $x_1$ to have been computed first. Sampling is $d$ sequential passes.
+
+That is the asymmetry from §10 made concrete. MAF is fast at density evaluation and slow at sampling, which makes it exactly right for Scenario A (maximum likelihood on a dataset) and wrong for Scenario B.
+
+[Inverse Autoregressive Flow](https://arxiv.org/abs/1606.04934) (Kingma et al., 2016) is the same architecture with the roles of $x$ and $z$ swapped: the autoregressive dependence is on the latent, so sampling is one pass and density evaluation is $d$. IAF was built for variational inference — Scenario B — where the model's own samples are what you need. The two papers describe what is essentially the same map read in opposite directions, and which one you want is decided entirely by which direction you can afford to make slow.
+
+## 15. Why a permutation between layers
+
+Stacking autoregressive layers has a defect that is easy to miss, and it exposes a real structural bias rather than a numerical nuisance.
+
+Look at coordinate 1 in (9). It depends on $x_{<1}$, which is the empty set. So $\mu_1$ and $\alpha_1$ are *constants* — the same numbers for every input. The map applied to the first coordinate is $x_1 = \mu_1 + e^{\alpha_1} z_1$: a fixed affine transformation, with no conditioning whatsoever. Coordinate 2 is conditioned on one variable. Coordinate $d$ is conditioned on $d-1$.
+
+That is a steep and entirely arbitrary hierarchy. The variable that happens to be first in my chosen ordering — for an image, the top-left pixel — is modelled by a single Gaussian with two learned scalars, forever.
+
+Stacking identical layers does not fix it, because each layer imposes the *same* hierarchy. Ten layers in, coordinate 1 has been through ten fixed affine maps, whose composition is still one fixed affine map. It never learns to depend on anything.
+
+The fix is to insert a permutation between layers. Multiply the vector by a permutation matrix $P$, reordering the coordinates, so the next autoregressive layer sees a different ordering and a different variable draws the short straw:
+
+$$x \xrightarrow{\;f_1\;} h_1 \xrightarrow{\;P_1\;} h_1' \xrightarrow{\;f_2\;} h_2 \xrightarrow{\;P_2\;} \cdots$$
+
+Concretely with $d = 3$ and the reversal permutation: layer 1 conditions coordinate 3 on $\{1, 2\}$ and leaves coordinate 1 unconditioned; after reversing, layer 2 conditions the original coordinate 1 on $\{3, 2\}$ and leaves the original coordinate 3 unconditioned. Two layers, and every variable has been conditioned on every other at least once.
+
+A permutation is an ideal choice of interleaving operation for three reasons, all of which matter:
+
+- It is exactly invertible — the inverse is $P^\top$, since permutation matrices are orthogonal.
+- Its determinant is $\pm 1$, so $\log \lvert \det P \rvert = 0$ and it adds nothing to (5). It costs nothing in the objective.
+- It is a pure reordering, so it destroys no information: the composed map remains a bijection.
+
+The remaining complaint is that a permutation is fixed and arbitrary. Nothing about the data suggested reversal. §19 is where Glow replaces it with a *learned* invertible mixing matrix, which is a strictly more general version of the same move.
+
+## 16. Real-NVP and the affine coupling layer
+
+MAF's sequential sampling is a real cost — $d$ passes for one image is thousands of network evaluations. The coupling layer is a different way to get a triangular Jacobian that is fast in **both** directions, and it is the single most used construction in the field.
+
+The idea is to give up on conditioning every coordinate on everything before it, and instead split the vector in two, transform one half using the other, and leave the other half completely alone.
+
+<figure><img src="assets/svg/coupling-layer.svg" alt="Affine coupling layer: forward, inverse, and block-triangular Jacobian"><figcaption>Figure 4. The affine coupling layer of Real-NVP. Freezing the first half is what makes the Jacobian block-triangular, and what lets the same network serve both directions without ever being inverted itself.</figcaption></figure>
+
+Split $x \in \mathbb{R}^d$ into $x_{1:k}$ and $x_{k+1:d}$, usually with $k = d/2$. The **forward** (normalising) pass is:
+
+$$z_{1:k} = x_{1:k}$$
+
+$$z_{k+1:d} = x_{k+1:d} \odot \exp\big(s(x_{1:k})\big) + t(x_{1:k})$$
+
+where $\odot$ is elementwise multiplication and $s, t : \mathbb{R}^{k} \to \mathbb{R}^{d-k}$ are two ordinary neural networks. The first half passes through untouched. The second half is scaled and shifted by amounts that depend only on the first half.
+
+**Inverting it is algebra, not optimisation.** Given $z$: the first half of $x$ is read straight off, $x_{1:k} = z_{1:k}$. But that means $s$ and $t$ can be recomputed — they only ever needed the first half, and I now have it. So
+
+$$x_{k+1:d} = \big(z_{k+1:d} - t(z_{1:k})\big) \odot \exp\big(-s(z_{1:k})\big)$$
+
+This is the point of the whole construction, and it deserves to be said explicitly: **the networks $s$ and $t$ are never inverted.** They are evaluated, forwards, in both directions of the flow. So they can be arbitrarily deep, use ReLUs, batch norm, residual connections, attention — anything at all, with no invertibility constraint. The invertibility lives in the *arithmetic* wrapped around them, not in the networks.
+
+**The Jacobian.** Write it in block form:
+
+$$J = \frac{\partial z}{\partial x} = \begin{pmatrix} I_k & 0 \\ \frac{\partial z_{k+1:d}}{\partial x_{1:k}} & \operatorname{diag}\big(\exp(s(x_{1:k}))\big) \end{pmatrix}$$
+
+The top-left block is the identity because $z_{1:k} = x_{1:k}$. The top-right block is **exactly zero** because $z_{1:k}$ does not depend on $x_{k+1:d}$ in any way — that is the payoff for freezing the first half. The bottom-right block is diagonal because $z_j$ for $j > k$ depends on exactly one input from the second half, namely $x_j$. The bottom-left block is a mess of derivatives of $s$ and $t$.
+
+For a block-triangular matrix the determinant is the product of the diagonal blocks, so the messy block never enters:
+
+$$\log \lvert \det J \rvert = \sum_{j=k+1}^{d} s_j(x_{1:k}) \tag{10}$$
+
+One sum over the scale network's own output. No matrix operations, no derivatives of $s$ or $t$, no Jacobian ever formed.
+
+This is [Real-NVP](https://arxiv.org/abs/1605.08803) (Dinh et al., 2017). Its predecessor [NICE](https://arxiv.org/abs/1410.8516) (Dinh et al., 2015) used the additive version with no scaling, $z_{k+1:d} = x_{k+1:d} + t(x_{1:k})$, whose Jacobian determinant is exactly $1$ — a *volume-preserving* flow. That is elegant and too weak: a map that never changes volume anywhere cannot move probability mass between regions of different density, so a whole class of shape changes is unreachable. Adding the learned scale $\exp(s)$ is what makes the flow "non-volume-preserving", which is what the NVP in the name stands for.
+
+Of course, one coupling layer transforms only one half of the vector. So layers are stacked with the roles alternating — freeze the second half, transform the first, then swap back — and after a few layers everything has conditioned on everything. Watch it happen:
+
+<div class="dgm-widget" id="widget-coupling"></div>
+
+### A constraint worth naming
+
+There is a design rule hiding here that is easy to state and easy to violate. Suppose someone proposes a flow layer that is enormously expressive but whose inverse requires running a numerical optimiser or a fixed-point iteration. Why is that unacceptable, given that it is still technically invertible?
+
+Because the two directions are not optional extras — they are the two jobs from §1. The normalising direction is density evaluation and training; the generating direction is sampling. A flow whose inverse takes an iterative solve has traded one of its two selling points away, and if the iteration is inexact then the model's own samples do not exactly satisfy its own density formula. A coupling layer inverts in closed form, in the same time as the forward pass, which is why it won.
+
+## 17. Beyond affine: NAF and SOS polynomial flows
+
+Every transformation so far has been affine in the coordinate being transformed: $x_j = \mu_j + e^{\alpha_j} z_j$ in (9), or scale-and-shift in the coupling layer. The conditioning is arbitrarily nonlinear, but the dependence on the transformed variable itself is a straight line. Composition of many such layers is expressive, but each layer is doing very little. Can the per-coordinate map be nonlinear too?
+
+The condition to preserve is precisely one thing: the map must be strictly increasing in $z_j$, so that $\partial x_j / \partial z_j > 0$ and §12's guarantees hold. Two papers attack this from opposite directions.
+
+### NAF: make the network itself monotone
+
+[Neural Autoregressive Flows](https://arxiv.org/abs/1804.00779) (Huang et al., 2018) replace the affine map with a small deep network applied to the single scalar $z_j$, whose weights are produced by the conditioner:
+
+$$x_j = \text{DNN}\big(z_j; \; w_j(z_{<j})\big)$$
+
+To force this network to be strictly increasing, NAF constrains it: all weights strictly positive, and all activations strictly monotone (sigmoid or tanh). The composition of increasing functions is increasing, and positive weights keep every linear combination increasing, so the whole network is monotone by construction. The result is a universal approximator of increasing triangular maps — combined with §13's theorem, that means universal for densities.
+
+The catch is optimisation. Constraining weights to be positive — typically by parameterising them as $\exp(v)$ or $\text{softplus}(v)$ — makes the loss surface substantially harder. The gradient signal is distorted by the reparameterisation, and the usual initialisation schemes, which assume weights are centred on zero, no longer apply. NAF is expressive and hard to train.
+
+### SOS flows: make the *derivative* a square
+
+[Sum-of-Squares Polynomial Flows](https://arxiv.org/abs/1905.02325) (Jaini, Selby & Yu, ICML 2019) sidestep the constraint entirely with a nice piece of algebra. The requirement is that $\partial T_j / \partial z_j > 0$. Rather than constrain a network to satisfy it, *build a function whose derivative cannot be negative* — and the classic way to force non-negativity without constraints is to write something as a sum of squares:
+
+$$\frac{\partial T_j}{\partial z_j} = \sum_{k=1}^{K} \mathcal{P}_{r,k}(z_j)^2, \qquad \mathcal{P}_{r,k}(z_j) = \sum_{l=0}^{r} a_{l,k}\, z_j^{\,l}$$
+
+Squares of real numbers are non-negative for *any* real coefficients $a_{l,k}$, so there is nothing to constrain. Then obtain the transformation by integrating — and since the integrand is a polynomial, the integral is a polynomial with coefficients that are simple algebraic combinations of the $a_{l,k}$, computable in closed form:
+
+$$x_j = T_j(z_j) = \int_0^{z_j} \left( \sum_{k=1}^{K} \mathcal{P}_{r,k}(u)^2 \right) du + c_j(z_{<j})$$
+
+**The smallest case, to see it is real.** Take $K = 1$, $r = 1$, $\mathcal{P}(z) = a_0 + a_1 z$ with $a_0 = a_1 = 1$. Then the derivative is $(1 + z)^2$ and integrating gives $T(z) = z + z^2 + z^3/3$. Check the values: $T(-1) = -1/3$, $T(0) = 0$, $T(1) = 7/3$. Increasing, as promised. Note also that $T'(-1) = 0$ exactly — the derivative touches zero at the root of the polynomial. So SOS gives *non-decreasing* rather than strictly increasing, and at that isolated point the Jacobian vanishes and $\log \lvert \det J \rvert$ is $-\infty$. In practice the likelihood objective itself repels the parameters from that configuration, since it is the worst possible value of the loss, but it is worth knowing the boundary is there rather than believing the construction is unconditionally safe.
+
+Three things come with SOS. Optimisation is unconstrained, so ordinary Adam on ordinary weights works. The coefficients are interpretable — polynomial coefficients relate directly to the moments of the transformed distribution, so degree controls how much skewness and kurtosis the layer can produce. And it is universal: increasing degree $r$ and count $K$ approximates any increasing triangular map arbitrarily well, so §13 again upgrades that to universality over densities.
+
+**What Part III established.** Triangular structure buys an $\mathcal{O}(d)$ determinant, and by Knothe–Rosenblatt it costs nothing in expressiveness. Autoregressive conditionals realise it with one fast direction and one slow one; coupling layers realise it with both directions fast, at the price of transforming half the vector per layer. Making the per-coordinate map nonlinear is possible either by constraining a network (NAF) or by squaring a polynomial and integrating (SOS).
+
+<div class="part-marker"><span class="part-label">Part IV</span><span class="part-name">Scaling to real images</span><span class="part-sub">factorisation, Glow, latent arithmetic, and the bill</span></div>
+
+## 18. The bottleneck you are not allowed to have
+
+Here is the constraint that shapes everything about deploying flows, and it follows from the mathematics rather than from any implementation choice.
+
+$\det J_f$ has to be a determinant, so $J_f$ has to be square, so **$z$ must have exactly the same dimension as $x$.** There is no way around it: a smooth injective map from $\mathbb{R}^d$ to $\mathbb{R}^m$ with $m < d$ has a Jacobian with a non-trivial null space, its "determinant" does not exist, and the change-of-variables formula has nothing to say.
+
+A VAE compresses a $256 \times 256 \times 3$ image — $196{,}608$ numbers — into a 128-dimensional code. A flow's latent for the same image has $196{,}608$ dimensions. Every one of them must be carried through every layer of the network, stored, and back-propagated through. Flows are memory-hungry in a way that no amount of cleverness removes.
+
+### Multi-scale factorisation
+
+Real-NVP's answer does not evade the constraint — nothing can — but it changes where the compute goes.
+
+<figure><img src="assets/svg/flow-multiscale.svg" alt="Multi-scale factorisation: latent dimensions are factored out at intermediate depths"><figcaption>Figure 5. Multi-scale factorisation. Dimensions leave the network at intermediate depths and go straight to the prior. The latent is still $d$-dimensional; what changes is how many layers each dimension has to pass through.</figcaption></figure>
+
+The scheme: run a few coupling layers, then **split** the activation in half. One half is declared finished — it is evaluated against the Gaussian prior right there and takes no further part. The other half continues into the next block, which does the same thing again.
+
+Two things follow. First, the deeper blocks operate on progressively fewer dimensions, so the cost of the network falls geometrically with depth rather than staying flat. Second, and more interestingly, the dimensions that leave early have passed through few layers, so they can only represent local, fine-grained structure; the dimensions that survive to the end have passed through everything and carry global structure. The model ends up with a coarse-to-fine latent decomposition that nobody designed — it falls out of where the splits are placed.
+
+I want to be careful about one thing, because the phrase "dimensionality reduction" gets attached to this and it is misleading. The concatenation $z = (z^{(1)}, z^{(2)}, z^{(3)})$ still has exactly $d$ components. Nothing was compressed. What was reduced is the *depth-weighted* compute and the memory held live at any one time.
+
+The companion trick is the **squeeze** operation: reshape an $H \times W \times C$ tensor into $\frac{H}{2} \times \frac{W}{2} \times 4C$ by folding each $2 \times 2$ spatial block into the channel dimension. It is exactly invertible, it is a pure reshape so its Jacobian is a permutation with determinant $\pm 1$, and it trades spatial extent for channels — which matters because coupling layers split along channels, so squeezing gives them more to work with.
+
+## 19. Glow: invertible 1×1 convolutions and the LU trick
+
+[Glow](https://arxiv.org/abs/1807.03039) (Kingma & Dhariwal, 2018) is Real-NVP with one substantial idea added, and it was the first flow to produce large face images that were genuinely convincing. Its step of flow is three layers:
+
+$$\text{actnorm} \;\longrightarrow\; \text{invertible } 1 \times 1 \text{ convolution} \;\longrightarrow\; \text{affine coupling}$$
+
+**Actnorm** is a per-channel affine transformation, $y_{i,j,c} = \gamma_c\, x_{i,j,c} + \beta_c$, with $\gamma$ and $\beta$ initialised from the first batch so that each channel's activations start with zero mean and unit variance. It plays the role batch normalisation plays elsewhere, but as a plain learned affine map with no batch statistics at inference — which matters because flows are often trained with batch size 1 per GPU, where batch norm's statistics are meaningless. Its log-determinant is $H \cdot W \cdot \sum_c \log \lvert \gamma_c \rvert$.
+
+**The invertible 1×1 convolution** is the new idea, and it is the direct successor to §15's permutation.
+
+A $1 \times 1$ convolution on a tensor with $C$ channels has a kernel of spatial size one, so at each pixel it takes the length-$C$ vector of channel values and multiplies it by a $C \times C$ matrix $W$ — the same $W$ at every pixel. It mixes channels and does nothing spatially. That is all it is.
+
+Why bother? Because a coupling layer always freezes the same fixed half of the channels, and a fixed permutation between layers rotates which half that is in a fixed, arbitrary way. A $1 \times 1$ convolution generalises the permutation: a permutation *is* a matrix of zeros and ones, and $W$ is an arbitrary invertible matrix, learned. Instead of choosing which channels to freeze, the model learns a linear recombination of channels and then freezes half of *those*.
+
+Its log-determinant: the same $W$ acts independently at each of the $H \times W$ pixel positions, so the full Jacobian is block-diagonal with $H \cdot W$ copies of $W$, and
+
+$$\log \left\lvert \det \left( \frac{\partial\, \text{conv}(x)}{\partial x} \right) \right\rvert = H \cdot W \cdot \log \lvert \det W \rvert$$
+
+That leaves a $C \times C$ determinant to compute, which is $\mathcal{O}(C^3)$. For $C = 512$ that is $1.3 \times 10^8$ operations at every step — not fatal, but not free either, and it recurs in every layer.
+
+**The LU parameterisation** removes it. Rather than storing $W$ and factorising it repeatedly, Glow stores the factorisation and never materialises anything else:
+
+$$W = P\, L\, \big(U + \operatorname{diag}(s)\big) \tag{11}$$
+
+with $P$ a fixed permutation chosen at initialisation, $L$ lower triangular with ones on its diagonal, $U$ strictly upper triangular (zeros on the diagonal), and $s$ a learned vector holding what would have been $U$'s diagonal. The trainable parameters are the entries of $L$, of $U$, and the vector $s$.
+
+The determinant now costs nothing. $\det P = \pm 1$; $\det L = 1$ since its diagonal is all ones; and $U + \operatorname{diag}(s)$ is upper triangular with diagonal $s$, so its determinant is $\prod_i s_i$. Therefore
+
+$$\log \lvert \det W \rvert = \sum_{i=1}^{C} \log \lvert s_i \rvert$$
+
+$\mathcal{O}(C)$, and it reuses parameters the model already stores.
+
+**Matrix collapse.** There is a failure mode built into (11) worth understanding rather than just watching for. $W$ is invertible exactly when no $s_i$ is zero, and $s$ is an unconstrained learned vector, so nothing structurally prevents a component from reaching zero. If it does, $W$ is singular, the flow is no longer a bijection, and the log-determinant is $-\infty$.
+
+The reassuring part is that the objective itself pushes against this: the log-likelihood (5) contains $+\sum_i \log \lvert s_i \rvert$, which diverges to $-\infty$ as any $s_i \to 0$. Gradient *ascent* on the likelihood is therefore climbing away from the singular set — the penalty acts as a barrier at the boundary.
+
+The unreassuring part is that gradient descent takes finite steps, and a barrier that is infinitely tall in exact arithmetic can still be jumped over by a single large update: $s_i$ can go from a small positive number to a negative one in one step, passing through zero without ever being evaluated there. The sign flip is not itself fatal — the absolute value tolerates negative $s_i$ — but a step that overshoots that badly usually indicates the learning rate is wrong, and the practical response is gradient clipping, a smaller learning rate, and restoring the last checkpoint whose $\lvert s_i \rvert$ were all comfortably away from zero.
+
+## 20. Latent-space arithmetic, and what actually preserves identity
+
+Because a flow maps data to a Gaussian bijectively, the latent space is a place where arithmetic can be done. This is where the demos come from — sliders that make a face older, or add a smile.
+
+The construction is concrete. Suppose I want an "aging" direction. Label two sets of images: $X_{\text{old}} = \{x_1, \dots, x_m\}$ and $X_{\text{young}} = \{y_1, \dots, y_k\}$. Map them all through the trained normaliser:
+
+$$\bar{z}_{\text{old}} = \frac{1}{m}\sum_{i=1}^{m} f(x_i), \qquad \bar{z}_{\text{young}} = \frac{1}{k}\sum_{j=1}^{k} f(y_j)$$
+
+and define the attribute direction as the difference of the means, $v = \bar{z}_{\text{old}} - \bar{z}_{\text{young}}$. Then for a new image, encode, shift, decode:
+
+$$x_{\text{modified}} = T\big(f(x_{\text{test}}) + \alpha v\big) \tag{12}$$
+
+Interpolation between two images is the same idea with a different arithmetic: $z_{\text{interp}} = (1-\alpha) f(x_A) + \alpha f(x_B)$, decoded through $T$.
+
+Now the question that actually matters, and where I had to change my mind. **Why does (12) produce the same person, older, rather than a completely different person?**
+
+The explanation I first wrote down — and the one the lecture gave — is that a well-trained flow disentangles factors of variation into orthogonal directions, so shifting along the aging direction is orthogonal to the identity-encoding directions and leaves identity untouched. I do not think that survives scrutiny. Maximum likelihood, objective (6), asks for exactly one thing: that $f$ push the data distribution onto a Gaussian. It says nothing whatsoever about which directions in latent space carry which semantics. Any rotation $R$ of the latent space leaves a standard Gaussian invariant, so $R \circ f$ achieves *identical* likelihood while scrambling every direction's meaning. Disentanglement cannot be a consequence of the training objective, because the objective cannot distinguish a disentangled solution from a rotated one.
+
+So the honest account is a combination of three weaker things, each of which is checkable.
+
+*The averaging is doing the work.* Write each latent, heuristically, as a sum of an age-related part, an identity-related part, and everything else. Averaging over many old faces averages over many identities, and the same for young faces. If identity is roughly independent of the age label — that is, the two groups contain a similar mix of people — then the identity components have similar means in both groups and *cancel in the difference*. What survives in $v$ is what systematically differs between the groups, which is age. The direction is a difference of class-conditional means; there is nothing mystical about it.
+
+This immediately predicts the standard failure, which is the strongest evidence that it is the right explanation. If the labelled groups are not balanced — if the "smiling" set happens to be mostly women and the "neutral" set mostly men — then gender does *not* cancel, and the smile direction moves gender too. This is exactly what practitioners report, and it is a defect of the labelling, not of the flow.
+
+*Continuity is doing the rest.* $T$ is a smooth bijection with bounded local distortion, so a small $\|\alpha v\|$ produces a small change in the image. The identity survives partly because nothing much changed. This also predicts, correctly, that large $\alpha$ eventually drifts the identity — the linear approximation only holds locally, and pushing far along $v$ leaves the region where the direction means what it meant.
+
+*Approximate linearity of semantics is an empirical finding.* That semantic attributes correspond to roughly linear directions in these latent spaces is an observation, repeated across GANs, VAEs and flows, not a theorem. It is a fact about the inductive biases of convolutional architectures on natural images. It works well enough to build products on, and it has no guarantee behind it.
+
+There is one more piece of fine print worth carrying, specific to interpolation. In $d$ dimensions a standard Gaussian sample has $\mathbb{E}\|z\|^2 = d$, so samples concentrate on a thin shell of radius $\sqrt{d}$ — high-dimensional Gaussian mass is nowhere near the origin. Take the midpoint of two independent samples: $\mathbb{E}\|\tfrac{1}{2}(z_A + z_B)\|^2 = \tfrac{1}{4}(d + d) = d/2$, so its norm is about $\sqrt{d/2} \approx 0.707\sqrt{d}$. For $d = 512$ I measured $22.63$ for a typical sample against $16.00$ for a midpoint — a 29% shrink, exactly $1/\sqrt{2}$. The midpoint of a linear interpolation is therefore *atypical* under the prior, sitting well inside the shell where the model saw almost no training mass, which is why linearly interpolated samples often look washed out halfway through. The fix is to interpolate along the sphere instead of the chord — spherical linear interpolation, which preserves the norm — and it is a one-line change that visibly improves the midpoints.
+
+## 21. Conditional flows
+
+Everything so far models $p(x)$. Plenty of problems want $p(y \mid x)$: given a low-resolution image, the distribution over high-resolution ones; given a greyscale photo, the distribution over colourisations.
+
+[Conditional normalizing flows](https://arxiv.org/abs/1912.00042) (Winkler et al., 2019) get there by feeding the conditioning variable into every part of the model that has parameters. The base becomes conditional,
+
+$$p(z \mid x) = \mathcal{N}\big(z; \; \mu(x), \; \sigma^2(x)\big)$$
+
+and the coupling networks take $x$ as an extra input alongside the frozen half:
+
+$$y_{k+1:d} = y_{k+1:d} \odot \exp\big(s(y_{1:k},\, x)\big) + t(y_{1:k},\, x)$$
+
+Crucially, none of this disturbs the mathematics. The map $y \mapsto z$ is still a bijection *for each fixed $x$*, the Jacobian is still taken with respect to $y$ only, and $x$ is a constant as far as the determinant is concerned — the extra input contributes nothing to it. So (10) is unchanged and
+
+$$\log p_\theta(y \mid x) = \log p\big(f_\theta(y; x) \mid x\big) + \log \big\lvert \det J_{f_\theta}(y; x) \big\rvert$$
+
+which is trained by maximum likelihood on paired data exactly as before.
+
+The reason to want this for super-resolution in particular is that the task is genuinely one-to-many. Many high-resolution images downsample to the same low-resolution one, and they differ in exactly the details being asked for. A network trained with an L2 regression loss learns the conditional *mean* of that set — the average of all plausible high-resolution images — and the average of many sharp images is blurry. That is not a training failure; it is the correct minimiser of the wrong objective. A conditional flow models the whole conditional distribution, so sampling from it gives one plausible sharp answer rather than the blurred average of all of them, and sampling twice gives two different ones. The same argument reappears in §24 from the GAN side.
+
+## 22. What flows actually cost
+
+Collecting the bill, including one item the lecture did not raise but which matters for the use case in §1.
+
+**The dimensionality constraint,** §18: latent and data dimension are equal, permanently. Memory and parameter counts scale with the data dimension, and there is no compressed representation to hand to a downstream task.
+
+**Every layer is weak.** Invertibility with a cheap determinant is a strong restriction on a single layer — a coupling layer transforms only half its input, and affinely at that. Flows compensate with depth, and Glow's largest configuration uses hundreds of steps of flow. A convolutional layer in a discriminative network does far more per parameter.
+
+**Sampling and density cannot always both be fast.** Coupling layers give both; autoregressive flows give one and pay $d$ sequential passes for the other (§14).
+
+**Sample quality lags.** Flow samples were the best available in 2018 and were passed by GANs and then decisively by diffusion models. The restricted layer family is the likely reason.
+
+**And the awkward one: high likelihood does not mean in-distribution.** [Nalisnick et al. (2019)](https://arxiv.org/abs/1810.09136) found that flows trained on CIFAR-10 assign *higher* likelihood to SVHN images than to CIFAR-10 images — confidently rating data they have never seen as more probable than their own training distribution. Glow does this, and so do VAEs and PixelCNNs. The rough cause is that likelihood in high dimensions is dominated by low-level statistics: SVHN images are smoother and less complex, and a model that has learned "natural images have strong local correlations" scores them highly regardless of semantic content.
+
+I am flagging this because §1 sold exact density as the reason to want flows, with anomaly detection as the leading application, and this result says that raw likelihood is not by itself a reliable OOD score. It does not make the exact likelihood useless — for compression, model comparison and as a training objective it is exactly what it claims to be — but any anomaly-detection system built on it needs a corrected statistic (typicality tests, likelihood ratios against a background model) rather than a bare threshold on $\log p_\theta(x)$.
+
+<div class="part-marker"><span class="part-label">Part V</span><span class="part-name">Back to the adversarial models</span><span class="part-sub">what they do that flows cannot, and how to choose</span></div>
+
+## 23. StyleGAN and disentanglement
+
+The lecture closes by returning to GANs for comparison, and two architectures are worth the detour because they make a point about latent structure that §20 left hanging.
+
+[StyleGAN](https://arxiv.org/abs/1812.04948) (Karras et al., 2019) redesigns the generator around one observation: feeding the latent in at the bottom and letting it propagate is a bad way to get control. Four changes:
+
+**A mapping network.** Instead of feeding $z \in \mathcal{Z}$ into the generator, pass it through an eight-layer MLP to get an intermediate code $w \in \mathcal{W}$, and feed *that* in. The argument for this is worth spelling out because it connects directly to §20. Sampling requires $z$ to have a fixed simple distribution, usually Gaussian. But the combinations of attributes present in real data are not distributed like a Gaussian — some combinations are common, some are rare, some (long hair on a face labelled male, in a biased dataset) may be nearly absent. Forcing the generator to map a spherical Gaussian onto that lumpy structure requires warping, and warping is precisely what entangles directions: to reach an under-represented region the generator must curve, and curvature means moving along one axis changes several attributes at once. The mapping network absorbs the warping, because $\mathcal{W}$ carries no distributional requirement at all — its distribution is whatever the MLP produces. The generator downstream then works in a space that is free to be flatter, and empirically it is.
+
+That is also the honest answer to why $\mathcal{W}$ is more disentangled than $\mathcal{Z}$, and note the shape of the argument: disentanglement came from *removing* a distributional constraint. A flow cannot do this, because its latent is required by construction to be exactly Gaussian — the constraint is the model. That is a real structural advantage GANs have here, and it is the flip side of the exactness that flows buy.
+
+**A learned constant input.** The synthesis network starts from a learned $4 \times 4 \times 512$ tensor rather than from the noise vector. All the input-dependent information arrives through the style pathway instead.
+
+**AdaIN.** At each layer, feature maps are normalised and then re-scaled and re-shifted by parameters derived from $w$:
+
+$$\text{AdaIN}(h_i, w) = y_{s,i}\, \frac{h_i - \mu(h_i)}{\sigma(h_i)} + y_{b,i}$$
+
+Because this is applied at every resolution, and different resolutions carry different scales of structure, styles injected early control coarse attributes (pose, face shape) and styles injected late control fine ones (colour scheme, micro-texture). That is where the layer-wise control in the demos comes from.
+
+**Noise injection.** Per-pixel Gaussian noise is added directly to feature maps at each layer, with a learned per-channel scale.
+
+The noise deserves a moment because its role is easy to misread. Details like the exact curl of a strand of hair, the precise arrangement of freckles, and the pattern of skin pores are genuinely stochastic — no facial identity determines them, and any specific arrangement is as valid as any other. Without a source of per-pixel randomness the generator has to synthesise these from the style vector, which is global; the result is that every face gets essentially the same texture, applied in the same way, and the images look flat and painterly. Remove the noise inputs from a trained StyleGAN and this is exactly what you see: identity and pose are untouched, because those come from $w$, while fine stochastic detail becomes repetitive. The separation is the design working as intended — global structure in $w$, local stochasticity in the noise.
+
+**Disentanglement, defined.** A latent space is *entangled* when moving along one coordinate changes several semantic attributes at once — a hair-colour slider that also shifts apparent age. It is *disentangled* when coordinates correspond to distinct, independently controllable factors. The practical target is the character-creator experience: one slider, one thing changes. §20's caution applies here too — disentanglement is encouraged architecturally, measured empirically, and not guaranteed by any objective.
+
+## 24. Pix2Pix, and why the L1 term is there
+
+[Pix2Pix](https://arxiv.org/abs/1611.07004) (Isola et al., 2017) is a conditional GAN for paired image translation — sketch to photograph, segmentation map to street scene, edges to product shot. Ch.5, §14 covered CycleGAN, which exists to remove Pix2Pix's requirement of aligned pairs; this is the paired case it was reacting to.
+
+Both generator and discriminator see the conditioning image $x$, so the discriminator judges the *pair* $(x, y)$ rather than $y$ alone — that is what makes it conditional, and it is why the setup can enforce correspondence at all. And the objective adds a reconstruction term to the adversarial one:
+
+$$G^* = \arg\min_G \max_D \; \mathcal{L}_{\text{cGAN}}(G, D) + \lambda\, \mathcal{L}_{L_1}(G), \qquad \mathcal{L}_{L_1}(G) = \mathbb{E}_{x,y}\big[\| y - G(x) \|_1\big]$$
+
+Why both terms? Each fixes the other's failure.
+
+*The adversarial term alone does not enforce correspondence.* The discriminator's job is to say whether a pair looks real. A generator that ignores the input sketch entirely and emits a perfectly photorealistic shoe of its own invention... would be caught, since the discriminator sees the pair. But the pressure is weak and indirect — it is a learned, noisy signal about joint plausibility, and in practice generators trained on the adversarial loss alone drift, hallucinating structure that has no basis in the input. The L1 term is a direct, dense, per-pixel instruction: match *this* target.
+
+*The reconstruction term alone produces blur,* for exactly the reason in §21. Translation is one-to-many; many photographs are consistent with one sketch. A deterministic generator trained on a per-pixel loss converges to a summary statistic of that set. For L2 the minimiser is the conditional mean, and averaging sharp images gives a blurry one. This is why the paper uses L1 rather than L2: the minimiser of an L1 loss is the conditional *median*, and a median is less catastrophic than a mean — it picks a representative value rather than blending all of them — so L1 blurs less. It still blurs.
+
+So the division of labour is by frequency. L1 gets the low frequencies right: global layout, colour, correspondence with the input. The adversarial loss supplies the high frequencies: crisp edges, plausible texture, the details that no averaged objective will ever produce. Pix2Pix's PatchGAN discriminator makes this explicit by judging local patches rather than whole images — its job is texture, since structure is already handled.
+
+This is also the cleanest statement of why a conditional GAN beats an unconditional one for a task like segmentation-map-to-street-view. An unconditional GAN starts from noise and produces *some* street scene, with no way to demand that the car be where the segmentation map says a car is. Conditioning turns the map into a blueprint that both networks can see, so the layout becomes a constraint rather than a suggestion.
+
+## 25. Choosing between them
+
+The whole course, in one table.
+
+| family | exact $p(x)$? | samples | training | latent | main drawback |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| KDE | yes, exact | poor | none needed | none | dies in high dimensions (§2) |
+| VAE | no — ELBO lower bound | good, often soft | stable | yes, compressed | likelihood is a bound with an unknown gap |
+| normalizing flow | **yes, exact and tractable** | very good | stable, plain MLE | yes, invertible, same size as data | latent dimension equals data dimension (§18) |
+| GAN | no, none at all | outstanding | unstable minimax | yes, can be highly disentangled | no density; mode collapse |
+| diffusion | no — variational bound | state of the art | very stable | yes, same size as data | many sequential steps to sample |
+
+Two ways of using this table are worth rehearsing, because they are the questions that actually get asked.
+
+**A GAN produces beautiful faces that all look nearly identical.** That is mode collapse, and Ch.4, §12 has the mechanism: the generator has found one region of data space the discriminator currently scores as real, and the minimax objective gives it no incentive to cover the rest — matching the whole distribution is not what the loss asks for, only fooling the current discriminator is. Note that this failure is invisible to any per-sample quality metric. Each image is excellent; the *distribution* is wrong. Flows cannot fail this way, because maximum likelihood (6) evaluates the model at every training point and a mode with no assigned density contributes $-\infty$.
+
+**A medical imaging system needs realistic samples, exact likelihoods for flagging anomalous scans, and a meaningful latent for interpolating between disease states.** Walk the table. GANs are out on requirement two — no density in any form. KDE is out on requirement one, from §2's calculation. VAEs give a bound, not an exact likelihood, and if the number is being used for a clinical threshold then an unknown gap is not acceptable. Diffusion models give a bound too, and sampling is slow. Flows satisfy all three simultaneously, which is precisely the niche they were built for — and with §22's caveat attached in writing: the likelihood is exact, but a bare threshold on it is not a reliable OOD detector, so the anomaly component needs a corrected statistic rather than raw $\log p_\theta(x)$.
+
+## 26. The chapter on one page
+
+| what | where | the line to remember |
+| :--- | :--- | :--- |
+| change of variables | (3) | $p_\theta(x) = p_z(f(x))\,\lvert \det J_f(x) \rvert$ — mass conserved, volume not |
+| log form, the objective | (4) | $\log p_\theta(x) = \log p_z(f(x)) + \log\lvert \det J_f(x)\rvert$; term 1 wants Gaussian codes, term 2 forbids collapse |
+| the absolute value | §7 | merges the increasing and decreasing CDF cases; without it, negative densities |
+| bijectivity | §12 | non-injective maps need a sum over preimages; $z^2$ loses a factor of exactly 2 |
+| composing layers | (5) | log-determinants add; depth is free |
+| training | (6), (7) | samples only → forward KL = MLE, needs $f$ fast; density only → reverse KL, needs $T$ fast |
+| triangular Jacobian | (8) | $\mathcal{O}(d^3) \to \mathcal{O}(d)$; and Knothe–Rosenblatt says it costs no expressiveness |
+| autoregressive / MAF | (9) | $x_j = \mu_j(x_{<j}) + e^{\alpha_j(x_{<j})} z_j$; density 1 pass, sampling $d$ passes |
+| permutations | §15 | coordinate 1 is otherwise never conditioned on anything |
+| affine coupling | (10) | freeze half; $\log\lvert\det J\rvert = \sum_j s_j$; both directions closed-form |
+| multi-scale | §18 | reduces compute per dimension, **not** the number of dimensions |
+| Glow 1×1 + LU | (11) | learned channel mixing; $\log\lvert\det W\rvert = \sum_i \log\lvert s_i\rvert$ |
+| latent arithmetic | (12) | it is a difference of class-conditional means; the averaging cancels identity |
+| the constraint | §18 | $\dim(z) = \dim(x)$, always, because a determinant needs a square matrix |
+
+## 27. What I take away
+
+The mathematics of flows is the smallest of any model in this course. One conservation law, applied in $d$ dimensions, plus the chain rule. There is no bound to be careful about, no adversary to stabilise, no noise schedule to tune. Objective (6) is the log-likelihood, written out in full, differentiated directly.
+
+Everything hard about flows got pushed into architecture. Because the objective demands nothing, the network must supply everything: invertibility, a computable determinant, and enough expressiveness to bend a Gaussian into the distribution of natural images. That is why this chapter is mostly a catalogue of clever layers — triangular maps, coupling layers, monotone networks, sum-of-squares polynomials, LU-parameterised mixing matrices. Each is an answer to "what can I make invertible and still differentiate cheaply".
+
+And the constraint that cannot be engineered around is the one that decided the field's direction. A flow cannot compress, because a determinant needs a square matrix. That single fact makes flows expensive on large images and left the door open for diffusion models, which gave up exactness and got sample quality in return.
+
+Which is the pattern the whole course has been circling. GANs gave up the density for sample quality. VAEs gave up exactness for a bottleneck. Diffusion gave up speed for stability. Flows gave up the bottleneck for exactness. There is no model here that got something for nothing, and knowing precisely what each one traded away is the actual content of knowing them.
+
+## References
+
+- Bogachev, Kolesnikov & Medvedev (2005). [Triangular transformations of measures](https://doi.org/10.1070/SM2005v196n03ABEH000882). *Sbornik: Mathematics.* — the existence and uniqueness of increasing triangular maps.
+- Dinh, Krueger & Bengio (2015). [NICE: Non-linear Independent Components Estimation](https://arxiv.org/abs/1410.8516). — additive coupling, volume-preserving.
+- Dinh, Sohl-Dickstein & Bengio (2017). [Density Estimation using Real NVP](https://arxiv.org/abs/1605.08803). — affine coupling layers, multi-scale factorisation.
+- Germain, Gregor, Murray & Larochelle (2015). [MADE: Masked Autoencoder for Distribution Estimation](https://arxiv.org/abs/1502.03509). — the masking trick behind MAF.
+- Kingma, Salimans, Jozefowicz, Chen, Sutskever & Welling (2016). [Improved Variational Inference with Inverse Autoregressive Flow](https://arxiv.org/abs/1606.04934).
+- Papamakarios, Pavlakou & Murray (2017). [Masked Autoregressive Flow for Density Estimation](https://arxiv.org/abs/1705.07057).
+- Huang, Krueger, Lacoste & Courville (2018). [Neural Autoregressive Flows](https://arxiv.org/abs/1804.00779).
+- Kingma & Dhariwal (2018). [Glow: Generative Flow with Invertible 1x1 Convolutions](https://arxiv.org/abs/1807.03039).
+- Jaini, Selby & Yu (2019). [Sum-of-Squares Polynomial Flow](https://arxiv.org/abs/1905.02325). *ICML.*
+- Winkler, Worrall, Hoogeboom & Welling (2019). [Learning Likelihoods with Conditional Normalizing Flows](https://arxiv.org/abs/1912.00042).
+- Nalisnick, Matsukawa, Teh, Gorur & Lakshminarayanan (2019). [Do Deep Generative Models Know What They Don't Know?](https://arxiv.org/abs/1810.09136) — flows assign higher likelihood to out-of-distribution data.
+- Papamakarios, Nalisnick, Rezende, Mohamed & Lakshminarayanan (2021). [Normalizing Flows for Probabilistic Modeling and Inference](https://arxiv.org/abs/1912.02762). *JMLR.* — the survey to read next.
+- Karras, Laine & Aila (2019). [A Style-Based Generator Architecture for Generative Adversarial Networks](https://arxiv.org/abs/1812.04948).
+- Isola, Zhu, Zhou & Efros (2017). [Image-to-Image Translation with Conditional Adversarial Networks](https://arxiv.org/abs/1611.07004).
+
+---
+
+*Next lecture picks up where §22 left off — the places where an exact likelihood stops being the thing you want.*
+    </script>
+
+    <script src="dgm-notes.js"></script>
+    <script src="dgm-widgets.js"></script>
+</body>
+
+</html>

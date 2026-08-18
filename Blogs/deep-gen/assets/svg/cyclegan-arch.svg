@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="Inter, -apple-system, sans-serif">
+  <defs><g id="quad"><path d="M 34 34 Q 46 20 62 21 L 92 21 Q 104 22 106 32 Q 108 42 100 46 L 44 47 Q 33 45 34 34 Z"/><path d="M 44 30 L 30 12 L 40 6 L 54 26 Z"/><path d="M 41 2 L 36 13 L 15 14 L 13 21 L 34 23 L 48 15 Z"/><path d="M 40 3 L 35 -5 L 45 0 Z"/><rect x="46" y="44" width="6" height="34" rx="2"/><rect x="58" y="44" width="6" height="34" rx="2"/><rect x="86" y="44" width="6" height="34" rx="2"/><rect x="97" y="44" width="6" height="34" rx="2"/><path d="M 105 24 Q 119 32 113 56 L 108 53 Q 113 35 102 30 Z"/></g><clipPath id="bclip"><path d="M 34 34 Q 46 20 62 21 L 92 21 Q 104 22 106 32 Q 108 42 100 46 L 44 47 Q 33 45 34 34 Z"/></clipPath><g id="stripes" clip-path="url(#bclip)" stroke="#fff"><path stroke-width="4.5" d="M 50 16 L 45 52 M 61 15 L 56 53 M 72 15 L 67 53 M 83 15 L 78 53 M 94 17 L 90 51"/><path stroke-width="3.4" d="M 55 15 L 51 53 M 66 15 L 62 53 M 77 15 L 73 53 M 88 16 L 84 52"/></g>
+    <marker id="cy-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker>
+    <marker id="cy-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/></marker>
+    <marker id="cy-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker>
+  </defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">two generators, two discriminators, and a loop that has to close</text>
+
+  <rect x="16" y="34" width="728" height="152" rx="10" fill="#fcfcfc" stroke="#dfe8ea"/>
+  <text x="34" y="54" font-size="11.5" font-weight="700" fill="#0e7490">FORWARD CYCLE   s → G₁ → t̂ → G₂ → s̃</text>
+  <g transform="translate(40,64) scale(0.46)" fill="#0e7490"><use href="#quad"/></g>
+  <text x="70" y="146" text-anchor="middle" font-size="9.6" fill="#777">real horse  s</text>
+  <path d="M 116 104 L 158 104" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#cy-t)"/>
+  <rect x="160" y="88" width="52" height="32" rx="7" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.5"/>
+  <text x="186" y="109" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7490">G₁</text>
+  <path d="M 214 104 L 252 104" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#cy-t)"/>
+  <g transform="translate(256,64) scale(0.46)"><g fill="#3a3a3a"><use href="#quad"/></g><use href="#stripes"/></g>
+  <text x="286" y="146" text-anchor="middle" font-size="9.6" fill="#777">fake zebra  t̂</text>
+  <path d="M 286 62 L 286 48" stroke="#d97706" stroke-width="1.4" fill="none" marker-end="url(#cy-o)"/>
+  <rect x="330" y="36" width="118" height="26" rx="7" fill="#fff" stroke="#d97706" stroke-width="1.4"/>
+  <text x="389" y="54" text-anchor="middle" font-size="10.2" font-weight="600" fill="#d97706">D_T : real zebra?</text>
+  <path d="M 328 50 L 294 50" stroke="#d97706" stroke-width="1.3" fill="none" stroke-dasharray="4 3"/>
+  <path d="M 330 104 L 368 104" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#cy-t)"/>
+  <rect x="370" y="88" width="52" height="32" rx="7" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.5"/>
+  <text x="396" y="109" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7490">G₂</text>
+  <path d="M 424 104 L 462 104" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#cy-t)"/>
+  <g transform="translate(466,64) scale(0.46)" fill="#0e7490" opacity="0.75"><use href="#quad"/></g>
+  <text x="496" y="146" text-anchor="middle" font-size="9.6" fill="#777">reconstructed  s̃</text>
+  <path d="M 70 60 C 190 20, 380 20, 496 60" stroke="#7c3aed" stroke-width="1.8" fill="none" stroke-dasharray="6 4"/>
+  <rect x="566" y="82" width="164" height="44" rx="8" fill="rgba(124,58,237,0.07)" stroke="#7c3aed" stroke-width="1.3"/>
+  <text x="648" y="100" text-anchor="middle" font-size="10.8" font-weight="700" fill="#7c3aed">‖ s̃ − s ‖₁  must be small</text>
+  <text x="648" y="116" text-anchor="middle" font-size="9.4" fill="#7c3aed">compared pixel by pixel</text>
+  <path d="M 564 104 L 548 104" stroke="#7c3aed" stroke-width="1.4" fill="none" marker-end="url(#cy-p)"/>
+
+  <rect x="16" y="198" width="728" height="152" rx="10" fill="#fcfcfc" stroke="#e8e2d5"/>
+  <text x="34" y="218" font-size="11.5" font-weight="700" fill="#d97706">BACKWARD CYCLE   t → G₂ → ŝ → G₁ → t̃</text>
+  <g transform="translate(40,228) scale(0.46)"><g fill="#3a3a3a"><use href="#quad"/></g><use href="#stripes"/></g>
+  <text x="70" y="310" text-anchor="middle" font-size="9.6" fill="#777">real zebra  t</text>
+  <path d="M 116 268 L 158 268" stroke="#d97706" stroke-width="1.6" fill="none" marker-end="url(#cy-o)"/>
+  <rect x="160" y="252" width="52" height="32" rx="7" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.5"/>
+  <text x="186" y="273" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7490">G₂</text>
+  <path d="M 214 268 L 252 268" stroke="#d97706" stroke-width="1.6" fill="none" marker-end="url(#cy-o)"/>
+  <g transform="translate(256,228) scale(0.46)" fill="#0e7490"><use href="#quad"/></g>
+  <text x="286" y="310" text-anchor="middle" font-size="9.6" fill="#777">fake horse  ŝ</text>
+  <path d="M 286 226 L 286 212" stroke="#0e7490" stroke-width="1.4" fill="none" marker-end="url(#cy-t)"/>
+  <rect x="330" y="200" width="118" height="26" rx="7" fill="#fff" stroke="#0e7490" stroke-width="1.4"/>
+  <text x="389" y="218" text-anchor="middle" font-size="10.2" font-weight="600" fill="#0e7490">D_S : real horse?</text>
+  <path d="M 328 214 L 294 214" stroke="#0e7490" stroke-width="1.3" fill="none" stroke-dasharray="4 3"/>
+  <path d="M 330 268 L 368 268" stroke="#d97706" stroke-width="1.6" fill="none" marker-end="url(#cy-o)"/>
+  <rect x="370" y="252" width="52" height="32" rx="7" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.5"/>
+  <text x="396" y="273" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7490">G₁</text>
+  <path d="M 424 268 L 462 268" stroke="#d97706" stroke-width="1.6" fill="none" marker-end="url(#cy-o)"/>
+  <g transform="translate(466,228) scale(0.46)" opacity="0.75"><g fill="#3a3a3a"><use href="#quad"/></g><use href="#stripes"/></g>
+  <text x="496" y="310" text-anchor="middle" font-size="9.6" fill="#777">reconstructed  t̃</text>
+  <path d="M 70 224 C 190 184, 380 184, 496 224" stroke="#7c3aed" stroke-width="1.8" fill="none" stroke-dasharray="6 4"/>
+  <rect x="566" y="246" width="164" height="44" rx="8" fill="rgba(124,58,237,0.07)" stroke="#7c3aed" stroke-width="1.3"/>
+  <text x="648" y="264" text-anchor="middle" font-size="10.8" font-weight="700" fill="#7c3aed">‖ t̃ − t ‖₁  must be small</text>
+  <text x="648" y="280" text-anchor="middle" font-size="9.4" fill="#7c3aed">compared pixel by pixel</text>
+  <path d="M 564 268 L 548 268" stroke="#7c3aed" stroke-width="1.4" fill="none" marker-end="url(#cy-p)"/>
+
+  <text x="380" y="374" text-anchor="middle" font-size="10.8" fill="#666">The discriminators enforce "looks like the target domain". The two L₁ terms enforce "is still the same animal, in the same pose".</text>
+  <text x="380" y="392" text-anchor="middle" font-size="10.8" fill="#666">Neither constraint alone is enough, which is exactly why both are in the loss.</text>
+</svg>

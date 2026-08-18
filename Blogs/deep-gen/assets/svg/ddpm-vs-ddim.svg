@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="dd-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker>
+    <marker id="dd-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/></marker>
+  </defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">the objective only ever saw the marginals — so the path between them was never pinned down</text>
+
+  <rect x="16" y="38" width="728" height="112" rx="10" fill="#fcfcfc" stroke="#e8d5d5"/>
+  <text x="34" y="58" font-size="11" font-weight="700" fill="#c0392b">DDPM — Markovian, so every rung must be climbed</text>
+  <g>
+    <circle cx="70" cy="98" r="13" fill="rgba(14,116,144,0.2)" stroke="#0e7490" stroke-width="1.3"/><text x="70" y="102" text-anchor="middle" font-size="8.4" fill="#0e7490">x₀</text>
+    <circle cx="150" cy="98" r="11" fill="rgba(120,120,120,0.12)" stroke="#999"/><text x="150" y="101" text-anchor="middle" font-size="7.6" fill="#777">x₁</text>
+    <circle cx="230" cy="98" r="11" fill="rgba(120,120,120,0.12)" stroke="#999"/><text x="230" y="101" text-anchor="middle" font-size="7.6" fill="#777">x₂</text>
+    <text x="300" y="102" text-anchor="middle" font-size="12" fill="#999">⋯</text>
+    <circle cx="370" cy="98" r="11" fill="rgba(120,120,120,0.12)" stroke="#999"/><text x="370" y="101" text-anchor="middle" font-size="7" fill="#777">x₉₉₉</text>
+    <circle cx="450" cy="98" r="13" fill="rgba(120,120,120,0.22)" stroke="#888" stroke-width="1.3"/><text x="450" y="102" text-anchor="middle" font-size="8" fill="#555">x_T</text>
+  </g>
+  <g stroke="#c0392b" stroke-width="1.4" fill="none">
+    <path d="M 437 112 L 385 112" marker-end="url(#dd-o)"/><path d="M 357 112 L 320 112" marker-end="url(#dd-o)"/>
+    <path d="M 280 112 L 243 112" marker-end="url(#dd-o)"/><path d="M 217 112 L 165 112" marker-end="url(#dd-o)"/>
+    <path d="M 137 112 L 85 112" marker-end="url(#dd-o)"/>
+  </g>
+  <text x="260" y="132" text-anchor="middle" font-size="9.4" fill="#c0392b">1000 network evaluations, every one of them, in order</text>
+  <text x="490" y="88" font-size="9.6" fill="#c0392b">each step adds fresh noise, so</text>
+  <text x="490" y="101" font-size="9.6" fill="#c0392b">the same x_T lands somewhere</text>
+  <text x="490" y="114" font-size="9.6" fill="#c0392b">different every run — nothing</text>
+  <text x="490" y="127" font-size="9.6" fill="#c0392b">to invert</text>
+
+  <rect x="16" y="162" width="728" height="112" rx="10" fill="#fcfcfc" stroke="#dfe8ea"/>
+  <text x="34" y="182" font-size="11" font-weight="700" fill="#0e7490">DDIM — non-Markovian, so any sub-sequence is legal</text>
+  <g>
+    <circle cx="70" cy="222" r="13" fill="rgba(14,116,144,0.2)" stroke="#0e7490" stroke-width="1.3"/><text x="70" y="226" text-anchor="middle" font-size="8.4" fill="#0e7490">x₀</text>
+    <circle cx="150" cy="222" r="7" fill="none" stroke="#ddd"/><circle cx="230" cy="222" r="7" fill="none" stroke="#ddd"/>
+    <circle cx="290" cy="222" r="11" fill="rgba(14,116,144,0.12)" stroke="#0e7490"/><text x="290" y="225" text-anchor="middle" font-size="7" fill="#0e7490">x₄₀₀</text>
+    <circle cx="360" cy="222" r="7" fill="none" stroke="#ddd"/>
+    <circle cx="450" cy="222" r="13" fill="rgba(120,120,120,0.22)" stroke="#888" stroke-width="1.3"/><text x="450" y="226" text-anchor="middle" font-size="8" fill="#555">x_T</text>
+  </g>
+  <g stroke="#0e7490" stroke-width="1.6" fill="none">
+    <path d="M 437 236 L 305 236" marker-end="url(#dd-t)"/><path d="M 275 236 L 85 236" marker-end="url(#dd-t)"/>
+  </g>
+  <text x="260" y="256" text-anchor="middle" font-size="9.4" fill="#0e7490">skip the hollow ones — 20 to 50 evaluations, same trained weights</text>
+  <text x="490" y="206" font-size="9.6" fill="#0e7490">with σ_t = 0 no noise is injected,</text>
+  <text x="490" y="219" font-size="9.6" fill="#0e7490">so one x_T gives exactly one x₀ —</text>
+  <text x="490" y="232" font-size="9.6" fill="#0e7490">run it backwards and you can edit</text>
+  <text x="490" y="245" font-size="9.6" fill="#0e7490">a real image in latent space</text>
+
+  <rect x="16" y="286" width="728" height="34" rx="8" fill="rgba(14,116,144,0.05)" stroke="#0e7490" stroke-width="1.1"/>
+  <text x="380" y="307" text-anchor="middle" font-size="10.6" fill="#333">Both rows use the <tspan font-weight="700">same trained network</tspan>. DDIM is a choice made at sampling time, not a different model — σ_t is a dial, and DDPM is the setting σ_t = √β̃_t.</text>
+</svg>

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/>
+    </marker>
+  </defs>
+
+  <text x="380" y="28" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">A classifier compresses. A generator expands.</text>
+
+  <!-- z vector -->
+  <g>
+    <rect x="50" y="120" width="22" height="18" fill="rgba(14,116,144,0.15)" stroke="#0e7490"/>
+    <rect x="50" y="138" width="22" height="18" fill="rgba(14,116,144,0.15)" stroke="#0e7490"/>
+    <rect x="50" y="156" width="22" height="18" fill="rgba(14,116,144,0.15)" stroke="#0e7490"/>
+    <text x="61" y="110" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0e7490">z ∈ ℝᵏ</text>
+    <text x="61" y="196" text-anchor="middle" font-size="10.5" fill="#888">noise seed</text>
+    <text x="61" y="210" text-anchor="middle" font-size="10.5" fill="#888">k ≈ 16–128</text>
+  </g>
+
+  <path d="M 80 148 L 112 148" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#arrG)"/>
+
+  <!-- widening layers -->
+  <g>
+    <polygon points="118,128 148,118 148,178 118,168" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.3"/>
+    <text x="133" y="200" text-anchor="middle" font-size="10.5" fill="#666">W₁: L₁×k</text>
+    <polygon points="168,116 202,104 202,192 168,180" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.3"/>
+    <text x="185" y="212" text-anchor="middle" font-size="10.5" fill="#666">W₂: L₂×L₁</text>
+    <polygon points="222,100 260,86 260,210 222,196" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.3"/>
+    <text x="241" y="228" text-anchor="middle" font-size="10.5" fill="#666">W₃: L₃×L₂</text>
+    <polygon points="280,82 322,64 322,232 280,214" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.3"/>
+    <text x="301" y="248" text-anchor="middle" font-size="10.5" fill="#666">W₄: d×L₃</text>
+  </g>
+
+  <path d="M 330 148 L 366 148" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#arrG)"/>
+
+  <!-- output image -->
+  <g>
+    <rect x="372" y="88" width="120" height="120" rx="6" fill="#fafafa" stroke="#bbb" stroke-width="1.3"/>
+    <g stroke="#ddd" stroke-width="0.8">
+      <line x1="402" y1="88" x2="402" y2="208"/><line x1="432" y1="88" x2="432" y2="208"/><line x1="462" y1="88" x2="462" y2="208"/>
+      <line x1="372" y1="118" x2="492" y2="118"/><line x1="372" y1="148" x2="492" y2="148"/><line x1="372" y1="178" x2="492" y2="178"/>
+    </g>
+    <circle cx="417" cy="133" r="7" fill="rgba(14,116,144,0.35)"/>
+    <circle cx="450" cy="133" r="7" fill="rgba(14,116,144,0.35)"/>
+    <path d="M 405 172 Q 432 194 462 170" stroke="#0e7490" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <text x="432" y="76" text-anchor="middle" font-size="11.5" font-weight="600" fill="#333">x̂ = g_θ(z) ∈ ℝᵈ</text>
+    <text x="432" y="228" text-anchor="middle" font-size="10.5" fill="#888">e.g. d = 200×200 = 40,000 pixels</text>
+  </g>
+
+  <!-- dimension chain -->
+  <rect x="540" y="96" width="190" height="104" rx="10" fill="rgba(14,116,144,0.05)" stroke="#0e7490" stroke-width="1.3"/>
+  <text x="635" y="122" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">Dimensionality expansion</text>
+  <text x="635" y="148" text-anchor="middle" font-size="13" fill="#333" font-family="Georgia, serif" font-style="italic">k &lt; L₁ &lt; L₂ &lt; L₃ &lt; d</text>
+  <text x="635" y="172" text-anchor="middle" font-size="10.5" fill="#666">each layer widens the vector</text>
+  <text x="635" y="187" text-anchor="middle" font-size="10.5" fill="#666">(upsampling / transpose conv in CNNs)</text>
+
+  <text x="380" y="284" text-anchor="middle" font-size="11" fill="#666">g_θ(z) = W₄ σ(W₃ σ(W₂ σ(W₁ z))) — a stack of widening linear maps with non-linearities between them</text>
+</svg>

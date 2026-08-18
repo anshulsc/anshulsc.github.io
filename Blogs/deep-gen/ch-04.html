@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lecture 4 notes: the f-GAN derivation end to end, built up from undergraduate intuition to graduate-level proof — non-negativity of f-divergences, the Fenchel conjugate, the variational bound, the optimal discriminator, why the vanilla GAN loss is Jensen-Shannon shifted by log 4, and the training loop.">
+    <meta name="keywords"
+        content="f-GAN, Variational Divergence Minimization, Fenchel Conjugate, Jensen's Inequality, Optimal Discriminator, Jensen-Shannon Divergence, GAN Training, Minimax, Saddle Point, Non-saturating Loss, Convex Analysis">
+    <meta name="author" content="Anshul Singh">
+    <title>Lecture 4: From f-Divergences to a Trainable GAN — DGM Notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="dgm-notes-style.css">
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../../css/theme.css">
+  <script src="../../js/theme.js"></script>
+  <!-- Passphrase gate for this notes series -->
+  <script src="../../js/gate.js"></script>
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">DGM Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Lecture 4</div>
+                <h1>From f-Divergences to a Trainable GAN</h1>
+                <div class="chapter-meta">
+                    <span>August 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">45 min read</span>
+                    <span class="dot">●</span>
+                    <span>f-GANs</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target">
+                    <!-- Rendered markdown goes here -->
+                </article>
+
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <a href="ch-03.html" class="nav-prev">
+                    <div class="nav-label">← Previous Lecture</div>
+                    <div class="nav-title">Adversarial Models &amp; f-Divergences</div>
+                </a>
+                <a href="ch-05.html" class="nav-next">
+                    <div class="nav-label">Next Lecture →</div>
+                    <div class="nav-title">The Classifier View, Conditional GANs &amp; CycleGAN</div>
+                </a>
+            </div>
+        </main>
+
+        <footer
+            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*This is the chapter where all the machinery cashes out. Ch.3 got us to a variational bound and stopped there, with the function $f$ still unchosen. Here we choose one — and the entire vanilla GAN, invented in 2014 out of pure intuition, falls out of the algebra: its loss, its sigmoid, its two-phase training loop, even the constant $\log 4$ that nobody could explain at the time.*
+
+*The convex analysis was new to me, so these notes climb rather than jump. Part I tells the whole story with small numbers and no machinery — read only that and you will still understand what a GAN is doing and why. Part II proves all of it properly. Part III is the part nobody tells you: where the assumptions actually bite, what the theory does not promise, and which of these cracks the next few papers were written to fix. Nothing is dropped on the way up; each part re-enters the same material at greater depth.*
+
+<div class="part-marker"><span class="part-label">Part I</span><span class="part-name">The idea, with nothing but arithmetic</span><span class="part-sub">Calculus and a first probability course is genuinely all you need here. No measure theory, no convex analysis, no proofs — those start in Part II.</span></div>
+
+## 1. What We Are Trying to Do
+
+We have a finite pile of data drawn from some unknown distribution:
+
+$$D = \{x_1, x_2, \dots, x_n\} \sim P_x$$
+
+and we want a machine that makes more of it. That machine is a **generator** $g_\theta$: it takes easy noise and pushes it through a network.
+
+$$z \sim \mathcal{N}(0, I), \qquad \hat{x} = g_\theta(z)$$
+
+Whatever distribution those outputs follow, call it $P_\theta$. We never get a formula for it — it is whatever the network happens to produce. The goal is to tune $\theta$ until $P_\theta$ matches $P_x$:
+
+$$\theta^* = \arg\min_\theta \; D\big(P_x \parallel P_\theta\big)$$
+
+Three things about the noise, because they are the kind of detail that quietly breaks an implementation.
+
+**The output depends entirely on $z$.** $g_\theta$ is a deterministic function; all the randomness in $\hat{x}$ is inherited from the seed. Different $z$, different face. Freeze $z$ and you freeze the sample. This is why [thispersondoesnotexist.com](https://thispersondoesnotexist.com) gives you a new person on every refresh — it is drawing a new $z$, nothing more.
+
+**The choice of noise distribution matters less than you think, and more than you would like.** Gaussian, uniform, anything cheap to sample. What matters is keeping it *identical* between training and inference. The network learns a map calibrated on the input distribution it saw; feed it $\mathcal{N}(0,I)$ after training on $U[0,1]$ and you are evaluating it far outside the region it was ever supervised on. The output will be garbage, and it will look like a modelling failure rather than the plumbing bug it is.
+
+**Can a trained generator produce something absurd — a face with four eyes?** This has a precise answer, and it is the reason the rest of the chapter matters. Absurd outputs are the symptom of $D(P_x \parallel P_\theta)$ still being large. Four-eyed faces have essentially zero density under $P_x$; if $P_\theta$ puts mass there, the two distributions differ and the divergence registers it. Drive the divergence down and the artefacts go with it. "Does it generate weird stuff?" and "did the optimisation converge?" are the same question.
+
+---
+
+## 2. Five Tools
+
+Everything in this chapter is assembled from five ingredients. None is hard; the difficulty later comes from stacking them.
+
+<figure><img src="assets/svg/warmup-five.svg" alt="Five prerequisite ideas: expectation, convexity, supremum, density ratio, gradient step" style="max-width:100%;"><figcaption>Figure 4.1: The entire toolkit. If these five make sense, nothing later is out of reach.</figcaption></figure>
+
+**Expectation is a weighted average.** Multiply each value by how likely it is and add up. A die landing on 1, 2, 3 with probabilities $0.5, 0.3, 0.2$ paying out $10, 20, 30$ rupees has expectation $0.5(10) + 0.3(20) + 0.2(30) = 17$. When outcomes are continuous the sum becomes an integral and *that is the only thing that changes*:
+
+$$\mathbb{E}_{x \sim P}[h(x)] = \sum_x P(x) h(x) \quad\Longleftrightarrow\quad \int h(x)\,P(x)\,dx$$
+
+Every $\int \dots dx$ below can be read as "a sum over all the possible $x$". If integrals make you tense, mentally replace each one with $\sum$; not one argument in this chapter depends on the difference.
+
+**Convex means bowl-shaped**: the straight line joining any two points on the graph lies on or above the curve between them. $u^2$, $|u|$ and $u\log u$ are convex; a hill like $-u^2$ is not. That one property is the entire reason divergences cannot go negative.
+
+**$\sup$ is a maximum** — for our purposes, reading "supremum" as "max" loses nothing. **$\arg\max$** is different: not the best *value* but the *location* where it happens. "The height of the summit" versus "where the summit is".
+
+**The density ratio** $u(x) = p(x)/q(x)$ is the basic signal of disagreement between the true density $p$ and the model's $q$. Above 1 means real data appears here more often than the model expects; below 1 means the model over-produces this region; exactly 1 everywhere means the model is perfect. Almost everything below is a way of measuring how far $u$ strays from 1.
+
+**A gradient step** moves a parameter downhill by the slope times a small number: $\theta \leftarrow \theta - \alpha \nabla_\theta L$. To maximise, go uphill instead. A GAN does both at once to two different parameter sets, which is where all the drama comes from.
+
+---
+
+## 3. The Whole Argument, Before Any Proofs
+
+Here is the entire chapter in one pass, with the machinery left out. Part II proves each step; this is what each step *says*.
+
+**We need a number that measures how wrong the model is.** The recipe: at every point compare the two densities by their ratio $u = p/q$, score how far that ratio is from 1 with some scoring function $f$, and average the scores. Different choices of $f$ give KL, Jensen-Shannon, total variation and the rest — one template, many distances.
+
+**That number has to behave.** It must never be negative, and it must hit zero only when the model is exactly right. Both follow from two small demands on $f$: that it be bowl-shaped, and that it score a perfect ratio as zero. The proof is three lines once you have the right form of "bowl-shaped".
+
+**But we cannot compute it.** The natural move is to estimate the average by averaging over samples — which works, *provided you can evaluate the thing you are averaging*. Here we cannot. The quantity is built from the two density formulas, and those are exactly the two things we do not have: the true density is unknown (that is the problem we are solving) and the model's density has no formula at all, since the model is just a network that emits samples. The obvious estimator is not merely inaccurate; it cannot be written down.
+
+**The escape is a change of description.** A bowl-shaped function can be described two ways. The obvious way is by its height at each point. The other is by *all the straight lines that touch it from below*: pick a slope, slide a line of that slope up until it just kisses the curve, record where it sits. Do that for every slope and you have recorded the curve perfectly — you could throw the curve away and rebuild it from the lines. The bookkeeping device for "where does the line of slope $t$ sit" is called the **convex conjugate**, written $f^*(t)$, and it is just the biggest vertical gap between the line $y = tu$ and the curve.
+
+Why bother? Because the blocker was *non-linearity*. This second description writes a curved function as the best of a family of straight lines, and straight lines are exactly what expectations pass through cleanly.
+
+**Cash it in and the impossible term dissolves.** Replace the curve with "the best straight line at this point". Each point of the data space gets its own best slope, and a rule assigning a number to every point *is a function* — so instead of choosing infinitely many slopes we choose one function, called $T$. Once $f$ has been replaced by something linear in the ratio, the ratio's denominator cancels against the density sitting in front of it, and the uncomputable quantity simply disappears. What is left reads: *score real samples with $T$, score fake samples with a warped version of $T$, subtract the two averages.* Computable from two bags of samples and nothing else.
+
+**One compromise.** "The best of *all* functions" is not something a computer can search, so we search the functions a neural network can represent. A smaller search finds a smaller maximum, so the equality becomes a $\geq$ and we are optimising a lower bound. That single compromise is the origin of every "you need a strong discriminator" rule of thumb in the literature.
+
+**Now choose a specific $f$ and something remarkable happens.** Work out its conjugate, notice the conjugate is only defined for negative inputs, and squash the network's output to keep it negative. The squashing function that does this is the sigmoid — and once the objective is rewritten in terms of the squashed output, what appears on the page is the 2014 GAN loss, exactly as published. The sigmoid in a GAN discriminator is not a design decision anyone made; it is the only way to keep the mathematics defined. The reading of $D$ as "probability this image is real" is a by-product, not an assumption.
+
+**Finally, what is the game really minimising?** If the discriminator plays perfectly it reports, at each point, the fraction of the local density coming from real data: $p/(p+q)$. Sensible — where only real data lives it says 1, where only fakes live it says 0, where they overlap equally it shrugs and says a half. And against that perfect opponent the generator is up against the Jensen-Shannon divergence, a genuine symmetric bounded distance, minus a fixed constant of $\log 4$. A constant has no slope, so it changes nothing about training. The cops-and-robbers game really was minimising a real distance all along — and that constant explains a number every practitioner has stared at: a loss sitting at $-1.386$ means the divergence has hit zero and the generator has won.
+
+---
+
+## 4. A Worked Example You Can Check by Hand
+
+Before any proofs, a world small enough to verify everything in.
+
+Suppose there are exactly **three possible images**: a cat, a dog, and an indistinct blob. The true distribution and our current model are
+
+$$p = (0.5,\; 0.3,\; 0.2), \qquad q = (0.2,\; 0.3,\; 0.5)$$
+
+The model has it backwards — it thinks blobs are common and cats are rare. The density ratios are
+
+$$u = \frac{p}{q} = \left(\frac{0.5}{0.2},\; \frac{0.3}{0.3},\; \frac{0.2}{0.5}\right) = (2.5,\; 1.0,\; 0.4)$$
+
+Cats appear $2.5\times$ more often in reality than the model expects; dogs are exactly right; blobs are over-produced. Now average those ratios *weighted by the model's own probabilities*:
+
+$$\mathbb{E}_{q}[u] = 0.2(2.5) + 0.3(1.0) + 0.5(0.4) = 0.5 + 0.3 + 0.2 = 1$$
+
+Exactly 1. Not approximately — exactly, and it will keep coming out exactly 1 for every $q$ you can invent, because $\sum q_i \cdot (p_i/q_i) = \sum p_i$ and probabilities sum to one. That pinned average is the hinge of the non-negativity proof in §5.
+
+Take $f(u) = u\log u$, which is convex with $f(1) = 0$. The divergence is
+
+$$\sum_i q_i\, f(u_i) = 0.2(2.5\log 2.5) + 0.3(0) + 0.5(0.4 \log 0.4) = 0.4581 - 0.1833 = 0.2749$$
+
+positive, as promised — and this particular $f$ is exactly the KL divergence. Set $q = p$ and every ratio becomes 1, every $f(u_i)$ becomes $f(1) = 0$, and the total collapses to zero.
+
+We will come back to this table in §10, where the same three numbers confirm the chapter's main theorem to six decimal places.
+
+<div class="part-marker"><span class="part-label">Part II</span><span class="part-name">The derivation, proved properly</span><span class="part-sub">The same road again, this time for general distributions with every step justified. Nothing here contradicts Part I; it is Part I with the arguments filled in.</span></div>
+
+## 5. Proof: an f-Divergence Really Is a Divergence
+
+For $f : \mathbb{R}^+ \to \mathbb{R}$ convex with $f(1) = 0$:
+
+$$D_f(P_x \parallel P_\theta) = \int_{\mathcal{X}} P_\theta(x) \, f\!\left( \frac{P_x(x)}{P_\theta(x)} \right) dx = \mathbb{E}_{x \sim P_\theta}\big[ f(u(x)) \big], \qquad u(x) := \frac{P_x(x)}{P_\theta(x)}$$
+
+Calling this a divergence is a promise, and neither half is obvious — $f$ itself is allowed to go negative, and we meet an $f$ in §9 that does.
+
+**Step 1 — a supporting line.** Convexity has a form more useful here than the chord definition. If $f$ is convex then at every point $m$ there is a line through $(m, f(m))$ that stays below the whole curve:
+
+$$f(u) \;\geq\; f(m) + g \cdot (u - m) \qquad \text{for all } u$$
+
+with $g = f'(m)$ where $f$ is differentiable, and a subgradient where it is not — for $f(u) = \frac{1}{2}|u-1|$ at the kink, any slope in $[-\frac12, \frac12]$ works. This is the same *supporting line* object that ran the conjugate story in Ch.3, a hint that we are not accumulating unrelated tricks.
+
+**Step 2 — Jensen's inequality, in two lines.** Take the supporting line at $m = \mathbb{E}[u]$ and apply expectation to both sides. Expectation is monotone and linear:
+
+$$\mathbb{E}\big[f(u)\big] \;\geq\; \mathbb{E}\big[f(m) + g(u - m)\big] = f(m) + g\big(\mathbb{E}[u] - m\big) = f\big(\mathbb{E}[u]\big)$$
+
+The middle term vanished because $\mathbb{E}[u] - m = 0$ by construction. For convex $f$, the average of the function is at least the function of the average.
+
+**Step 3 — the average ratio is pinned to 1.** One line of cancellation, the general version of the arithmetic in §4:
+
+$$\mathbb{E}_{x \sim P_\theta}\big[u(x)\big] = \int P_\theta(x) \cdot \frac{P_x(x)}{P_\theta(x)} \, dx = \int P_x(x)\, dx = 1$$
+
+The ratio itself can be wild — near zero in places, enormous in others — but averaged under $P_\theta$ it is exactly 1 for *any* pair of distributions.
+
+**Step 4 — combine.**
+
+$$D_f(P_x \parallel P_\theta) = \mathbb{E}_{P_\theta}\big[f(u)\big] \;\overset{\text{Jensen}}{\geq}\; f\big(\mathbb{E}_{P_\theta}[u]\big) = f(1) = 0 \qquad \blacksquare$$
+
+The condition $f(1) = 0$ is not cosmetic bookkeeping: it is what places the floor at zero rather than some arbitrary level. **Equality** holds exactly when Jensen is tight, which for strictly convex $f$ means $u$ is constant wherever $P_\theta$ has mass; combined with $\mathbb{E}[u] = 1$ that constant must be 1, so $P_x = P_\theta$ almost everywhere.
+
+<div class="dgm-widget" id="widget-jensen"></div>
+
+---
+
+## 6. Proof: Sample Averages Cannot Touch It
+
+The **Law of Large Numbers** says that for any function $h$ we can compute,
+
+$$\mathbb{E}_{x \sim P}[h(x)] = \int h(x) P(x)\, dx \;\approx\; \frac{1}{n}\sum_{i=1}^n h(x_i), \qquad x_i \sim P$$
+
+Note what the right side does *not* contain: the density $P$. Drawing the samples already performs the weighting. That is what makes empirical averages so powerful against an unknown distribution — subject to one non-negotiable condition: **you must be able to evaluate $h$ at each sampled point.**
+
+Check our integrand against it:
+
+$$D_f(P_x \parallel P_\theta) = \mathbb{E}_{x \sim P_\theta}\!\left[ f\!\left(\frac{P_x(x)}{P_\theta(x)}\right) \right] \quad\Longrightarrow\quad h(x) = f\!\left(\frac{P_x(x)}{P_\theta(x)}\right)$$
+
+To average $h$ over generated samples we would have to evaluate both densities at those samples. $P_x$ is unknown by assumption; $P_\theta$ is defined implicitly by a network and has no formula either. The densities are trapped inside a non-linear $f$, so they cannot be arranged to cancel the way they did in Step 3.
+
+That is the precise diagnosis, and it tells us exactly what to fix: **the estimator fails not because of the integral, but because the integrand is non-linear in the unknown densities.** Make the dependence on $u$ linear and the $P_\theta$ out front cancels the denominator, exactly as in Step 3 where the ratio appeared linearly and died on contact.
+
+---
+
+## 7. The Convex Conjugate, Proved Properly
+
+For $f$ convex and lower semi-continuous, the **Fenchel conjugate** is
+
+$$f^*(t) = \sup_{u \, \in \, \mathrm{dom} f} \big\{ u t - f(u) \big\}$$
+
+Four lemmas is all we need.
+
+**Lemma A — $f^*$ is always convex.** For each *fixed* $u$, the map $t \mapsto ut - f(u)$ is affine in $t$ (slope $u$, intercept $-f(u)$). A pointwise supremum of affine functions is convex:
+
+$$f^*\big(\lambda t_1 + (1-\lambda) t_2\big) = \sup_u \Big\{ \lambda\big(ut_1 - f(u)\big) + (1-\lambda)\big(ut_2 - f(u)\big) \Big\} \leq \lambda f^*(t_1) + (1-\lambda) f^*(t_2)$$
+
+using only that the sup of a sum is at most the sum of the sups. Note what was *not* needed: $f$ convex. The conjugate of any function is convex — convexity of $f$ becomes necessary for Lemma D.
+
+**Lemma B — the Fenchel–Young inequality.** A supremum is at least any particular member, so for every $u$ and every $t$:
+
+$$f^*(t) \geq ut - f(u) \qquad \Longleftrightarrow \qquad \boxed{\; f(u) + f^*(t) \;\geq\; ut \;}$$
+
+Read right-to-left: $f(u) \geq ut - f^*(t)$, so the line $y = ut - f^*(t)$ lies below $f$ everywhere.
+
+**Lemma C — when it is tight.** Fix $t$ and maximise $h(u) = ut - f(u)$. Since $f$ is convex, $h$ is concave and a stationary point is the global maximum:
+
+$$h'(u) = t - f'(u) = 0 \quad\Longleftrightarrow\quad f'(u) = t$$
+
+The gap is largest where the curve's own slope equals $t$ — where the line is parallel to the curve. Equivalently $u^* = (f^*)'(t)$: the derivative of the conjugate inverts the derivative of the original.
+
+<figure><img src="assets/svg/fenchel-young.svg" alt="Fenchel-Young inequality: the gap between line and curve, and the tangency condition that makes it tight" style="max-width:100%;"><figcaption>Figure 4.2: Lemma B on the left — any u gives a valid but loose bound. Lemma C on the right — tangency makes it exact.</figcaption></figure>
+
+**Lemma D — duality, $f^{**} = f$.** Apply the definition twice: $f^{**}(u) = \sup_t \{ ut - f^*(t) \}$.
+
+*Upper bound.* By Lemma B, $ut - f^*(t) \leq f(u)$ for every $t$; take the sup over $t$ to get $f^{**}(u) \leq f(u)$.
+
+*Lower bound.* Fix $u_0$ and choose $t_0 = f'(u_0)$. By Lemma C the inequality is tight at that pair, so $u_0 t_0 - f^*(t_0) = f(u_0)$ exactly. A supremum is at least any attained value, so $f^{**}(u_0) \geq f(u_0)$.
+
+Both directions give
+
+$$\boxed{\; f(u) = \sup_{t \, \in \, \mathrm{dom} f^*} \big\{ ut - f^*(t) \big\} \;} \qquad \blacksquare$$
+
+Look at what that buys: $f$, a non-linear function, is now a supremum of things **linear in $u$**. §6 said the blocker was non-linearity in the density ratio; Lemma D removes it. (Ch.3, §7 has a demo where you drag the slope and watch the supporting lines rebuild the curve, if the geometry has not clicked yet.)
+
+---
+
+## 8. The Variational Bound
+
+Substitute Lemma D into the divergence with $u = P_x(x)/P_\theta(x)$:
+
+$$D_f(P_x \parallel P_\theta) = \int_{\mathcal{X}} P_\theta(x) \left[ \sup_{t} \left\{ t \cdot \frac{P_x(x)}{P_\theta(x)} - f^*(t) \right\} \right] dx$$
+
+**Move 1 — pull the supremum out.** Inside, each $x$ independently picks its own optimal $t$. A rule assigning a number to every $x$ is a function, so collecting those choices into $T : \mathcal{X} \to \mathbb{R}$ and taking the sup over the class $\mathcal{T}$ of **all** measurable functions is the same search:
+
+$$D_f(P_x \parallel P_\theta) = \sup_{T \in \mathcal{T}} \int_{\mathcal{X}} P_\theta(x) \left\{ T(x)\, \frac{P_x(x)}{P_\theta(x)} - f^*\big(T(x)\big) \right\} dx$$
+
+This is an **equality**, not a bound — the unrestricted class is rich enough to realise the pointwise optimum at every $x$ simultaneously. (Worth being careful with the brackets; on the board the closing bracket drifted past the $dx$ and it took a question from the class to catch it. The $dx$ applies to the whole integrand.)
+
+**Move 2 — distribute $P_\theta(x)$ and watch the ratio die.**
+
+$$D_f(P_x \parallel P_\theta) = \sup_{T \in \mathcal{T}} \left\{ \int_{\mathcal{X}} T(x)\, P_x(x)\, dx \; - \; \int_{\mathcal{X}} f^*\big(T(x)\big)\, P_\theta(x)\, dx \right\}$$
+
+$$\boxed{\; D_f(P_x \parallel P_\theta) = \sup_{T \in \mathcal{T}} \Big\{ \mathbb{E}_{x \sim P_x}\big[ T(x) \big] - \mathbb{E}_{\hat{x} \sim P_\theta}\big[ f^*\big(T(\hat{x})\big) \big] \Big\} \;}$$
+
+Both terms are now expectations of things we can *evaluate*: push a sample through a network, apply $f^*$ if it is a fake.
+
+**Move 3 — restrict to a network, accept an inequality.** Replace $\mathcal{T}$ with $\{T_\omega : \omega \in \Omega\}$, a network's reachable set. Searching a subset can only find an equal-or-smaller maximum:
+
+$$D_f(P_x \parallel P_\theta) \;\geq\; \max_{\omega} \Big\{ \mathbb{E}_{x \sim P_x}\big[ T_\omega(x) \big] - \mathbb{E}_{z \sim P_z}\big[ f^*\big(T_\omega(g_\theta(z))\big) \big] \Big\} \;=:\; \max_\omega V(\theta, \omega)$$
+
+Keep the two approximations separate in your head: **Moves 1–2 are exact, Move 3 is where the slack enters.**
+
+### The optimal $T$, in closed form
+
+The objective depends on $T$ only through its value at each individual $x$, so maximise pointwise. Treating the value $T(x) = t$ as the variable:
+
+$$\frac{\partial}{\partial t}\Big[ P_x(x)\, t - P_\theta(x)\, f^*(t) \Big] = P_x(x) - P_\theta(x)\, (f^*)'(t) = 0 \quad\Longrightarrow\quad (f^*)'(t) = \frac{P_x(x)}{P_\theta(x)}$$
+
+By Lemma C, $(f^*)'$ inverts $f'$, so
+
+$$\boxed{\; T^*(x) = f'\!\left( \frac{P_x(x)}{P_\theta(x)} \right) \;}$$
+
+**The optimal critic is a fixed, known function of the density ratio.** It is not learning something mysterious — it is learning $P_x/P_\theta$, pushed through $f'$. We cash this in twice, in §9 and §10.
+
+One doubt worth killing: **does $T$ have to be convex?** No. Nothing above asked for it. Convexity was demanded of $f$ — a function *we choose in advance* — so Lemma D holds. $T$ is a function we *learn* and may be any continuous function; §9's optimal $T^*$ is a log of a density ratio, nowhere near convex.
+
+---
+
+## 9. Choosing f: the Vanilla GAN Falls Out
+
+Pick
+
+$$f(u) = u \log u - (u+1)\log(u+1)$$
+
+Convex, and (spoiler for §10) $f(1) = -2\log 2 \neq 0$, which turns out to be a harmless bookkeeping quirk.
+
+**Step 1 — the derivative.**
+
+$$f'(u) = \big(\log u + 1\big) - \big(\log(u+1) + 1\big) = \log\frac{u}{u+1}$$
+
+**Step 2 — stationarity (Lemma C).** Set $f'(u) = t$:
+
+$$\log\frac{u}{u+1} = t \;\Longrightarrow\; \frac{u}{u+1} = e^t \;\Longrightarrow\; u\big(1 - e^t\big) = e^t \;\Longrightarrow\; u^* = \frac{e^t}{1 - e^t}$$
+
+**Step 3 — read off the domain.** We need $u^* > 0$, hence $1 - e^t > 0$:
+
+$$\mathrm{dom}\, f^* = \{\, t : t < 0 \,\}$$
+
+Hold onto that. It is not a technicality; it is the sigmoid.
+
+**Step 4 — evaluate.** Since $\log u = \log\frac{u}{u+1} + \log(u+1) = t + \log(u+1)$:
+
+$$f(u) = u\big(t + \log(u+1)\big) - (u+1)\log(u+1) = ut - \log(u+1)$$
+
+so $f^*(t) = u^*t - f(u^*) = \log(u^*+1)$, and with $u^* + 1 = \frac{1}{1 - e^t}$:
+
+$$\boxed{\; f^*(t) = -\log\big(1 - e^{t}\big), \qquad \mathrm{dom}\, f^* = (-\infty, 0) \;}$$
+
+<div class="dgm-widget" id="widget-ganconj"></div>
+
+### Why the sigmoid is forced
+
+The critic is a network; its raw output $v = \mathrm{net}_\omega(x)$ is an unconstrained real number, and nothing stops a linear final layer emitting $+3.7$. But $f^*$ is undefined for $t \geq 0$: the argument $1 - e^t$ becomes zero or negative and the logarithm dies. Feed it such a $t$ and the objective is not "large", it is *meaningless*.
+
+So insert a final activation whose range is exactly $\mathrm{dom}\, f^*$:
+
+$$T_\omega(x) = \log \sigma\big(v(x)\big) = -\log\big(1 + e^{-v}\big) \;\in\; (-\infty, 0) \quad \text{for all } v \in \mathbb{R}$$
+
+<figure><img src="assets/svg/sigmoid-domain.svg" alt="How the raw critic output is mapped into the domain of the conjugate, producing the discriminator" style="max-width:100%;"><figcaption>Figure 4.3: The sigmoid is not a modelling choice. It is the map keeping the critic inside the domain where f* exists.</figcaption></figure>
+
+Now define $D_\omega(x) := \sigma(v(x)) = e^{T_\omega(x)} \in (0,1)$. The classifier reading — "$D$ is the probability that $x$ is real" — arrives as a **consequence**, not an assumption. We asked for nothing but domain-correctness and got a probability out.
+
+### Substituting into the bound
+
+With $f^*(T) = -\log(1 - e^T) = -\log(1 - D)$:
+
+$$V(\theta, \omega) = \mathbb{E}_{x \sim P_x}\big[ T_\omega(x) \big] - \mathbb{E}_{\hat{x} \sim P_\theta}\big[ f^*(T_\omega(\hat{x})) \big] = \mathbb{E}_{x \sim P_x}\big[ \log D_\omega(x) \big] + \mathbb{E}_{\hat{x} \sim P_\theta}\big[ \log\big(1 - D_\omega(\hat{x})\big) \big]$$
+
+$$\boxed{\; \min_\theta \; \max_\omega \; V(\theta,\omega) = \mathbb{E}_{x \sim P_x}\big[\log D_\omega(x)\big] + \mathbb{E}_{z \sim P_z}\big[\log\big(1 - D_\omega(g_\theta(z))\big)\big] \;}$$
+
+Exactly the [2014 GAN objective](https://arxiv.org/abs/1406.2661), character for character — proposed then as an intuition about cops and robbers, falling out here from a convex-analysis identity with no intuition required.
+
+One sign to be careful about. The general form carries a *minus* before the second expectation, but $f^*$ itself starts with a minus and the two cancel into a **plus**. I wrote $\mathbb{E}[\log D] - \mathbb{E}[\log(1-D)]$ the first time through and got an objective rewarding the critic for calling fakes real. Sanity-check it by asking what the critic wants: $D \to 1$ on real data *and* $D \to 0$ on fakes pushes both $\log D$ and $\log(1-D)$ up. Both terms increase together, so it is a plus.
+
+---
+
+## 10. What the Game Is Actually Minimising
+
+### The optimal discriminator
+
+Write the objective as one integral, with $p := P_x(x)$ and $q := P_\theta(x)$:
+
+$$V(D) = \int \Big[ p(x) \log D(x) + q(x) \log\big(1 - D(x)\big) \Big] dx$$
+
+$D$ is unconstrained across different $x$, so maximise the integrand pointwise. For fixed non-negative $a, b$, maximise $\varphi(y) = a\log y + b \log(1-y)$ over $y \in (0,1)$:
+
+$$\varphi'(y) = \frac{a}{y} - \frac{b}{1-y} = 0 \;\Longrightarrow\; a(1-y) = by \;\Longrightarrow\; y = \frac{a}{a+b}$$
+
+and $\varphi''(y) = -\frac{a}{y^2} - \frac{b}{(1-y)^2} < 0$, a genuine maximum. Hence
+
+$$\boxed{\; D^*(x) = \frac{P_x(x)}{P_x(x) + P_\theta(x)} \;}$$
+
+**Cross-check against §8.** The general theory said $T^* = f'(u)$ with $u = p/q$; here $f'(u) = \log\frac{u}{u+1}$, so
+
+$$T^*(x) = \log \frac{p/q}{p/q + 1} = \log\frac{p}{p+q} \quad\Longrightarrow\quad D^* = e^{T^*} = \frac{p}{p+q}$$
+
+Two independent routes — pointwise calculus on the GAN loss, and the general conjugate machinery — landing on the same $D^*$. That agreement is the best evidence the derivation was done right.
+
+Read in reverse it gives an identity used far beyond GANs, in density-ratio estimation and importance weighting:
+
+$$\frac{P_x(x)}{P_\theta(x)} = \frac{D^*(x)}{1 - D^*(x)}$$
+
+**A perfectly trained discriminator is a density-ratio estimator in disguise.** And $D^* \equiv \frac12$ when $P_\theta = P_x$: at convergence the critic is reduced to guessing, which is the visual signature to look for during training.
+
+### Substituting $D^*$ back
+
+Let $M := \frac{P_x + P_\theta}{2}$, so $p + q = 2M$:
+
+$$V(D^*) = \int p \log \frac{p}{2M} + q \log \frac{q}{2M} \, dx = \int p\log\frac{p}{M} + q\log\frac{q}{M}\,dx \; - \; \log 2 \int (p + q)\, dx$$
+
+The last integral is $1 + 1 = 2$, and the first two are KL divergences against $M$:
+
+$$V(D^*) = D_{KL}\big(P_x \parallel M\big) + D_{KL}\big(P_\theta \parallel M\big) - 2\log 2 = \boxed{\; 2\, D_{JS}\big(P_x \parallel P_\theta\big) - \log 4 \;}$$
+
+### The $f(1) = 0$ problem, and why it does not matter
+
+A legal $f$-divergence generator needs $f(1) = 0$, and ours gives $f(1) = -2\log 2 = -\log 4 \neq 0$. So strictly, **the vanilla GAN objective is not an $f$-divergence.** The properly normalised JS generator is
+
+$$f_{JS}(u) = u\log u - (u+1)\log\frac{u+1}{2}, \qquad f_{JS}(1) = 0$$
+
+and the two differ by exactly $f_{JS}(u) = f(u) + (u+1)\log 2$. Feed that difference through the integral:
+
+$$\int P_\theta \cdot (u + 1)\log 2 \; dx = \log 2 \int \big(P_x + P_\theta\big) dx = 2\log 2 = \log 4$$
+
+A **constant** — independent of $\theta$, of $\omega$, of the data — and a constant has zero gradient. It shifts the value without moving the minimiser or changing a single update.
+
+<figure><img src="assets/svg/jsd-offset.svg" alt="The GAN value function is the Jensen-Shannon divergence shifted down by log 4" style="max-width:100%;"><figcaption>Figure 4.4: Same curve, shifted. Why an objective that fails the f(1)=0 test still trains perfectly well.</figcaption></figure>
+
+Back to the toy world to collect the winnings. With $p = (0.5, 0.3, 0.2)$ and $q = (0.2, 0.3, 0.5)$, compute all three quantities independently. Straight from the definition, $\sum q_i f(u_i)$ gives $-0.4188 - 0.4159 - 0.4188 = -1.253466$. From the optimal discriminator, $D^* = (0.714, 0.5, 0.286)$ and $\sum p_i \log D^*_i + \sum q_i \log(1 - D^*_i) = -1.253466$. From Jensen-Shannon, $D_{JS} = 0.066414$, so $2 D_{JS} - \log 4 = -1.253466$. Three routes, six decimal places, one number — the main theorem verified with a calculator. The ratio identity checks out too: $D^*/(1-D^*) = 0.714/0.286 = 2.5 = u_1$.
+
+<div class="dgm-widget" id="widget-optd"></div>
+
+<div class="dgm-widget" id="widget-toy"></div>
+
+---
+
+## 11. From Integrals to Minibatches
+
+Expectations over $P_x$ and $P_\theta$ are still integrals, but §6's Law of Large Numbers now applies because every integrand is computable. With a real batch $\{x_i\}_{i=1}^N$ from the dataset and a noise batch $\{z_j\}_{j=1}^M$ pushed through the generator:
+
+$$\hat{J}(\theta, \omega) = \frac{1}{N}\sum_{i=1}^N \log D_\omega(x_i) \;+\; \frac{1}{M}\sum_{j=1}^M \log\big(1 - D_\omega(\hat{x}_j)\big)$$
+
+$$\theta^*, \omega^* = \arg\min_\theta \max_\omega \; \hat{J}(\theta, \omega)$$
+
+**Do $N$ and $M$ have to match?** Mathematically no — they are independent Monte-Carlo estimates of independent expectations, each converging on its own. In practice you set $N = M$: it keeps the two gradient contributions on the same noise scale, it is what every dataloader gives you, and an imbalance just makes one term noisier for no benefit. The interesting knob is not $N$ versus $M$ but how many critic steps you take per generator step.
+
+---
+
+## 12. The Training Loop, Derived
+
+There is no way to solve a min-max problem in one shot, so we alternate: hold one player fixed, step the other. The part that trips everyone up is how far the gradient travels — when training the critic it stops inside the critic, and when training the generator it passes *all the way through the frozen critic* and out the other side. The critic is a road, not a destination: its weights are read on the way past and left untouched.
+
+<figure><img src="assets/svg/gan-train-loop.svg" alt="The two-phase GAN training loop with frozen and updating networks and gradient paths" style="max-width:100%;"><figcaption>Figure 4.5: What is frozen, what is updating, and how far the gradient travels in each phase.</figcaption></figure>
+
+**Phase 1 — the critic ($\omega$ moves, $\theta$ frozen).** The critic maximises, so gradient **ascent**:
+
+$$\omega^{t+1} \leftarrow \omega^{t} + \beta \, \nabla_\omega \hat{J}(\theta^t, \omega^t)$$
+
+Both terms contain $\omega$ so both contribute. Fakes come from the frozen generator — in code, generate them then detach them from the graph. Backpropagation computes $\nabla_\omega$ and **stops at the critic's input layer**.
+
+**Phase 2 — the generator ($\theta$ moves, $\omega$ frozen).**
+
+$$\theta^{t+1} \leftarrow \theta^{t} - \alpha \, \nabla_\theta \hat{J}(\theta^t, \omega^t)$$
+
+First a simplification that halves the work: the real-data term contains no $\theta$ anywhere — those are dataset samples, untouched by the generator — so its gradient is identically zero:
+
+$$\nabla_\theta \hat{J}(\theta, \omega) = \nabla_\theta \left[ \frac{1}{M}\sum_{j=1}^M \log\Big(1 - D_\omega\big(g_\theta(z_j)\big)\Big) \right]$$
+
+Now the chain rule, spelled out, because this is where architecture and calculus meet:
+
+$$\nabla_\theta \hat{J} = \frac{1}{M}\sum_{j=1}^M \underbrace{\frac{\partial \log(1 - D_\omega(\hat{x}))}{\partial \hat{x}}\bigg|_{\hat{x} = g_\theta(z_j)}}_{\text{through the critic}} \cdot \underbrace{\nabla_\theta \, g_\theta(z_j)}_{\text{through the generator}}$$
+
+With $D_\omega = \sigma(v)$ and $\frac{d}{dv}\log(1 - \sigma(v)) = -\sigma(v)$:
+
+$$\frac{\partial}{\partial \hat{x}} \log\big(1 - D_\omega(\hat{x})\big) = -D_\omega(\hat{x}) \cdot \nabla_{\hat{x}} v(\hat{x})$$
+
+So the signal reaching the generator is *the critic's confidence that this sample is fake, times the direction in input space that would most change its mind.*
+
+**Why it feels unstable.** Ordinary training descends to a minimum and progress is monotone. Here the target is a **saddle point** — a maximum along $\omega$ and a minimum along $\theta$ simultaneously.
+
+<figure><img src="assets/svg/saddle-point.svg" alt="A saddle surface with maximization along omega and minimization along theta" style="max-width:100%;"><figcaption>Figure 4.6: Two players walking in perpendicular directions on the same surface. Neither loss curve is supposed to fall monotonically.</figcaption></figure>
+
+That geometry is why GAN loss curves are so uninformative: a rising critic loss can mean the generator is improving, a falling one can mean the critic is winning too hard. It is also why $k$, the critic steps per generator step, is such a sensitive knob — too few and Move 3's bound is loose so the generator chases a mirage, too many and the critic saturates, driving $D(\hat{x}) \to 0$ and killing the gradient, as §13 shows.
+
+Everything above is implemented literally in the demo below: the same gradients, the same alternation, fresh minibatches every step.
+
+<div class="dgm-widget" id="widget-gantrain"></div>
+
+---
+
+## 13. The Saturation Problem
+
+The gradient carries a factor $-D_\omega(\hat{x})$. At the start of training the generator is terrible, the critic spots fakes instantly, so $D_\omega(\hat{x}) \approx 0$ and the gradient is $\approx 0$ too. **Precisely when the generator is worst, it learns slowest** — structural, not a tuning issue, because $\log(1 - D)$ is flat near $D = 0$.
+
+The standard fix keeps the equilibrium and changes the gradient profile: instead of minimising $\log(1 - D_\omega(\hat{x}))$, *maximise* $\log D_\omega(\hat{x})$.
+
+$$\frac{\partial}{\partial \hat{x}}\Big[-\log D_\omega(\hat{x})\Big] = -\big(1 - D_\omega(\hat{x})\big)\cdot \nabla_{\hat{x}} v(\hat{x})$$
+
+The factor is now $(1 - D)$ instead of $D$ — close to 1 exactly when the generator is losing badly. Both versions share the same fixed point (the generator still drives $D(\hat{x}) \to \frac12$), so this re-weights the gradient rather than changing the objective. It is the **non-saturating loss**, and essentially every implementation runs it. The demo in §12 has a toggle; switching it and resetting makes the early-training difference plainly visible, which is a better argument than this paragraph.
+
+<div class="part-marker"><span class="part-label">Part III</span><span class="part-name">The fine print</span><span class="part-sub">What the theorems above quietly assume, what they do not promise, and which of these cracks the literature after 2016 was written to repair. This is the layer that separates using a GAN from understanding one.</span></div>
+
+## 14. Where the Assumptions Actually Bite
+
+Part II moved briskly past several conditions. They are not decoration.
+
+**Lower semi-continuity and closed convexity.** Lemma D needs $f$ convex *and* lower semi-continuous. Without it, $f^{**}$ is not $f$ but the **closed convex hull** of $f$ — the largest closed convex function below it. Every step after Lemma D would then be bounding the wrong function. For all the standard generators ($u\log u$, $(u-1)^2$, $\frac12|u-1|$) the condition holds, so the issue never surfaces in practice, but it is the reason "convex" alone is not the stated hypothesis in the papers.
+
+**Non-differentiable $f$.** Lemma C differentiated $ut - f(u)$, which total variation's $f(u) = \frac{1}{2}|u-1|$ does not permit at $u = 1$. The fix is standard: replace $f'$ with the **subdifferential** $\partial f$ and stationarity with $t \in \partial f(u)$. Everything survives, but $T^* = f'(p/q)$ becomes set-valued, and for TV the optimal critic is genuinely a step function — which is a real hint about why TV-like objectives behave differently in practice.
+
+**Where the densities do not exist.** The whole construction assumed $P_x$ and $P_\theta$ have densities with respect to a common measure. If $P_\theta$ is supported on a low-dimensional manifold — which it *always is*, since $g_\theta$ maps $\mathbb{R}^k$ into $\mathbb{R}^d$ with $k \ll d$ — then $P_\theta$ has no density on $\mathbb{R}^d$ at all. The ratio $P_x/P_\theta$ is undefined almost everywhere. Strictly speaking the object we spent this chapter bounding does not exist for the models we actually train.
+
+That last point is not a technicality. It is the crack the next few years of research pried open.
+
+---
+
+## 15. What the Bound Does Not Promise
+
+Three gaps between the theory and what training actually does.
+
+**The bound is not the divergence.** Move 3 replaced a supremum over all measurable functions with a maximum over a network's reachable set. Everything downstream — including "the game minimises $2D_{JS} - \log 4$" — holds for the *unrestricted* critic. With a real network you minimise a lower bound, and minimising a lower bound does not minimise the thing it bounds. The bound can fall while the true divergence stays flat. All the folklore about training a strong discriminator is an attempt to keep this gap small, and it is folklore precisely because nobody can bound the gap.
+
+**The optimal-$D^*$ analysis assumes an inner loop you never run.** $\max_D V = 2D_{JS} - \log 4$ requires the discriminator to be *fully optimised for the current generator*. In practice you take $k$ gradient steps, $k$ is 1 or 5, and the critic is perpetually chasing. The elegant statement describes a limit nobody reaches.
+
+**Alternating gradient descent-ascent has no convergence guarantee.** Gradient descent on a convex loss provably converges; simultaneous descent-ascent on a saddle problem provably does not, in general. It can cycle forever, even on objectives as simple as $\min_x \max_y xy$. The best available statements are local: under conditions, near a **local Nash equilibrium**, the dynamics are locally stable. "The game has a unique global optimum at $P_\theta = P_x$" is true and almost irrelevant, because the optimum is stated in distribution space while the optimiser moves in parameter space, and the map between them is neither convex nor surjective.
+
+The oscillation you see in the §12 demo is not a bug in the demo. It is the honest behaviour of the algorithm.
+
+---
+
+## 16. The Crack That Motivated Wasserstein GANs
+
+Combine §14's manifold observation with the JS result and something uncomfortable follows.
+
+Suppose $P_x$ and $P_\theta$ live on **disjoint supports** — which, for two low-dimensional manifolds in a high-dimensional space, is the generic situation rather than the exception. Then at every point at most one of the densities is non-zero, so the midpoint $M = \frac{P_x + P_\theta}{2}$ equals $\frac{P_x}{2}$ where the data lives and $\frac{P_\theta}{2}$ where the fakes live. Substituting:
+
+$$D_{KL}(P_x \parallel M) = \int P_x \log\frac{P_x}{P_x/2} = \log 2, \qquad D_{KL}(P_\theta \parallel M) = \log 2$$
+
+$$\Longrightarrow \quad D_{JS}(P_x \parallel P_\theta) = \log 2 \quad \text{— its maximum, constant}$$
+
+**The divergence is pinned at $\log 2$ no matter how far apart the two distributions are, and no matter which direction you move the generator.** A constant has zero gradient. The generator receives no signal at all — not a weak signal, none — and the corresponding optimal discriminator achieves perfect separation, driving $D(\hat{x}) \to 0$ and triggering §13's saturation as well.
+
+This is the precise, provable version of the practitioner's complaint that "the discriminator wins and training dies". It is not instability; it is the objective being mathematically flat.
+
+The fix is to stop using a divergence that only sees whether supports overlap, and use one that measures *how far apart* they are. The Wasserstein (earth-mover) distance does exactly that: it stays finite and has usable gradients even for disjoint supports. Getting there requires leaving the $f$-divergence family entirely and changing what the critic is constrained to be — from "any function in the network's range" to "any 1-Lipschitz function" — which is the subject of the [WGAN paper](https://arxiv.org/abs/1701.07875) and the next stretch of the course.
+
+Worth noticing what just happened: every step of Parts I and II was correct, and the conclusion is still that this objective has a serious structural weakness. That is what the fine print is for.
+
+---
+
+## 17. Choosing a Different f
+
+The general framework's real payoff is that swapping the divergence is a three-line change: pick a convex $f$, compute $f^*$, set the output activation to match $\mathrm{dom}\, f^*$. From the [$f$-GAN paper](https://arxiv.org/abs/1606.00709):
+
+| Divergence | generator $f(u)$ | conjugate $f^*(t)$ | $\mathrm{dom}\,f^*$ | output activation |
+| :--- | :--- | :--- | :--- | :--- |
+| GAN / JS | $u\log u - (u{+}1)\log(u{+}1)$ | $-\log(1 - e^t)$ | $t < 0$ | $\log \sigma(v)$ |
+| KL | $u \log u$ | $e^{t-1}$ | all of $\mathbb{R}$ | linear, $v$ |
+| Reverse KL | $-\log u$ | $-1 - \log(-t)$ | $t < 0$ | $-e^{-v}$ |
+| Pearson $\chi^2$ | $(u-1)^2$ | $t + t^2/4$ | all of $\mathbb{R}$ | linear, $v$ |
+| Squared Hellinger | $(\sqrt{u} - 1)^2$ | $t/(1-t)$ | $t < 1$ | $1 - e^{-v}$ |
+
+Two of them need no squashing at all — the sigmoid is specific to the JS choice, not a universal feature of adversarial training. Swapping the divergence in a codebase and leaving the last layer alone silently produces nonsense, because the critic will wander outside $\mathrm{dom}\,f^*$ and the objective stops meaning anything.
+
+Also worth knowing: the choice of $f$ changes *which* mismatches get punished hardest. Forward KL is mode-covering — it pays an enormous price for putting near-zero density where real data exists, so it smears to cover everything. Reverse KL is mode-seeking — it pays for putting density where data is absent, so it collapses onto one mode and stays sharp. Neither is right; they are different failure modes, and picking $f$ is picking which one you would rather have.
+
+**How can a network represent an arbitrary $T$?** By the **universal approximation theorem** — enough hidden units approximate any continuous function on a bounded domain. But "represent" is subtle. Ask a network to fit $y = 2x^3 + 3x + 5$ and it never finds the cubic; it bends a straight line at many places, one kink per hidden unit, until the piecewise-linear result is indistinguishable from the curve.
+
+<div class="dgm-widget" id="widget-uat"></div>
+
+This also settles the convexity question visually: a cubic is not convex and the network tracks it without difficulty. Only $f$ had to be convex, and $f$ was never learned.
+
+---
+
+## 18. Where This Breaks: Discrete Data
+
+$x$ has been completely generic — images, audio, tabular rows, text. Nothing in §5–§13 assumed pixels. So why are GANs essentially never used for text?
+
+The answer is in the Phase 2 chain rule. The generator's gradient must travel **through the generated sample $\hat{x}$**, which requires $\hat{x}$ to depend on $\theta$ *differentiably*. For images it does: the network outputs pixel intensities directly and nudging a weight nudges a pixel proportionally. For text it does not. A text generator outputs a distribution over the vocabulary and must then **choose a token** — an $\arg\max$ or a sample. That choice is a step function of the logits: perturb them slightly and either nothing changes at all, or the output jumps to a different word.
+
+$$\frac{\partial \, \hat{x}}{\partial \, \text{logits}} = 0 \quad \text{almost everywhere}$$
+
+<figure><img src="assets/svg/discrete-gradient.svg" alt="Continuous outputs let gradients flow while discrete token sampling blocks them" style="max-width:100%;"><figcaption>Figure 4.7: The path from critic to generator is a chain of derivatives. One zero anywhere and the whole product is zero.</figcaption></figure>
+
+Zero gradient almost everywhere means no learning signal at all. The critic can be as good as you like; there is no road for its opinion to travel back on. This is why autoregressive maximum-likelihood models — which never differentiate through a sampled token, because they train on ground-truth tokens — took over language modelling completely. Workarounds exist (Gumbel-softmax relaxations, RL-style estimators, working in a continuous latent space) and the course returns to them.
+
+---
+
+## 19. Why the Mathematics Was Worth It
+
+The chronology makes the argument better than I could. In **2014** the GAN was proposed as an intuition: two networks competing until the fakes pass, with analysis tailored specifically to the JS case. In **2016** the $f$-GAN derived the same objective from Fenchel duality and showed the 2014 model was one member of an infinite family. And in **2017** the WGAN used exactly the structural understanding from §16 to identify what was wrong with the JS choice and replace it.
+
+That progression is only available if you have the general derivation. Without it you are stuck with whatever loss the paper shipped and any modification is guesswork. It is also the honest answer to "why so much maths, when do we get to the code" — the code for a GAN is thirty lines. Knowing *which* thirty lines, and what to change when they do not work, is the entire content.
+
+**Going deeper:** the [$f$-GAN paper](https://arxiv.org/abs/1606.00709) is remarkably readable once the derivation is in hand — its Table 2 is §17's table, extended. [Goodfellow et al. (2014)](https://arxiv.org/abs/1406.2661) for the original, [Arjovsky et al. (2017)](https://arxiv.org/abs/1701.07875) for the Wasserstein repair, and Arjovsky & Bottou's [*Towards Principled Methods*](https://arxiv.org/abs/1701.04862) for the full treatment of §16's disjoint-support argument. For the convex analysis, any treatment of Legendre-Fenchel duality; the geometry in §7 is genuinely all you need.
+
+---
+
+## 20. Cheat Sheet
+
+| Result | Statement | Where it came from |
+| :--- | :--- | :--- |
+| **Non-negativity** | $D_f(P_x \parallel P_\theta) \geq 0$, $= 0$ iff $P_x = P_\theta$ | Jensen + $\mathbb{E}_{P_\theta}[u] = 1$ + $f(1) = 0$ |
+| **Fenchel–Young** | $f(u) + f^*(t) \geq ut$ | a sup exceeds any member |
+| **Tightness** | equality iff $t = f'(u)$ | stationarity of $ut - f(u)$ |
+| **Duality** | $f(u) = \sup_t \{ut - f^*(t)\}$ | both inequalities in Lemma D |
+| **Variational form** | $D_f = \sup_T \{\mathbb{E}_{P_x}[T] - \mathbb{E}_{P_\theta}[f^*(T)]\}$ | duality + the ratio cancelling |
+| **Optimal critic** | $T^*(x) = f'(P_x/P_\theta)$ | pointwise stationarity |
+| **GAN's $f$** | $f(u) = u\log u - (u{+}1)\log(u{+}1)$ | the choice that makes it vanilla |
+| **Its conjugate** | $f^*(t) = -\log(1 - e^t)$, $t < 0$ | four lines of algebra in §9 |
+| **The sigmoid** | $T = \log\sigma(v)$, $D = e^T = \sigma(v)$ | the only reason: $\mathrm{dom}\,f^*$ |
+| **GAN objective** | $\mathbb{E}_{P_x}[\log D] + \mathbb{E}_{P_\theta}[\log(1{-}D)]$ | substituting $f^*$ into the bound |
+| **Optimal $D$** | $D^*= \frac{P_x}{P_x + P_\theta}$ | maximise $a\log y + b\log(1{-}y)$ |
+| **Density ratio** | $P_x/P_\theta = D^*/(1 - D^*)$ | rearranging the line above |
+| **What is minimised** | $\max_D V = 2 D_{JS} - \log 4$ | substituting $D^*$ back in |
+| **Generator gradient** | $-D_\omega(\hat{x}) \, \nabla_{\hat{x}} v \cdot \nabla_\theta g_\theta(z)$ | chain rule through a frozen critic |
+| **Non-saturating** | swap the factor $D$ for $(1 - D)$ | maximise $\log D$ instead |
+| **Disjoint supports** | $D_{JS} \equiv \log 2$, gradient $\equiv 0$ | §16 — the WGAN motivation |
+
+---
+
+## 21. Key Takeaways
+
+1. **An $f$-divergence is non-negative for one reason:** convexity gives Jensen, and the density ratio has expectation exactly 1 under $P_\theta$. The condition $f(1) = 0$ places the floor at zero.
+2. **The naive estimator fails for a specific, fixable reason** — non-linearity in the unknown densities. Fenchel duality rewrites $f$ as a supremum of linear functions, the ratio cancels, and two sample averages remain.
+3. **Only Move 3 introduces error.** Rewriting the divergence variationally is exact; restricting the critic to a network is where the bound goes loose, and every "use a strong discriminator" heuristic traces back to that one step.
+4. **The vanilla GAN is not an invention, it is a substitution.** Pick $f(u) = u\log u - (u{+}1)\log(u{+}1)$, compute $f^*$, notice $\mathrm{dom}\,f^*$ forces $T = \log\sigma(v)$, and the 2014 objective appears — sigmoid, classifier interpretation and all.
+5. **The optimal critic is a density-ratio estimator:** $D^* = \frac{P_x}{P_x+P_\theta}$, so $P_x/P_\theta = D^*/(1-D^*)$, and $D^* \equiv \frac12$ exactly when the generator has won.
+6. **The game minimises $2D_{JS} - \log 4$** — but only against a fully optimised critic you never actually train. The $\log 4$ is constant in every parameter and has no gradient; the value $-1.386$ means victory.
+7. **Training is alternating optimisation toward a saddle point**, with no general convergence guarantee. Loss curves are not progress bars, and oscillation is the honest behaviour of the algorithm.
+8. **The theory has a real hole, and it is not where beginners expect.** Implicit generators put mass on a low-dimensional manifold, so the density ratio the whole chapter is built on may not exist; when supports are disjoint, $D_{JS}$ is pinned at $\log 2$ and the gradient vanishes identically. That single fact is what the Wasserstein GAN was built to fix.
+9. **The whole scheme needs a differentiable path from critic to generator.** Discrete outputs sever it, which is why GANs never took over text.
+
+---
+
+*Next: reading this same objective the opposite way round — as a generator being tutored by a classifier — which explains why the discriminator must be retrained inside the loop, and then the practical machinery: DCGAN, conditioning, and unpaired translation.*
+    </script>
+
+    <script src="dgm-notes.js"></script>
+    <script src="dgm-widgets.js"></script>
+</body>
+
+</html>

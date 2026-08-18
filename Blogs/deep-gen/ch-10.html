@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lecture 10 notes: the DDPM training loop in practice, sinusoidal time embedding in a U-Net, Tweedie's formula connecting noise prediction to score matching, classifier-guided conditional generation, and DDIM — non-Markovian sampling, step skipping and deterministic inversion.">
+    <meta name="keywords"
+        content="DDIM, Denoising Diffusion Implicit Models, Score Matching, Tweedie Formula, Classifier Guidance, Guidance Scale, Time Embedding, Sinusoidal Embedding, U-Net, Latent Diffusion, Stable Diffusion, Deterministic Sampling, Inversion">
+    <meta name="author" content="Anshul Singh">
+    <title>Lecture 10: Score Matching, Guidance &amp; DDIM — DGM Notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="dgm-notes-style.css">
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../../css/theme.css">
+  <script src="../../js/theme.js"></script>
+  <!-- Passphrase gate for this notes series -->
+  <script src="../../js/gate.js"></script>
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">DGM Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Lecture 10</div>
+                <h1>Score Matching, Guidance &amp; DDIM</h1>
+                <div class="chapter-meta">
+                    <span>August 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">34 min read</span>
+                    <span class="dot">●</span>
+                    <span>Guidance &amp; DDIM</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target">
+                    <!-- Rendered markdown goes here -->
+                </article>
+
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <a href="ch-09.html" class="nav-prev">
+                    <div class="nav-label">← Previous Lecture</div>
+                    <div class="nav-title">Denoising Diffusion Probabilistic Models</div>
+                </a>
+                <a href="ch-11.html" class="nav-next">
+                    <div class="nav-label">Next Lecture →</div>
+                    <div class="nav-title">Normalizing Flows</div>
+                </a>
+            </div>
+        </main>
+
+        <footer
+            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*Ch.9 got to the noise-prediction loss and stopped. This lecture finishes the job in four movements: the coefficient algebra that Ch.9 compressed, the engineering that makes the network actually work, then two results that are each worth more than they look. Tweedie's formula shows the noise predictor was secretly a score estimator all along — which hands you conditional generation for free. And DDIM shows the training objective never constrained the sampling path at all, which hands you a fifty-fold speed-up and a deterministic, invertible map, both from a network you have already trained.*
+
+| symbol | meaning | learned? |
+| :--- | :--- | :--- |
+| $x_0$ | the clean data point | — |
+| $x_t$ | the same point after $t$ noising steps | — |
+| $\alpha_t,\ \beta_t = 1-\alpha_t$ | signal and noise fractions at step $t$ | fixed schedule |
+| $\bar\alpha_t = \prod_{i \le t} \alpha_i$ | signal surviving all $t$ steps | derived |
+| $\epsilon$ | the noise actually added, $\mathcal{N}(0,I)$ | — |
+| $\hat\epsilon_\theta(x_t,t)$ | the network's estimate of it | **learned** |
+| $\nabla_{x_t} \log p(x_t)$ | the score at noise level $t$ | — |
+| $y$ | a class label to condition on | — |
+| $s$ | guidance scale | your choice |
+| $\sigma_t$ | noise injected by the sampler at step $t$ | your choice |
+| $S$ | number of sampling steps actually taken, $S \le T$ | your choice |
+
+<div class="part-marker"><span class="part-label">Part I</span><span class="part-name">Finishing the objective</span><span class="part-sub">The algebra Ch.9 compressed, written out, and what the training loop looks like in code.</span></div>
+
+## 1. Where the KL Term Goes
+
+The training objective from Ch.9, §9 is a sum of KL divergences between the true denoising posterior and our learned reverse step:
+
+$$D_{KL}\Big( q(x_{t-1} \mid x_t, x_0) \;\parallel\; p_\theta(x_{t-1} \mid x_t) \Big)$$
+
+Both are Gaussians, which is what makes the term computable. The forward posterior, derived by completing the square in Ch.9, §11, is
+
+$$q(x_{t-1} \mid x_t, x_0) = \mathcal{N}\big(x_{t-1};\, \mu_q(x_t, x_0),\, \Sigma_q(t)\big), \qquad \mu_q(x_t, x_0) = \frac{\sqrt{\alpha_t}(1 - \bar\alpha_{t-1})}{1 - \bar\alpha_t} x_t + \frac{\sqrt{\bar\alpha_{t-1}}(1 - \alpha_t)}{1 - \bar\alpha_t} x_0 \tag{1}$$
+
+a weighted average of where we are and where we started.
+
+---
+
+## 2. Reparameterising the Mean, in Full
+
+Asking a network to predict $x_0$ from a badly corrupted $x_t$ is asking for a highly non-linear map. There is a better target, and finding it is pure algebra — Ch.9, §13 stated the result; here is the derivation.
+
+From the forward marginal $x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon_t$, solve for the clean image:
+
+$$x_0 = \frac{x_t - \sqrt{1 - \bar\alpha_t}\, \epsilon_t}{\sqrt{\bar\alpha_t}} \tag{2}$$
+
+Substitute (2) into (1) and group by $x_t$ and $\epsilon_t$. The key identity is $\bar\alpha_t = \alpha_t \bar\alpha_{t-1}$, so $\sqrt{\bar\alpha_{t-1}}/\sqrt{\bar\alpha_t} = 1/\sqrt{\alpha_t}$:
+
+$$\mu_q = \underbrace{\left[ \frac{\sqrt{\alpha_t}(1 - \bar\alpha_{t-1})}{1-\bar\alpha_t} + \frac{(1-\alpha_t)}{(1-\bar\alpha_t)\sqrt{\alpha_t}} \right]}_{\text{coefficient of } x_t} x_t \;-\; \underbrace{\left[ \frac{1-\alpha_t}{\sqrt{\alpha_t}\sqrt{1-\bar\alpha_t}} \right]}_{\text{coefficient of } \epsilon_t} \epsilon_t$$
+
+The first bracket collapses completely. Putting it over a common denominator of $\sqrt{\alpha_t}(1-\bar\alpha_t)$:
+
+$$\begin{aligned} \frac{\alpha_t(1 - \bar\alpha_{t-1}) + (1 - \alpha_t)}{\sqrt{\alpha_t}(1 - \bar\alpha_t)} &= \frac{\alpha_t - \alpha_t\bar\alpha_{t-1} + 1 - \alpha_t}{\sqrt{\alpha_t}(1 - \bar\alpha_t)} & \text{(expand)} \\[2pt] &\overset{\alpha_t \bar\alpha_{t-1} = \bar\alpha_t}{=} \frac{1 - \bar\alpha_t}{\sqrt{\alpha_t}(1 - \bar\alpha_t)} & \text{(the } \alpha_t \text{ terms cancel)} \\[2pt] &= \frac{1}{\sqrt{\alpha_t}} & \text{(divide out } 1 - \bar\alpha_t) \end{aligned}$$
+
+So the whole thing reduces to
+
+$$\boxed{\; \mu_q(x_t, x_0) = \frac{1}{\sqrt{\alpha_t}}\left( x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar\alpha_t}}\, \epsilon_t \right) \;} \tag{3}$$
+
+**Take the current image, subtract a scaled multiple of the noise in it, rescale.** Every other quantity is a schedule constant. That is the entire content of one reverse step.
+
+---
+
+## 3. Parameterising $\mu_\theta$, and the Collapse
+
+Since (3) depends on the data only through $\epsilon_t$, give the network exactly that shape and let it supply the one unknown:
+
+$$\mu_\theta(x_t, t) = \frac{1}{\sqrt{\alpha_t}}\left( x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar\alpha_t}}\, \hat\epsilon_\theta(x_t, t) \right) \tag{4}$$
+
+Both Gaussians share the covariance $\Sigma_q(t)$, so their KL is proportional to the squared distance between means (Ch.9, §12). Subtracting (4) from (3), the $x_t$ terms are identical and vanish, and the shared prefactor $\frac{1-\alpha_t}{\sqrt{\alpha_t}\sqrt{1-\bar\alpha_t}}$ comes out:
+
+$$\big\| \mu_q - \mu_\theta \big\|_2^2 \;\propto\; \big\| \epsilon_t - \hat\epsilon_\theta(x_t, t) \big\|_2^2$$
+
+A variational bound over a thousand-step hierarchical latent model has become regression on noise.
+
+---
+
+## 4. The Training Loop
+
+```python
+for x0 in dataloader:                                  # a batch of clean images
+    t   = uniform_int(1, T, size=len(x0))              # one random step *per image*
+    eps = normal(0, 1, size=x0.shape)
+    xt  = sqrt(abar[t]) * x0 + sqrt(1 - abar[t]) * eps # the closed-form jump
+    loss = mse(eps, model(xt, t))
+    loss.backward(); optimizer.step()
+```
+
+Two things about `t` that are easy to get wrong.
+
+**You never compute the chain.** If training required stepping $x_1, x_2, \dots, x_{1000}$ for every image, it would be hopeless. The closed form of Ch.9, §10 lets you land on any $t$ in one operation, which is the single reason this is affordable.
+
+**One `t` per image, not one per batch.** In a batch of 64, image 1 might get $t = 400$, image 2 $t = 12$, image 3 $t = 950$. Each image contributes an unbiased single-sample estimate of the expectation over $t$, and averaging over the batch and over epochs covers the schedule. The network therefore learns every noise level at once rather than in stages.
+
+<div class="part-marker"><span class="part-label">Part II</span><span class="part-name">The network, and telling it the time</span><span class="part-sub">A U-Net that must be conditioned on a single scalar — and why that scalar has to be inflated into a vector first.</span></div>
+
+## 5. The U-Net, and the Time-Embedding Problem
+
+The noise predictor is a **U-Net**: a contracting path that reduces spatial resolution while deepening channels, an expanding path that reverses it, and **skip connections** joining matching levels so that high-frequency detail survives the bottleneck. Input and output have the same shape, which is what the task requires — the prediction $\hat\epsilon$ is the same size as the image.
+
+The awkwardness is the conditioning. The model is $\hat\epsilon_\theta(x_t, t)$, and those two arguments are wildly mismatched: $x_t$ might be $3 \times 64 \times 64 = 12{,}288$ numbers, and $t$ is **one number**.
+
+Concatenating $t$ as a single extra channel does not work. Its contribution is swamped by the spatial data and the network learns to ignore it — and a network that ignores $t$ cannot function at all, because $t$ is what tells it *how much noise to remove*. Without it, an input could equally be a slightly noisy image at $t = 10$ or near-pure noise at $t = 990$, and the correct output is completely different.
+
+<figure><img src="assets/svg/unet-time.svg" alt="A U-Net with a sinusoidal time embedding projected and broadcast into every residual block" style="max-width:100%;"><figcaption>Figure 10.1: The scalar is inflated to a vector, then injected at every level rather than only at the input.</figcaption></figure>
+
+**And $t$ is not a class label.** It looks like the one-hot conditioning of Ch.5, §11, and structurally the injection is similar, but the meaning is different: everything here is still *unconditional* generation. $t$ is a parameter of the diffusion process itself. Class conditioning comes later, in §9.
+
+---
+
+## 6. Sinusoidal Time Embedding
+
+The fix is the positional encoding from Transformers. Map the scalar into $D$ dimensions using sine–cosine pairs at geometrically spaced frequencies:
+
+$$\hat{t} = \Big[ \sin(\omega_1 t),\, \cos(\omega_1 t),\, \dots,\, \sin(\omega_{D/2} t),\, \cos(\omega_{D/2} t) \Big], \qquad \omega_i = \frac{1}{10000^{2i/D}} \tag{5}$$
+
+The geometric spacing is the point. High-frequency components separate neighbouring timesteps, where the required behaviour changes subtly; low-frequency components vary slowly across the whole range and say roughly *where* in the schedule you are. Together they resolve every scale with $D$ numbers.
+
+<div class="dgm-widget" id="widget-timeembed"></div>
+
+**How it enters the network.** Not by concatenation at the input. The $D$-dimensional vector goes through a small MLP, and then at each residual block — on both the contracting and expanding paths — it is linearly projected to that block's channel count and **broadcast across height and width**, so every spatial position receives the same time signal, and added into the feature map. The information is therefore available at every depth rather than having to survive a journey from the input layer.
+
+**Recap:** the network sees an image and a time, the time is inflated to a vector so it cannot be ignored, and it is injected everywhere so no layer has to remember it.
+
+<div class="part-marker"><span class="part-label">Part III</span><span class="part-name">Scores, and steering</span><span class="part-sub">Tweedie's formula shows the noise predictor is a score estimator. Once you know that, conditional generation is one line of Bayes.</span></div>
+
+## 7. Tweedie's Formula
+
+A classical result in statistics, and the bridge between diffusion and score-based models. If a variable is observed under Gaussian noise, $z \sim \mathcal{N}(z; \mu_z, \Sigma_z)$, then the posterior expectation of the underlying mean is
+
+$$\mathbb{E}[\mu_z \mid z] = z + \Sigma_z \nabla_z \log p(z) \tag{6}$$
+
+where $\nabla_z \log p(z)$ is the **score** — the gradient of the log density of the *noisy* variable, with respect to that variable. In words: the best guess at the clean mean is the observation, nudged in the direction the noisy density increases.
+
+## 8. The Score Is the Noise
+
+Apply (6) to the diffusion marginal. From Ch.9, §10, $x_t \sim \mathcal{N}(x_t; \sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t)I)$, so take $z = x_t$, $\mu_z = \sqrt{\bar\alpha_t} x_0$ and $\Sigma_z = (1-\bar\alpha_t) I$:
+
+$$\mathbb{E}\big[\sqrt{\bar\alpha_t} x_0 \,\big|\, x_t\big] = x_t + (1 - \bar\alpha_t) \nabla_{x_t} \log p(x_t) \quad\Longrightarrow\quad \mathbb{E}[x_0 \mid x_t] = \frac{x_t + (1-\bar\alpha_t)\nabla_{x_t} \log p(x_t)}{\sqrt{\bar\alpha_t}}$$
+
+But (2) already gave an expression for $x_0$ in terms of $\epsilon_t$. Setting the two equal, the $\sqrt{\bar\alpha_t}$ denominators and the $x_t$ terms cancel:
+
+$$-\sqrt{1 - \bar\alpha_t}\, \epsilon_t = (1 - \bar\alpha_t) \nabla_{x_t} \log p(x_t) \quad\Longrightarrow\quad \boxed{\; \nabla_{x_t} \log p(x_t) = -\frac{\epsilon_t}{\sqrt{1 - \bar\alpha_t}} \;} \tag{7}$$
+
+**The score is the added noise, up to a known constant.** So a network trained to predict $\epsilon$ is — with no modification whatsoever — an estimator of $\nabla \log p$ at every noise level. Substituting (7) into the DDPM loss shows the objective is denoising score matching in disguise:
+
+$$\mathcal{L}_{\text{simple}} = \big\| \epsilon_t - \hat\epsilon_\theta(x_t,t) \big\|^2 = \big\| {-\sqrt{1-\bar\alpha_t}}\,\nabla_{x_t} \log p(x_t) - \hat\epsilon_\theta(x_t,t) \big\|^2$$
+
+Two research traditions that developed separately — Sohl-Dickstein's diffusion and Song's score matching — turn out to be the same algorithm.
+
+**Recap:** you already own a score estimator. Anything expressible as arithmetic on scores is now available without retraining.
+
+---
+
+## 9. Classifier Guidance
+
+Conditional generation is exactly such an operation. We want to sample from $p(x_t \mid y)$, so we want its score. Bayes:
+
+$$p(x_t \mid y) = \frac{p(x_t)\, p(y \mid x_t)}{p(y)} \quad\Longrightarrow\quad \log p(x_t \mid y) = \log p(x_t) + \log p(y \mid x_t) - \log p(y)$$
+
+Differentiate with respect to $x_t$. The last term contains no $x_t$, so it dies:
+
+$$\boxed{\; \nabla_{x_t} \log p(x_t \mid y) = \underbrace{\nabla_{x_t} \log p(x_t)}_{\text{your existing model}} + \underbrace{\nabla_{x_t} \log p(y \mid x_t)}_{\text{a separate classifier}} \;} \tag{8}$$
+
+<figure><img src="assets/svg/score-guidance.svg" alt="Tweedie's formula linking noise to score, and the Bayes decomposition of the conditional score" style="max-width:100%;"><figcaption>Figure 10.2: Two modular pieces — an unconditional model you already trained, and a classifier's gradient.</figcaption></figure>
+
+The decomposition is completely modular. The first term is the unconditional diffusion model. The second is the gradient of a **classifier trained on noisy images** — it must handle $x_t$ at every noise level, so it cannot be an off-the-shelf clean-image classifier — and it points in the direction that makes the image look more like class $y$.
+
+In practice the second term is scaled by a **guidance scale** $s$, and converted back to noise language through (7):
+
+$$\tilde\epsilon_\theta(x_t,t) = \hat\epsilon_\theta(x_t,t) - s\sqrt{1-\bar\alpha_t}\, \nabla_{x_t} \log p(y \mid x_t), \qquad \tilde\mu = \mu_\theta(x_t,t) + s\,\Sigma_q(t) \nabla_{x_t}\log p(y \mid x_t)$$
+
+<div class="dgm-widget" id="widget-guidance"></div>
+
+**What $s \neq 1$ actually does.** Equation (8) holds with $s = 1$ and no other value. Setting $s > 1$ means sampling from something proportional to $p(x_t)\,p(y \mid x_t)^s$ — a sharpened posterior, not the posterior. Empirically that improves class fidelity and visibly destroys diversity: the samples collapse toward whatever the classifier is most confident about. The demo above measures it, showing the spread shrinking below the true class spread as $s$ rises. Practitioners run $s$ between about 3 and 8 and treat it as a taste dial, which is an honest description of what it is.
+
+*(This is also why **classifier-free guidance** later replaced it: training a separate noisy-image classifier is a nuisance, and the same sharpening can be had by training one network both conditionally and unconditionally and extrapolating between its two predictions.)*
+
+<div class="part-marker"><span class="part-label">Part IV</span><span class="part-name">DDIM</span><span class="part-sub">The objective only ever constrained the marginals. Everything the sampler does between them was free all along.</span></div>
+
+## 10. Where Diffusion Actually Runs
+
+A note on scale before the theory. Running diffusion directly on pixels for a high-resolution image is enormously expensive. **Latent diffusion** — the architecture behind Stable Diffusion — runs the entire diffusion process inside the latent space of a pre-trained autoencoder, typically a VQ-VAE of the kind in Ch.8, §10:
+
+$$\text{image} \xrightarrow{\ \text{encoder}\ } z_0 \xrightarrow{\ \text{diffusion, forward and reverse}\ } \hat z_0 \xrightarrow{\ \text{decoder}\ } \text{image}$$
+
+Sample $z_T$ from the prior, denoise to $\hat z_0$, decode. This is the two-stage blueprint from Ch.9, §1, now with the diffusion model in the second stage.
+
+**Which latent, though — before or after quantisation?** The natural reading of "VQ-VAE" says the discrete codebook indices, and then it is unclear how a continuous diffusion process could possibly operate on them. The resolution is that the diffusion model is built on the **continuous** embeddings — either the encoder output before index lookup, or the continuous codebook vectors themselves. Diffusion stays in a continuous space throughout, and the discrete structure is only used at the decoding boundary.
+
+---
+
+## 11. Two Things Wrong With DDPM
+
+**Sampling is slow.** The DDPM forward and reverse processes are first-order Markov chains, so $x_{t-1}$ depends on $x_t$ and the sampler has no choice but to walk every rung: $t = T, T-1, \dots, 1$. With $T \approx 1000$ — needed so each Gaussian transition stays small enough to be a good approximation — that is a thousand network evaluations per image, against a GAN's one.
+
+**There is no inversion.** Finding the latent $x_T$ that corresponds to a given real image $x_0$ is what makes image editing and interpolation possible. In DDPM the forward process is stochastic: run it twice on the same image and you land on different $x_T$. The reverse is stochastic too, so decoding an $x_T$ does not return a specific $x_0$. There is no deterministic map to invert.
+
+---
+
+## 12. The Insight: the Loss Only Sees Marginals
+
+Here is the observation that unlocks both problems, and it is worth stating precisely because it sounds too cheap to be true.
+
+The training objective is
+
+$$\mathcal{L}_{\text{simple}}(\theta) = \mathbb{E}_{t, x_0, \epsilon}\Big[\big\|\epsilon - \epsilon_\theta(x_t, t)\big\|^2\Big], \qquad x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon$$
+
+Look at what appears in it. Only $x_0$, only $t$, only $\epsilon$, and only the **marginal** $q(x_t \mid x_0)$. The joint path $q(x_{1:T} \mid x_0)$ — the actual sequence of intermediate states — never enters. It was used to *derive* the objective, and then it vanished.
+
+So **any forward process with the same marginals produces the identical objective and the identical trained network.** The Markov chain was one choice among many, and we are free to swap it for a different one at sampling time — including a non-Markovian one, and including a deterministic one. No retraining. A trained DDPM *is already* a DDIM; the difference is entirely in how you sample it.
+
+---
+
+## 13. A Non-Markovian Forward Process
+
+Define a family indexed by a vector of standard deviations $\sigma \in \mathbb{R}^T_{\ge 0}$:
+
+$$q_\sigma(x_{1:T} \mid x_0) = q_\sigma(x_T \mid x_0) \prod_{t=2}^T q_\sigma(x_{t-1} \mid x_t, x_0)$$
+
+with the terminal marginal unchanged, $q_\sigma(x_T \mid x_0) = \mathcal{N}(x_T; \sqrt{\bar\alpha_T}x_0, (1-\bar\alpha_T)I)$, and each transition conditioned on **both** $x_t$ and $x_0$ — which is precisely what breaks the Markov property:
+
+$$q_\sigma(x_{t-1} \mid x_t, x_0) = \mathcal{N}\big(x_{t-1};\, \mathbf{m}_t(x_t, x_0),\, \sigma_t^2 I\big), \qquad \mathbf{m}_t = \sqrt{\bar\alpha_{t-1}}\,x_0 + \sqrt{1 - \bar\alpha_{t-1} - \sigma_t^2}\, \frac{x_t - \sqrt{\bar\alpha_t}x_0}{\sqrt{1-\bar\alpha_t}} \tag{9}$$
+
+The mean has two readable pieces: a step **toward the clean image**, and a step **along the current noise direction**, since $(x_t - \sqrt{\bar\alpha_t}x_0)/\sqrt{1-\bar\alpha_t}$ is exactly the unit noise in $x_t$.
+
+**Why that particular coefficient?** Because it is what preserves the marginals — the whole point of §12. Write $u = (x_t - \sqrt{\bar\alpha_t}x_0)/\sqrt{1-\bar\alpha_t}$, which is a standard normal draw, and let $z \sim \mathcal{N}(0,I)$ be the fresh noise. Then
+
+$$x_{t-1} = \sqrt{\bar\alpha_{t-1}}x_0 + \sqrt{1-\bar\alpha_{t-1}-\sigma_t^2}\;u + \sigma_t z$$
+
+so its mean is $\sqrt{\bar\alpha_{t-1}}x_0$ and, since $u$ and $z$ are independent, its variance is $(1 - \bar\alpha_{t-1} - \sigma_t^2) + \sigma_t^2 = 1 - \bar\alpha_{t-1}$. Exactly $q(x_{t-1} \mid x_0)$, **for every choice of $\sigma_t$.** The $\sigma_t^2$ subtracted inside the square root is precisely the budget being handed to the injected noise, so the total never changes.
+
+---
+
+## 14. The Reverse Process
+
+At sampling time we do not have $x_0$. But the network gives us an estimate of it, by rearranging the forward marginal:
+
+$$f_\theta(x_t) = \frac{x_t - \sqrt{1-\bar\alpha_t}\,\epsilon_\theta(x_t)}{\sqrt{\bar\alpha_t}} \tag{10}$$
+
+Substitute that for the true $x_0$ in (9), giving $p_\theta(x_{t-1}\mid x_t) = q_\sigma\big(x_{t-1} \mid x_t, f_\theta(x_t)\big)$, and the sampling step is
+
+$$\boxed{\; x_{t-1} = \underbrace{\sqrt{\bar\alpha_{t-1}}\, f_\theta(x_t)}_{\text{predicted } x_0,\ \text{re-noised to } t-1} + \underbrace{\sqrt{1-\bar\alpha_{t-1}-\sigma_t^2}\; \epsilon_\theta(x_t)}_{\text{point back along the noise}} + \underbrace{\sigma_t \epsilon_t}_{\text{fresh randomness}} \;} \tag{11}$$
+
+---
+
+## 15. Turning the Dial: $\sigma_t$
+
+Everything now depends on one free choice.
+
+**Set $\sigma_t = \sqrt{\dfrac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}}\sqrt{1 - \dfrac{\bar\alpha_t}{\bar\alpha_{t-1}}}$ and you get DDPM back.** Since $\bar\alpha_t / \bar\alpha_{t-1} = \alpha_t$, the second factor is $\sqrt{1-\alpha_t} = \sqrt{\beta_t}$, so $\sigma_t^2 = \frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\beta_t = \tilde\beta_t$ — exactly the posterior variance derived in Ch.9, §11. DDPM is one setting of the dial, not a separate model.
+
+**Set $\sigma_t = 0$ and the last term of (11) disappears.** The update becomes
+
+$$x_{t-1} = \sqrt{\bar\alpha_{t-1}}\left( \frac{x_t - \sqrt{1-\bar\alpha_t}\,\epsilon_\theta(x_t)}{\sqrt{\bar\alpha_t}} \right) + \sqrt{1-\bar\alpha_{t-1}}\;\epsilon_\theta(x_t)$$
+
+with no randomness anywhere. This is **DDIM**, and both of §11's problems dissolve.
+
+<figure><img src="assets/svg/ddpm-vs-ddim.svg" alt="DDPM walking every step stochastically versus DDIM skipping steps deterministically" style="max-width:100%;"><figcaption>Figure 10.3: Same weights, two samplers. σ_t is the only difference.</figcaption></figure>
+
+**Speed**, because the process is no longer Markovian: the sampler may visit any increasing sub-sequence of timesteps, so $S \approx 20$–$50$ evaluations replace $T = 1000$. **Invertibility**, because the map is now deterministic: one $x_T$ gives one $x_0$, and running the update in the forward direction recovers the latent for a real image — which is what image editing and latent interpolation need.
+
+<div class="dgm-widget" id="widget-ddim"></div>
+
+**Is the culprit really the Markov property?** That was my first guess and it is wrong. Being Markovian is not what makes DDPM non-invertible — **stochasticity** is. A Markov chain with no injected noise would be perfectly invertible. DDPM adds a fresh $\sigma_t \epsilon_t$ at every step, so the same $x_T$ leads somewhere different each run and there is nothing to reverse. Remove the noise and the map becomes a function, regardless of what the conditioning structure is.
+
+**One caveat on "invertible", worth knowing before relying on it.** The map is exactly deterministic, but inversion in practice is *approximate*, because the sampler discretises a continuous trajectory. Round-tripping a point through the deterministic forward and reverse maps in a one-dimensional toy gives errors that shrink cleanly with step size — around $10^{-2}$ at 20 steps, $10^{-3}$ at 200 — which is ordinary first-order discretisation error. But near points where the score field is degenerate, such as a saddle exactly between two modes, the error does **not** shrink with step size, because the trajectory there is genuinely unstable. Real editing pipelines hit this as reconstruction drift, and it is why they use many more steps for inversion than for sampling.
+
+---
+
+## 16. DDPM against DDIM
+
+| | DDPM | DDIM ($\sigma_t = 0$) |
+| :--- | :--- | :--- |
+| **forward process** | Markov chain | non-Markovian, conditioned on $x_t$ and $x_0$ |
+| **sampling** | stochastic — noise added each step | deterministic |
+| **steps needed** | all $T \approx 1000$, in order | any sub-sequence, $S \approx 20$–$50$ |
+| **invertible** | no | yes, up to discretisation error |
+| **training** | standard | **identical — the same trained network** |
+| **sample diversity** | higher, from the injected noise | lower; the only randomness is $x_T$ |
+
+The last row is the honest trade. DDIM's determinism removes a source of variety: with DDPM, two runs from the same $x_T$ give different images, while DDIM gives the same one every time. That is a feature for editing and a limitation for sampling diversity, and it is why the intermediate settings of $\sigma_t$ — neither zero nor the DDPM value — are sometimes used.
+
+---
+
+## 17. Cheat Sheet
+
+| Result | Statement | Where |
+| :--- | :--- | :--- |
+| **Posterior mean** | weighted average of $x_t$ and $x_0$, Eq. (1) | §1 |
+| **Coefficient collapse** | the $x_t$ coefficient reduces to $1/\sqrt{\alpha_t}$ | §2 |
+| **Reparameterised mean** | $\mu_q = \frac{1}{\sqrt{\alpha_t}}(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon)$, Eq. (3) | §2 |
+| **Loss collapse** | shared covariance ⟹ $\|\epsilon - \hat\epsilon_\theta\|^2$ | §3 |
+| **One $t$ per image** | not one per batch; unbiased, and covers the schedule | §4 |
+| **Why embed $t$** | one channel against 12,288 gets ignored | §5 |
+| **Sinusoidal embedding** | geometric frequencies, Eq. (5); injected at every block | §6 |
+| **Tweedie** | $\mathbb{E}[\mu_z\mid z] = z + \Sigma_z \nabla_z \log p(z)$, Eq. (6) | §7 |
+| **Score = noise** | $\nabla_{x_t}\log p(x_t) = -\epsilon_t/\sqrt{1-\bar\alpha_t}$, Eq. (7) | §8 |
+| **Conditional score** | $\nabla \log p(x_t\mid y) = \nabla\log p(x_t) + \nabla\log p(y\mid x_t)$, Eq. (8) | §9 |
+| **Guidance scale** | $s \ne 1$ samples $\propto p(x)p(y\mid x)^s$ — sharper, less diverse | §9 |
+| **Latent diffusion** | run the chain in an autoencoder's continuous latent space | §10 |
+| **The key insight** | the loss only sees marginals, never the path | §12 |
+| **Marginal preservation** | $(1-\bar\alpha_{t-1}-\sigma_t^2) + \sigma_t^2 = 1-\bar\alpha_{t-1}$, for any $\sigma_t$ | §13 |
+| **DDIM step** | Eq. (11); three readable terms | §14 |
+| **$\sigma_t = \sqrt{\tilde\beta_t}$** | recovers DDPM exactly | §15 |
+| **$\sigma_t = 0$** | deterministic, skippable, invertible | §15 |
+
+---
+
+## 18. Key Takeaways
+
+1. **The coefficient of $x_t$ in $\mu_q$ collapses to $1/\sqrt{\alpha_t}$** — one line of algebra, and it is what turns the reverse step into "subtract the scaled noise".
+2. **One random $t$ per image per batch**, never the whole chain. The closed-form jump is what makes a thousand-step model affordable to train.
+3. **A scalar timestep must be inflated into a vector and injected everywhere**, or the network ignores it — and a network that ignores $t$ cannot know how much noise to remove.
+4. **Tweedie's formula shows the noise predictor is a score estimator**, $\nabla \log p(x_t) = -\epsilon_t/\sqrt{1-\bar\alpha_t}$, which quietly unifies diffusion models with score matching.
+5. **Because scores add, conditioning is one line of Bayes.** The conditional score is the unconditional score plus a classifier's gradient — completely modular, no retraining.
+6. **A guidance scale above 1 is not the posterior.** It samples from a sharpened distribution, trading diversity for class fidelity, which is measurable as sample spread falling below the true class spread.
+7. **The training loss only ever constrained the marginals.** The intermediate path was used to derive the objective and then disappeared from it — so the sampler is free to take any path with the same marginals.
+8. **DDIM is therefore a sampling-time choice, not a model.** The same trained weights, run with a different $\sigma_t$.
+9. **$\sigma_t$ interpolates between the two.** The DDPM posterior variance at one end, zero at the other, with marginals preserved at every setting.
+10. **Determinism, not the Markov property, is what buys invertibility** — and even then it is exact only in the continuous limit, with discretisation error that shrinks with step count except near degenerate points of the score field.
+
+---
+
+## 19. References
+
+* Ho, Jain and Abbeel (2020), *Denoising Diffusion Probabilistic Models* — [arXiv:2006.11239](https://arxiv.org/abs/2006.11239).
+* Song, Meng and Ermon (2020), *Denoising Diffusion Implicit Models* — [arXiv:2010.02502](https://arxiv.org/abs/2010.02502). Part IV is this paper.
+* Song and Ermon (2019), *Generative Modeling by Estimating Gradients of the Data Distribution* — [arXiv:1907.05600](https://arxiv.org/abs/1907.05600). The score-matching tradition that §8 connects to.
+* Dhariwal and Nichol (2021), *Diffusion Models Beat GANs on Image Synthesis* — [arXiv:2105.05233](https://arxiv.org/abs/2105.05233). Classifier guidance, and the guidance-scale trade-off measured properly.
+* Ho and Salimans (2022), *Classifier-Free Diffusion Guidance* — [arXiv:2207.12598](https://arxiv.org/abs/2207.12598). What replaced §9 in practice.
+* Rombach et al. (2022), *High-Resolution Image Synthesis with Latent Diffusion Models* — [arXiv:2112.10752](https://arxiv.org/abs/2112.10752). Latent diffusion, §10.
+* Efron (2011), *Tweedie's Formula and Selection Bias* — the statistical result of §7, in its original context.
+
+---
+
+*Next: the one family that gives up none of it — exact likelihood, one-pass sampling and plain maximum-likelihood training at once — and the constraint it accepts in exchange.*
+    </script>
+
+    <script src="dgm-notes.js"></script>
+    <script src="dgm-widgets.js"></script>
+</body>
+
+</html>

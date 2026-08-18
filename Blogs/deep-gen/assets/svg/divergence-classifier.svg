@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" font-family="Inter, -apple-system, sans-serif">
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">only one family of divergences turns the critic into a classifier</text>
+
+  <!-- JS / GAN -->
+  <rect x="16" y="38" width="728" height="118" rx="10" fill="#fcfcfc" stroke="#dfe8ea"/>
+  <text x="34" y="58" font-size="11.5" font-weight="700" fill="#0e7490">JS  /  naive GAN   —   dom f* is bounded above</text>
+  <text x="34" y="76" font-size="10" fill="#777">f*(t) = −log(1 − eᵗ), t &lt; 0     activation −log(1 + e⁻ˢ)</text>
+  <line x1="300" y1="104" x2="700" y2="104" stroke="#555" stroke-width="1.4"/>
+  <rect x="300" y="96" width="200" height="16" fill="rgba(14,116,144,0.16)"/>
+  <rect x="500" y="96" width="200" height="16" fill="rgba(200,60,60,0.09)"/>
+  <line x1="500" y1="90" x2="500" y2="118" stroke="#c0392b" stroke-width="1.6"/>
+  <text x="500" y="130" text-anchor="middle" font-size="9.6" fill="#c0392b">0</text>
+  <text x="400" y="90" text-anchor="middle" font-size="10" fill="#0e7490">allowed</text>
+  <text x="600" y="90" text-anchor="middle" font-size="10" fill="#c0392b">forbidden</text>
+  <text x="300" y="146" font-size="10.5" fill="#0e7490">bounded ⟹ exponentiate to get D ∈ [0,1] ⟹ read it as a probability ⟹ a genuine binary classifier</text>
+
+  <!-- KL / chi2 -->
+  <rect x="16" y="168" width="728" height="118" rx="10" fill="#fcfcfc" stroke="#e8e2d5"/>
+  <text x="34" y="188" font-size="11.5" font-weight="700" fill="#d97706">KL,  Pearson χ²   —   dom f* is all of ℝ</text>
+  <text x="34" y="206" font-size="10" fill="#777">f*(t) = eᵗ⁻¹  or  t + t²/4     activation: none (linear)</text>
+  <line x1="300" y1="234" x2="700" y2="234" stroke="#555" stroke-width="1.4"/>
+  <path d="M 300 234 L 308 230 L 308 238 Z" fill="#555"/>
+  <path d="M 700 234 L 692 230 L 692 238 Z" fill="#555"/>
+  <rect x="300" y="226" width="400" height="16" fill="rgba(217,119,6,0.14)"/>
+  <text x="500" y="220" text-anchor="middle" font-size="10" fill="#d97706">everything is allowed</text>
+  <text x="304" y="256" font-size="9.6" fill="#999">−∞</text>
+  <text x="696" y="256" text-anchor="end" font-size="9.6" fill="#999">+∞</text>
+  <text x="300" y="276" font-size="10.5" fill="#d97706">unbounded ⟹ the output is a density ratio, not a probability ⟹ the critic is a regressor, not a classifier</text>
+
+  <text x="380" y="308" text-anchor="middle" font-size="10.5" fill="#666">The min–max machinery is identical in both rows. Only the "it's really just a real-vs-fake classifier" story is special to JS.</text>
+</svg>

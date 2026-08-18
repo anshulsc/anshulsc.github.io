@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lecture 3 notes: adversarial generative models — the generator as a noise-warping network, the f-divergence family, convex conjugates explained visually, and the variational bound that makes GANs trainable from samples alone.">
+    <meta name="keywords"
+        content="GAN, Adversarial Generative Models, f-Divergence, Convex Conjugate, Legendre-Fenchel, Variational Lower Bound, Discriminator, KL, Jensen-Shannon, Total Variation">
+    <meta name="author" content="Anshul Singh">
+    <title>Lecture 3: Adversarial Models &amp; f-Divergences — DGM Notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="dgm-notes-style.css">
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../../css/theme.css">
+  <script src="../../js/theme.js"></script>
+  <!-- Passphrase gate for this notes series -->
+  <script src="../../js/gate.js"></script>
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">DGM Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Lecture 3</div>
+                <h1>Adversarial Models &amp; f-Divergences</h1>
+                <div class="chapter-meta">
+                    <span>August 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">22 min read</span>
+                    <span class="dot">●</span>
+                    <span>GANs</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target">
+                    <!-- Rendered markdown goes here -->
+                </article>
+
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <a href="ch-02.html" class="nav-prev">
+                    <div class="nav-label">← Previous Lecture</div>
+                    <div class="nav-title">Prediction, Sampling &amp; Divergence Minimization</div>
+                </a>
+                <a href="ch-04.html" class="nav-next">
+                    <div class="nav-label">Next Lecture →</div>
+                    <div class="nav-title">From f-Divergences to a Trainable GAN</div>
+                </a>
+            </div>
+        </main>
+
+        <footer
+            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*My notes from the third lecture. This is where the course stopped being "probability review" and became genuinely new for me — especially the convex-analysis machinery (conjugates, suprema, variational bounds), which I'd never touched before. So these notes are deliberately slow on exactly those parts: every derivation step gets a plain-words version first, and the key geometric ideas have interactive demos. The destination is worth it: by the end, we can estimate the distance between two distributions using nothing but samples — which is the mathematical heart of every GAN.*
+
+---
+
+## 1. Recap: The Recipe, One More Time
+
+From Ch.2, the universal template for generative modeling. Given data $D = \{x_1, \dots, x_n\}$ from an unknown true distribution $P_x$:
+
+1. Assume a **parametric family** $P_\theta$.
+2. Define a **divergence** $D(P_x \parallel P_\theta)$.
+3. **Optimize**: $\theta^* = \arg\min_\theta D(P_x \parallel P_\theta)$.
+
+This lecture fills in the two blanks that Ch.2 left open: what exactly $P_\theta$ looks like for adversarial models, and how the divergence can possibly be computed when *both* densities are unknown.
+
+---
+
+## 2. The Generator: Sampling by Warping Noise
+
+In **adversarial generative models** (GANs), we never write a formula for $P_\theta(x)$ at all. The model is **implicit**: a neural network $g_\theta$, the **generator**, that manufactures samples.
+
+```
+  [ Simple Noise Seed ] -----> [ Generator Network ] -----> [ Generated Sample ]
+     z ~ N(0, I)                   g_θ(z)                     x̂ ~ P_θ
+```
+
+Draw a seed $z \sim \mathcal{N}(0, I)$ from a simple known distribution, push it through the deterministic network, and out comes $\hat{x} = g_\theta(z)$. Because $z$ is random, $\hat{x}$ is a random variable too — and *its* distribution is what we mean by $P_\theta$.
+
+A few things about $z$ that confused me at first, now sorted:
+
+* **Is $z$ related to the data?** Not at all. It has zero connection to the training set — it's a blank canvas of noise that the network learns to paint into structured data.
+* **Why a Gaussian and not, say, uniform?** You *can* use uniform, but the Gaussian has **infinite support** — non-zero density over all of $\mathbb{R}^k$. A bounded-support distribution boxes the generator in when it has to reach every corner of a complex target space.
+* **How big is $k$?** A hyperparameter, typically small (16, 32, 100, 128). There's evidence an optimal latent size exists per dataset, but in practice you pick one and keep it fixed.
+* **Doesn't this go the "wrong way" dimensionally?** Yes — and that's the point. A classifier *compresses* (image → label). A generator *expands*: $z \in \mathbb{R}^k$ with small $k$ grows into $\hat{x} \in \mathbb{R}^d$ with huge $d$ (a $200 \times 200$ image is $d = 40{,}000$). In CNN generators this is done with upsampling and transpose-convolution layers.
+
+### How can a deterministic function create a new distribution?
+
+This felt like sleight of hand until I saw a tiny example. Take $z \sim U[0,1]$ and the world's dumbest "generator", $g(z) = z^2$. The output $\hat{x} = z^2$ is **not uniform** — squaring compresses values near 0 and stretches them near 1, so density piles up near 0. No randomness inside $g$, yet the distribution changed shape:
+
+<div class="dgm-widget" id="widget-warp"></div>
+
+A deep network is the same idea with millions of knobs: warp a simple Gaussian into the distribution of natural images.
+
+### Inside $g_\theta$: the actual architecture
+
+A minimal 4-layer fully-connected generator:
+
+$$g_\theta(z) = W_4 \, \sigma\big( W_3 \, \sigma\big( W_2 \, \sigma\big( W_1 z \big) \big) \big)$$
+
+with $z \in \mathbb{R}^{k \times 1}$, element-wise non-linearities $\sigma$ (ReLU, sigmoid, …), and weight matrices sized to *widen* at every step:
+
+$$W_1 \in \mathbb{R}^{L_1 \times k}, \quad W_2 \in \mathbb{R}^{L_2 \times L_1}, \quad W_3 \in \mathbb{R}^{L_3 \times L_2}, \quad W_4 \in \mathbb{R}^{d \times L_3}$$
+
+$$k < L_1 < L_2 < L_3 < d$$
+
+(Each matrix's *columns* must match the previous layer's output size — chasing these shapes is a good sanity check; even the lecturer's board had a typo here until the class caught it.)
+
+<figure><img src="assets/svg/generator-expand.svg" alt="Generator network expanding dimensionality from z to image" style="max-width:100%;"><figcaption>Figure 3.1: The generator is a stack of widening linear maps — dimensionality expansion, the mirror image of a classifier</figcaption></figure>
+
+One design freedom worth noting: the **final layer's activation** is your choice. Arbitrary real-valued outputs → leave it linear. Pixels normalized to $[0,1]$ → put a sigmoid at the end to squash the range.
+
+### Unconditional means *no steering wheel*
+
+Important expectation-setting: this setup is **unconditional** generation. There is no text prompt, no class label. Feed noise in, get a realistic-but-random sample out — you don't control *which* one. Wanting "a cup on a table" from a text description is **conditional** generation ($p(x \mid y)$, later in the course).
+
+The cleanest real-world demo: [thispersondoesnotexist.com](https://thispersondoesnotexist.com). Every refresh draws a fresh $z \sim \mathcal{N}(0, I)$, pushes it through a big pre-trained $g_\theta$, and shows you a photorealistic human who has never existed. No prompt — just noise mapped onto the learned manifold of faces.
+
+---
+
+## 3. The Real Problem: Both Densities Are Missing
+
+Here's the question that defines the whole lecture. If training only ever pushes noise through $g_\theta$, *where does the data come in? What's the loss?*
+
+The data defines the target: we want the distribution of generated samples, $P_\theta$, to match the data distribution $P_x$. But look at what we actually hold in our hands:
+
+* For $P_x$ — **no formula**, only samples: the dataset $\{x_1, \dots, x_n\}$.
+* For $P_\theta$ — **also no formula!** The network defines it implicitly; all we can do is *produce* samples $\hat{x} = g_\theta(z)$ by drawing seeds.
+
+So the honest version of the training problem is:
+
+> **Minimize $D(P_x \parallel P_\theta)$ over $\theta$, given only samples from both distributions — no density formulas anywhere.**
+
+Every generative framework is a different answer to this (VAEs: variational inference; autoregressive models: maximum likelihood). The GAN answer starts by generalizing what "divergence" even means.
+
+---
+
+## 4. The f-Divergence Family: One Formula, Many Distances
+
+Ch.2 built KL divergence from information theory. It turns out KL is one member of a whole family. For any function $f$, define the **$f$-divergence**:
+
+$$D_f(P_x \parallel P_\theta) = \int P_\theta(x) \, f\!\left( \frac{P_x(x)}{P_\theta(x)} \right) dx$$
+
+In words: *at every point $x$, compare the two densities by their ratio, score the mismatch with $f$, and average the score under $P_\theta$.* The ratio is the natural mismatch signal — it equals $1$ wherever the distributions agree.
+
+For this to behave like a divergence, $f: \mathbb{R}^+ \to \mathbb{R}$ must satisfy exactly two conditions:
+
+1. **$f$ is convex** — bowl-shaped. Via Jensen's inequality this guarantees $D_f \geq 0$.
+2. **$f(1) = 0$** — agreement must cost nothing. If $P_x = P_\theta$ everywhere, every ratio is 1, so the divergence integrates $f(1) = 0$ and vanishes, exactly as it should. (The slide originally said "$f(0)=1$" — a student caught it; it's $f(1) = 0$. Writing this down so I never flip it on an exam.)
+
+### Deriving the classics by choosing $f$
+
+**KL divergence** — choose $f(u) = u \log u$ (check: $f(1) = 0$ ✓). Substitute with $u = \frac{P_x(x)}{P_\theta(x)}$:
+
+$$D_f = \int P_\theta(x) \left[ \frac{P_x(x)}{P_\theta(x)} \log\frac{P_x(x)}{P_\theta(x)} \right] dx = \int P_x(x) \log\frac{P_x(x)}{P_\theta(x)}\, dx = D_{KL}(P_x \parallel P_\theta)$$
+
+The $P_\theta$'s cancel and Ch.2's KL falls right out.
+
+**Jensen-Shannon divergence** — choose $f(u) = \frac{1}{2}\big(u \log u - (u+1)\log\frac{u+1}{2}\big)$ (check: $f(1) = \frac{1}{2}(0 - 2\log 1) = 0$ ✓). The algebra simplifies to a symmetrized KL against the *midpoint* distribution:
+
+$$D_{JS}(P_x \parallel P_\theta) = \tfrac{1}{2} D_{KL}\!\left(P_x \,\Big\|\, \tfrac{P_x + P_\theta}{2}\right) + \tfrac{1}{2} D_{KL}\!\left(P_\theta \,\Big\|\, \tfrac{P_x + P_\theta}{2}\right)$$
+
+**Total Variation distance** — choose $f(u) = \frac{1}{2}|u - 1|$ (check: $f(1) = 0$ ✓). Slide the positive factor $P_\theta(x)$ inside the absolute value:
+
+$$D_f = \frac{1}{2}\int \left| P_\theta(x)\frac{P_x(x)}{P_\theta(x)} - P_\theta(x) \right| dx = \frac{1}{2} \int \big| P_x(x) - P_\theta(x) \big| \, dx = D_{TV}$$
+
+— literally the total area of disagreement between the two curves.
+
+Same template, three famous distances — and they *feel* different in practice:
+
+<div class="dgm-widget" id="widget-fdiv"></div>
+
+---
+
+## 5. Why the Obvious Estimator Fails
+
+We have a divergence formula and we have samples. The standard tool for turning "integral against a density" into "average over samples" is the **Law of Large Numbers**:
+
+$$\mathbb{E}_{x \sim P_x}[h(x)] = \int h(x)\, P_x(x)\, dx \;\approx\; \frac{1}{n} \sum_{i=1}^n h(x_i)$$
+
+The density disappears from the right-hand side — sampling *is* the weighting. (Set $h(x) = x$ and this is just the everyday sample mean.) The one requirement: **you must be able to compute $h$ at each sample.**
+
+Now try it on the $f$-divergence. Writing it as an expectation over $P_\theta$:
+
+$$D_f(P_x \parallel P_\theta) = \mathbb{E}_{x \sim P_\theta}\!\left[ f\!\left( \frac{P_x(x)}{P_\theta(x)} \right) \right]$$
+
+To average this over generated samples $x_i \sim P_\theta$, I'd need to *evaluate* $\frac{P_x(x_i)}{P_\theta(x_i)}$ at each one. But those are exactly the two density formulas we don't have. **The LLN needs a computable integrand, and ours is built from the two things we can't compute.** Dead end — and precisely the wall the rest of the lecture climbs over.
+
+---
+
+## 6. A Gentle Optimization Detour (New Vocabulary)
+
+The escape route uses convex analysis, which was new to me, so here's the vocabulary in plain words before any of it gets used:
+
+* **$\sup$ (supremum):** the least upper bound — think "max, but allowed to be approached without being reached." For everything here, reading $\sup$ as $\max$ loses nothing (the lecturer did exactly that on the board).
+* **$\arg\max$:** not the best *value* but the *location* of the best value — which $u$ achieves the max.
+* **Variational:** an adjective meaning "we optimize over *functions*, not just numbers." A "variational bound" is a bound whose quality you improve by searching over a family of functions.
+* **A bound you optimize:** the recurring trick of this whole field. Can't compute quantity $Q$? Find a family of computable quantities that are all $\leq Q$, and push the family as high as it will go. Best member ≈ $Q$.
+
+That last bullet is a spoiler for §8. But first, the tool that makes it possible.
+
+---
+
+## 7. The Convex Conjugate, Drawn Instead of Defined
+
+For a convex $f(u)$, its **Legendre-Fenchel conjugate** (or convex conjugate) is:
+
+$$f^*(t) = \sup_{u} \; \{ ut - f(u) \}$$
+
+Symbols first, picture second — but honestly the picture *is* the definition:
+
+1. Fix a slope $t$. The graph of $y = t \cdot u$ is a straight line through the origin.
+2. At each $u$, the quantity $ut - f(u)$ is the **vertical gap** between that line and the curve $f$.
+3. $f^*(t)$ is the **biggest gap you can find** — and it occurs at the $u$ where the line is *parallel to the curve* (tangent slopes match: that's just "derivative of the gap = 0").
+
+<div class="dgm-widget" id="widget-conjugate"></div>
+
+Two facts fall straight out of "biggest gap":
+
+$$f^*(t) \geq ut - f(u) \;\; \forall u, t \qquad \Longleftrightarrow \qquad f(u) \geq ut - f^*(t) \;\; \forall u, t$$
+
+The second form says: the shifted line $y = ut - f^*(t)$ sits **below $f$ everywhere and touches it at one point** — a *supporting line* (tangent from below).
+
+### The duality that powers everything
+
+Now the beautiful part. A convex curve is *completely described* by its supporting lines — draw the tangent line for every slope $t$ and their upper envelope rebuilds the curve exactly (toggle the envelope in the demo above to watch this happen). Formally, for convex (and lower semi-continuous) $f$, the double conjugate returns the original, $(f^*)^* = f$, giving:
+
+$$f(u) = \sup_{t} \; \{ tu - f^*(t) \}$$
+
+Stare at what this buys us: **a non-linear function $f$ has been rewritten as a supremum of *linear* functions of $u$.** Linear is the magic word — expectations slide through linear things effortlessly. That's the crowbar for §5's dead end.
+
+---
+
+## 8. The Derivation: Four Moves to a Computable Objective
+
+Goal: turn $D_f(P_x \parallel P_\theta)$ — uncomputable, needs both densities — into something built only from sample averages. Four moves, each one small.
+
+### Move 1 — Swap the curve for its lines
+
+Start from the definition and replace $f(\cdot)$ with its dual form, using $u = \frac{P_x(x)}{P_\theta(x)}$:
+
+$$D_f(P_x \parallel P_\theta) = \int P_\theta(x) \left[ \sup_{t} \left\{ t\,\frac{P_x(x)}{P_\theta(x)} - f^*(t) \right\} \right] dx$$
+
+*In words: at every point $x$, instead of evaluating the curve $f$ at the ratio, we find the best supporting line there. Nothing lost — the sup recovers $f$ exactly.*
+
+### Move 2 — One best slope per point = one best function
+
+The sup inside the integral is solved **point-wise**: each $x$ gets to pick its own best slope $t$. A rule that assigns a value to every $x$ *is a function*. So collect all those point-wise choices into a single function $T(x)$, and move the sup outside — now over the set $\mathcal{T}$ of all functions $T: \mathcal{X} \to \mathbb{R}$:
+
+$$D_f(P_x \parallel P_\theta) = \sup_{T \in \mathcal{T}} \int P_\theta(x) \left[ T(x)\,\frac{P_x(x)}{P_\theta(x)} - f^*(T(x)) \right] dx$$
+
+*In words: "choose the best slope separately at every point" and "choose the best slope-assigning function once" are the same search.*
+
+### Move 3 — Watch the impossible ratio dissolve
+
+Distribute $P_\theta(x)$ into the bracket. In the first term it cancels the denominator:
+
+$$D_f(P_x \parallel P_\theta) = \sup_{T \in \mathcal{T}} \left\{ \int T(x)\, P_x(x)\, dx \;-\; \int f^*(T(x))\, P_\theta(x)\, dx \right\}$$
+
+And each integral is now *an expectation of a computable thing*:
+
+$$\boxed{\; D_f(P_x \parallel P_\theta) = \sup_{T \in \mathcal{T}} \; \Big\{ \mathbb{E}_{x \sim P_x}\big[T(x)\big] - \mathbb{E}_{x \sim P_\theta}\big[f^*(T(x))\big] \Big\} \;}$$
+
+*In words: the density ratio — the thing we could never compute — has been algebra'd out of existence. What remains is: score real samples with $T$, score fake samples with $f^* \circ T$, subtract the averages. Both are LLN-friendly.*
+
+### Move 4 — Shrink the search space, accept a lower bound
+
+One catch: "$\sup$ over **all** functions" isn't something a computer can do. So restrict $T$ to a parametric family $\mathcal{T}_\omega$ — a neural network with weights $\omega$. Searching a smaller space can only find an equal-or-worse maximum, so the equality relaxes to an inequality:
+
+$$D_f(P_x \parallel P_\theta) \;\geq\; \max_{\omega} \; \Big\{ \mathbb{E}_{x \sim P_x}\big[T_\omega(x)\big] - \mathbb{E}_{x \sim P_\theta}\big[f^*(T_\omega(x))\big] \Big\}$$
+
+and the LLN finally gets to work — with real samples $\{x_i\} \sim P_x$ and generated samples $\{\hat{y}_j\} \sim P_\theta$:
+
+$$D_f(P_x \parallel P_\theta) \;\geq\; \max_{\omega} \left\{ \frac{1}{n}\sum_{i=1}^n T_\omega(x_i) \;-\; \frac{1}{m}\sum_{j=1}^m f^*\big(T_\omega(\hat{y}_j)\big) \right\}$$
+
+*In words: an estimate of the divergence between two distributions, computed from nothing but two bags of samples and two network passes. The wall from §5 is climbed.*
+
+<figure><img src="assets/svg/gan-game.svg" alt="The f-GAN objective as two sample averages and a min-max game" style="max-width:100%;"><figcaption>Figure 3.2: The whole objective is two sample averages. The critic raises it; the generator lowers it.</figcaption></figure>
+
+### And suddenly: a GAN
+
+Name the players. $T_\omega$ is the **discriminator** (or critic). The full training objective is a **min-max game**:
+
+$$\min_\theta \; \max_\omega \; \Big\{ \mathbb{E}_{x \sim P_x}\big[T_\omega(x)\big] - \mathbb{E}_{x \sim P_\theta}\big[f^*(T_\omega(x))\big] \Big\}$$
+
+* **Inner max (discriminator):** push the bound *up* toward the true divergence — make the estimate as honest as possible.
+* **Outer min (generator):** push the (estimated) divergence *down* — make $P_\theta$ approach $P_x$.
+
+The "adversarial" in GAN is not decoration; it's the sup from convex duality, wearing a network.
+
+---
+
+## 9. Why the Critic Must Be Strong
+
+The sharpest question of the lecture: *if we minimize a lower bound, are we even minimizing the real divergence? The bound could go down while the true divergence stays high.*
+
+Completely right — and it's the central danger. A **loose** bound is a bad speedometer: the generator optimizes against a number that barely tracks reality. The bound tightens exactly as the function family $\mathcal{T}_\omega$ gets more expressive, because the restricted max creeps up toward the unrestricted sup:
+
+<figure><img src="assets/svg/bound-tightness.svg" alt="Richer critic families give tighter lower bounds on the divergence" style="max-width:100%;"><figcaption>Figure 3.3: The bound climbs toward the true divergence as the critic family grows richer — a weak discriminator starves the generator of signal</figcaption></figure>
+
+Hence the practical folklore suddenly has a theorem behind it: **train a strong discriminator.** If $T_\omega$ is weak, the bound is loose, and the generator's gradient steps are aimed at a mirage.
+
+And one structural fact to remember — the bound *always* has the shape
+
+$$\mathbb{E}_{P_x}[T(x)] - \mathbb{E}_{P_\theta}[f^*(T(x))]$$
+
+an average over real data minus a (conjugate-warped) average over fakes. Everything computable, no densities anywhere.
+
+---
+
+## 10. Cheat Sheet
+
+| Concept | Form | What it means in practice |
+| :--- | :--- | :--- |
+| **$P_x$** | unknown density | Only samples: the dataset $\{x_i\}$ |
+| **$P_\theta$** | implicit density | Only samples: $\hat{x} = g_\theta(z)$, $z \sim \mathcal{N}(0,I)$ |
+| **Generator $g_\theta$** | $k \to d$ expansion, $k \ll d$ | Warps noise into data; upsampling / transpose convs |
+| **$f$-divergence** | $\int P_\theta \, f\!\big(\frac{P_x}{P_\theta}\big) dx$ | Needs $f$ convex, $f(1)=0$; KL, JS, TV are members |
+| **Convex conjugate** | $f^*(t) = \sup_u \{ut - f(u)\}$ | Max vertical gap between line $tu$ and curve $f$ |
+| **Duality** | $f(u) = \sup_t \{tu - f^*(t)\}$ | A convex curve = envelope of its tangent lines |
+| **Variational bound** | $D_f \geq \mathbb{E}_{P_x}[T_\omega] - \mathbb{E}_{P_\theta}[f^*(T_\omega)]$ | Computable from samples; $T_\omega$ = discriminator |
+| **The GAN game** | $\min_\theta \max_\omega \{\cdot\}$ | Critic tightens the bound; generator shrinks the divergence |
+
+---
+
+## 11. Key Takeaways
+
+1. **A GAN's model is implicit:** no density formula, just a generator $g_\theta$ that warps low-dimensional noise into high-dimensional samples ($k < L_1 < \dots < d$). Deterministic functions really do reshape distributions — $z^2$ already proves it.
+2. **$f$-divergences unify the distances:** one integral template with a convex $f$, $f(1) = 0$; plugging in $u\log u$, the JS generator, or $\frac{1}{2}|u-1|$ recovers KL, JS, TV.
+3. **The naive estimator dies on the density ratio:** LLN converts expectations to sample averages only when the integrand is computable — and $f(P_x/P_\theta)$ isn't.
+4. **Convex duality is the escape:** $f(u) = \sup_t\{tu - f^*(t)\}$ replaces the curve with its supporting lines; the ratio cancels, leaving a difference of two expectations of network outputs.
+5. **Restricting the sup to a network gives a lower bound**, and the min-max structure of GANs is exactly: discriminator maximizes to *tighten* the bound, generator minimizes to *shrink* the divergence. A weak critic = a loose bound = meaningless generator updates.
+
+---
+
+*Next lecture (Ch.4): plugging a specific choice of $f$ into this framework, which turns out to recover the classical 2014 GAN objective exactly — sigmoid and all — along with proofs of everything left on trust here, and the training loop that makes it run.*
+    </script>
+
+    <script src="dgm-notes.js"></script>
+    <script src="dgm-widgets.js"></script>
+</body>
+
+</html>

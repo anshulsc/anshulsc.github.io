@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="lb-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#888"/></marker>
+    <filter id="blur6"><feGaussianBlur stdDeviation="3.2"/></filter>
+    <g id="three" fill="none" stroke-width="11" stroke-linecap="round">
+      <path d="M 14 16 Q 52 6 52 32 Q 52 50 30 50 Q 52 50 52 72 Q 52 98 12 88"/>
+    </g>
+    <g id="three-b" fill="none" stroke-width="11" stroke-linecap="round">
+      <path d="M 10 24 Q 30 4 48 20 Q 60 34 34 50 Q 62 56 52 80 Q 42 100 8 90"/>
+    </g>
+  </defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">why you cannot just regress: an L₂ loss returns the average of the valid answers</text>
+
+  <rect x="52" y="52" width="150" height="150" rx="6" fill="#fbfbfb" stroke="#ccc"/>
+  <g transform="translate(88,74)" stroke="#0e7490"><use href="#three"/></g>
+  <text x="127" y="222" text-anchor="middle" font-size="10.6" font-weight="600" fill="#0e7490">someone's handwritten 3</text>
+  <text x="127" y="238" text-anchor="middle" font-size="9.6" fill="#888">sharp · a real sample</text>
+
+  <rect x="252" y="52" width="150" height="150" rx="6" fill="#fbfbfb" stroke="#ccc"/>
+  <g transform="translate(290,74)" stroke="#0e7490"><use href="#three-b"/></g>
+  <text x="327" y="222" text-anchor="middle" font-size="10.6" font-weight="600" fill="#0e7490">someone else's 3</text>
+  <text x="327" y="238" text-anchor="middle" font-size="9.6" fill="#888">just as sharp · just as real</text>
+
+  <path d="M 414 127 L 458 127" stroke="#888" stroke-width="1.6" fill="none" marker-end="url(#lb-g)"/>
+  <text x="436" y="118" text-anchor="middle" font-size="9.4" fill="#888">average</text>
+
+  <rect x="470" y="52" width="150" height="150" rx="6" fill="#fbfbfb" stroke="#c0392b"/>
+  <g filter="url(#blur6)" opacity="0.55">
+    <g transform="translate(506,74)" stroke="#0e7490"><use href="#three"/></g>
+    <g transform="translate(508,74)" stroke="#0e7490"><use href="#three-b"/></g>
+  </g>
+  <text x="545" y="222" text-anchor="middle" font-size="10.6" font-weight="600" fill="#c0392b">what minimising ‖·‖₂ gives you</text>
+  <text x="545" y="238" text-anchor="middle" font-size="9.6" fill="#c0392b">a blurred ghost of both — a real 3 shaped like neither</text>
+
+  <rect x="636" y="86" width="106" height="82" rx="9" fill="rgba(200,60,60,0.05)" stroke="#c0392b" stroke-width="1.1"/>
+  <text x="689" y="106" text-anchor="middle" font-size="9.8" fill="#c0392b">Nothing pairs a</text>
+  <text x="689" y="120" text-anchor="middle" font-size="9.8" fill="#c0392b">noise vector z with</text>
+  <text x="689" y="134" text-anchor="middle" font-size="9.8" fill="#c0392b">one particular 3, so</text>
+  <text x="689" y="148" text-anchor="middle" font-size="9.8" fill="#c0392b">"the" right answer</text>
+  <text x="689" y="162" text-anchor="middle" font-size="9.8" fill="#c0392b">does not exist.</text>
+
+  <text x="380" y="272" text-anchor="middle" font-size="11" fill="#555">Squared error is minimised by the conditional <tspan font-style="italic">mean</tspan> of the acceptable outputs. Every stroke sits somewhere slightly different</text>
+  <text x="380" y="290" text-anchor="middle" font-size="11" fill="#555">in each sample, so averaging washes all of them out. This is the blur in every early autoencoder sample you have ever seen.</text>
+</svg>

@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="rp-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker>
+    <marker id="rp-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker>
+    <marker id="rp-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#aaa"/></marker>
+  </defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">the same sample, two graphs — only one of them has a path back to φ</text>
+
+  <!-- ── NAIVE ── -->
+  <rect x="16" y="38" width="728" height="146" rx="10" fill="#fcfcfc" stroke="#e8d5d5"/>
+  <text x="34" y="58" font-size="11.5" font-weight="700" fill="#c0392b">naive: sample directly from the encoder's distribution</text>
+
+  <rect x="40" y="74" width="70" height="40" rx="8" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.4"/>
+  <text x="75" y="99" text-anchor="middle" font-size="11" fill="#0e7490">x</text>
+  <path d="M 112 94 L 144 94" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#rp-t)"/>
+  <rect x="146" y="72" width="96" height="44" rx="8" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.6"/>
+  <text x="194" y="90" text-anchor="middle" font-size="10.8" font-weight="700" fill="#0e7490">encoder φ</text>
+  <text x="194" y="106" text-anchor="middle" font-size="9.6" fill="#555">→ μ, σ</text>
+  <path d="M 244 94 L 276 94" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#rp-t)"/>
+
+  <circle cx="308" cy="94" r="26" fill="rgba(200,60,60,0.12)" stroke="#c0392b" stroke-width="2"/>
+  <text x="308" y="91" text-anchor="middle" font-size="10" font-weight="700" fill="#c0392b">sample</text>
+  <text x="308" y="103" text-anchor="middle" font-size="8.6" fill="#c0392b">z ~ q_φ</text>
+  <text x="308" y="140" text-anchor="middle" font-size="9.4" fill="#c0392b">a stochastic node whose</text>
+  <text x="308" y="152" text-anchor="middle" font-size="9.4" fill="#c0392b">distribution depends on φ</text>
+
+  <path d="M 336 94 L 368 94" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#rp-t)"/>
+  <rect x="370" y="72" width="96" height="44" rx="8" fill="rgba(217,119,6,0.10)" stroke="#d97706" stroke-width="1.6"/>
+  <text x="418" y="90" text-anchor="middle" font-size="10.8" font-weight="700" fill="#d97706">decoder θ</text>
+  <text x="418" y="106" text-anchor="middle" font-size="9.6" fill="#555">→ x̂</text>
+  <path d="M 468 94 L 500 94" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#rp-t)"/>
+  <rect x="502" y="74" width="76" height="40" rx="8" fill="#fff" stroke="#888" stroke-width="1.4"/>
+  <text x="540" y="99" text-anchor="middle" font-size="10.6" fill="#444">loss</text>
+
+  <!-- blocked gradient -->
+  <path d="M 500 130 L 344 130" stroke="#7c3aed" stroke-width="1.8" fill="none" stroke-dasharray="6 4" marker-end="url(#rp-p)"/>
+  <line x1="330" y1="120" x2="290" y2="142" stroke="#c0392b" stroke-width="2.6"/>
+  <line x1="290" y1="120" x2="330" y2="142" stroke="#c0392b" stroke-width="2.6"/>
+  <text x="620" y="100" font-size="10" font-weight="600" fill="#c0392b">∇_φ blocked</text>
+  <text x="620" y="115" font-size="9.4" fill="#c0392b">you cannot differentiate</text>
+  <text x="620" y="128" font-size="9.4" fill="#c0392b">"draw a random number"</text>
+  <text x="620" y="146" font-size="9.4" fill="#c0392b">with respect to the</text>
+  <text x="620" y="159" font-size="9.4" fill="#c0392b">distribution it came from</text>
+
+  <!-- ── REPARAMETERISED ── -->
+  <rect x="16" y="196" width="728" height="150" rx="10" fill="#fcfcfc" stroke="#dfe8ea"/>
+  <text x="34" y="216" font-size="11.5" font-weight="700" fill="#0e7490">reparameterised: the randomness comes from outside</text>
+
+  <rect x="40" y="238" width="70" height="40" rx="8" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.4"/>
+  <text x="75" y="263" text-anchor="middle" font-size="11" fill="#0e7490">x</text>
+  <path d="M 112 258 L 144 258" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#rp-t)"/>
+  <rect x="146" y="236" width="96" height="44" rx="8" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.6"/>
+  <text x="194" y="254" text-anchor="middle" font-size="10.8" font-weight="700" fill="#0e7490">encoder φ</text>
+  <text x="194" y="270" text-anchor="middle" font-size="9.6" fill="#555">→ μ, σ</text>
+  <path d="M 244 258 L 276 258" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#rp-t)"/>
+
+  <rect x="278" y="238" width="60" height="40" rx="8" fill="rgba(14,116,144,0.06)" stroke="#0e7490" stroke-width="1.6"/>
+  <text x="308" y="255" text-anchor="middle" font-size="10" font-weight="700" fill="#0e7490">z =</text>
+  <text x="308" y="270" text-anchor="middle" font-size="9.4" fill="#0e7490">μ + σ⊙ε</text>
+  <text x="308" y="300" text-anchor="middle" font-size="9.4" fill="#0e7490">deterministic and</text>
+  <text x="308" y="312" text-anchor="middle" font-size="9.4" fill="#0e7490">differentiable in μ, σ</text>
+
+  <!-- epsilon comes in from outside -->
+  <rect x="360" y="190" width="112" height="32" rx="8" fill="#f4f4f4" stroke="#888" stroke-width="1.4" stroke-dasharray="5 3"/>
+  <text x="416" y="211" text-anchor="middle" font-size="10.2" fill="#555">ε ~ 𝒩(0, I)</text>
+  <path d="M 396 224 L 330 240" stroke="#888" stroke-width="1.5" fill="none" marker-end="url(#rp-g)"/>
+  <text x="484" y="205" font-size="9.4" fill="#888">no φ anywhere in here —</text>
+  <text x="484" y="217" font-size="9.4" fill="#888">that is the entire trick</text>
+
+  <path d="M 340 258 L 368 258" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#rp-t)"/>
+  <rect x="370" y="236" width="96" height="44" rx="8" fill="rgba(217,119,6,0.10)" stroke="#d97706" stroke-width="1.6"/>
+  <text x="418" y="254" text-anchor="middle" font-size="10.8" font-weight="700" fill="#d97706">decoder θ</text>
+  <text x="418" y="270" text-anchor="middle" font-size="9.6" fill="#555">→ x̂</text>
+  <path d="M 468 258 L 500 258" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#rp-t)"/>
+  <rect x="502" y="238" width="76" height="40" rx="8" fill="#fff" stroke="#888" stroke-width="1.4"/>
+  <text x="540" y="263" text-anchor="middle" font-size="10.6" fill="#444">loss</text>
+
+  <path d="M 500 302 C 420 334, 250 334, 190 288" stroke="#7c3aed" stroke-width="2" fill="none" stroke-dasharray="6 4" marker-end="url(#rp-p)"/>
+  <text x="620" y="258" font-size="10" font-weight="600" fill="#0e7490">∇_φ flows ✓</text>
+  <text x="620" y="273" font-size="9.4" fill="#555">an unbroken chain of</text>
+  <text x="620" y="286" font-size="9.4" fill="#555">differentiable operations</text>
+  <text x="620" y="299" font-size="9.4" fill="#555">from the loss to μ and σ</text>
+
+  <text x="380" y="366" text-anchor="middle" font-size="10.6" fill="#555">Nothing became deterministic — ε is still random on every pass. The randomness simply moved off the path the gradient has to travel.</text>
+</svg>

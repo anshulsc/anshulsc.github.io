@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 260" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="cm-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/></marker>
+    <marker id="cm-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#aaa"/></marker>
+  </defs>
+  <text x="380" y="20" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">the loop: every time the generator finds a blind spot, the next classifier removes it</text>
+
+  <!-- panel 1 -->
+  <rect x="16" y="34" width="168" height="140" rx="8" fill="#fcfcfc" stroke="#e2e2e2"/>
+  <text x="100" y="50" text-anchor="middle" font-size="10.4" font-weight="600" fill="#555">1 · train D on P_θ₁</text>
+  <line x1="30" y1="150" x2="170" y2="72" stroke="#555" stroke-width="1.6"/>
+  <g stroke="#0e7490" stroke-width="1.7"><path d="M 48 78 l 7 7 M 55 78 l -7 7"/><path d="M 66 92 l 7 7 M 73 92 l -7 7"/><path d="M 44 100 l 7 7 M 51 100 l -7 7"/></g>
+  <g fill="none" stroke="#d97706" stroke-width="1.6"><circle cx="130" cy="132" r="4"/><circle cx="146" cy="122" r="4"/><circle cx="126" cy="150" r="4"/></g>
+  <text x="100" y="167" text-anchor="middle" font-size="9.2" fill="#0e7490">separated ✓</text>
+
+  <path d="M 186 104 L 202 104" stroke="#aaa" stroke-width="1.4" fill="none" marker-end="url(#cm-g)"/>
+
+  <!-- panel 2 -->
+  <rect x="206" y="34" width="168" height="140" rx="8" fill="#fcfcfc" stroke="#e2e2e2"/>
+  <text x="290" y="50" text-anchor="middle" font-size="10.4" font-weight="600" fill="#555">2 · G hops over it</text>
+  <line x1="220" y1="150" x2="360" y2="72" stroke="#aaa" stroke-width="1.6" stroke-dasharray="4 3"/>
+  <g stroke="#0e7490" stroke-width="1.7"><path d="M 238 78 l 7 7 M 245 78 l -7 7"/><path d="M 256 92 l 7 7 M 263 92 l -7 7"/><path d="M 234 100 l 7 7 M 241 100 l -7 7"/></g>
+  <g fill="none" stroke="#d97706" stroke-width="1.6"><circle cx="330" cy="70" r="4"/><circle cx="346" cy="60" r="4"/><circle cx="326" cy="88" r="4"/></g>
+  <path d="M 322 122 C 332 106, 336 98, 334 96" stroke="#d97706" stroke-width="1.6" fill="none" stroke-dasharray="4 3" marker-end="url(#cm-o)"/>
+  <text x="290" y="167" text-anchor="middle" font-size="9.2" fill="#c0392b">D fooled — but wrong region ✗</text>
+
+  <path d="M 376 104 L 392 104" stroke="#aaa" stroke-width="1.4" fill="none" marker-end="url(#cm-g)"/>
+
+  <!-- panel 3 -->
+  <rect x="396" y="34" width="168" height="140" rx="8" fill="#fcfcfc" stroke="#e2e2e2"/>
+  <text x="480" y="50" text-anchor="middle" font-size="10.4" font-weight="600" fill="#555">3 · retrain D</text>
+  <line x1="452" y1="62" x2="452" y2="160" stroke="#555" stroke-width="1.6"/>
+  <g stroke="#0e7490" stroke-width="1.7"><path d="M 418 78 l 7 7 M 425 78 l -7 7"/><path d="M 428 92 l 7 7 M 435 92 l -7 7"/><path d="M 414 100 l 7 7 M 421 100 l -7 7"/></g>
+  <g fill="none" stroke="#d97706" stroke-width="1.6"><circle cx="510" cy="70" r="4"/><circle cx="526" cy="60" r="4"/><circle cx="506" cy="88" r="4"/></g>
+  <text x="480" y="167" text-anchor="middle" font-size="9.2" fill="#0e7490">blind spot patched ✓</text>
+
+  <path d="M 566 104 L 582 104" stroke="#aaa" stroke-width="1.4" fill="none" marker-end="url(#cm-g)"/>
+
+  <!-- panel 4 -->
+  <rect x="586" y="34" width="158" height="140" rx="8" fill="#fcfcfc" stroke="#dfe8ea"/>
+  <text x="665" y="50" text-anchor="middle" font-size="10.4" font-weight="600" fill="#0e7490">n · nowhere left to hide</text>
+  <g stroke="#0e7490" stroke-width="1.7"><path d="M 636 92 l 7 7 M 643 92 l -7 7"/><path d="M 654 104 l 7 7 M 661 104 l -7 7"/><path d="M 646 118 l 7 7 M 653 118 l -7 7"/></g>
+  <g fill="none" stroke="#d97706" stroke-width="1.6"><circle cx="648" cy="100" r="4"/><circle cx="664" cy="112" r="4"/><circle cx="640" cy="120" r="4"/></g>
+  <ellipse cx="652" cy="110" rx="34" ry="26" fill="none" stroke="#aaa" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="665" y="167" text-anchor="middle" font-size="9.2" fill="#0e7490">the clusters coincide ✓</text>
+
+  <text x="380" y="200" text-anchor="middle" font-size="10.8" fill="#555">The only arrangement that survives <tspan font-style="italic">every</tspan> boundary the classifier can draw is the one with nothing left to separate.</text>
+  <text x="380" y="222" text-anchor="middle" font-size="10.8" fill="#555">That is why the classifier is retrained inside the loop: against a frozen one, step 2 is a winning strategy forever.</text>
+  <text x="380" y="246" text-anchor="middle" font-size="10" font-style="italic" fill="#999">…and if the generator can only ever be one blob, steps 2–3 repeat without end. That is mode collapse.</text>
+</svg>

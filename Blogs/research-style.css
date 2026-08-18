@@ -115,6 +115,130 @@ p {
     border-bottom: none;
 }
 
+/* --- section headings on the writing index (lecture notes vs. writing) --- */
+.section-label {
+    max-width: 800px;
+    margin: 0 auto 6px;
+    padding-bottom: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.section-note {
+    max-width: 800px;
+    margin: 0 auto 28px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    text-align: left;
+}
+
+/* The lecture-note series live behind this — quiet on purpose, findable if
+   you actually read to the bottom of the page (or search for them). */
+.notes-vault {
+    max-width: 800px;
+    margin: 90px auto 0;
+    padding-top: 28px;
+}
+
+.notes-vault>summary {
+    list-style: none;
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    text-transform: lowercase;
+    color: #cfcfcf;
+    padding: 4px 0;
+    transition: color 0.3s ease, letter-spacing 0.3s ease;
+    user-select: none;
+}
+
+.notes-vault>summary::-webkit-details-marker {
+    display: none;
+}
+
+.notes-vault>summary:hover,
+.notes-vault>summary:focus-visible {
+    color: var(--accent-color);
+    letter-spacing: 0.34em;
+    outline: none;
+}
+
+.notes-vault[open]>summary {
+    color: var(--text-muted);
+    margin-bottom: 22px;
+}
+
+.notes-vault .section-note {
+    text-align: center;
+    margin-bottom: 34px;
+}
+
+.writing-section .section-label {
+    margin-bottom: 28px;
+}
+
+.lock-badge {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent-color);
+    background: rgba(110, 70, 190, 0.09);
+    border: 1px solid rgba(110, 70, 190, 0.22);
+}
+
+/* --- asca brand mark (avatar + wordmark) in the section header --- */
+.brand-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    text-decoration: none;
+    opacity: 0.9;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.brand-mark:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.brand-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: block;
+    background: #f1eefb;
+    border: 1px solid rgba(110, 70, 190, 0.18);
+}
+
+.brand-wordmark {
+    height: 26px;
+    width: auto;
+    display: block;
+}
+
+@media (max-width: 600px) {
+    .brand-avatar {
+        width: 34px;
+        height: 34px;
+    }
+
+    .brand-wordmark {
+        height: 22px;
+    }
+}
+
 .site-logo {
     font-weight: 700;
     font-size: 1.1rem;

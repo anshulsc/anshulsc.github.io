@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lecture 5 notes: reading the GAN as a classifier-guided generative model, why a frozen classifier can be fooled without matching the distribution, mode collapse, DCGAN and transpose convolutions, Conditional GANs, and CycleGAN's cycle-consistency loss.">
+    <meta name="keywords"
+        content="GAN, Classifier-Guided Generation, Mode Collapse, DCGAN, Transpose Convolution, Conditional GAN, cGAN, CycleGAN, Cycle Consistency, Unpaired Image Translation, FID, Jensen-Shannon">
+    <meta name="author" content="Anshul Singh">
+    <title>Lecture 5: The Classifier View, Conditional GANs &amp; CycleGAN — DGM Notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="dgm-notes-style.css">
+
+  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
+  <link rel="stylesheet" href="../../css/theme.css">
+  <script src="../../js/theme.js"></script>
+  <!-- Passphrase gate for this notes series -->
+  <script src="../../js/gate.js"></script>
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">DGM Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Lecture 5</div>
+                <h1>The Classifier View, Conditional GANs &amp; CycleGAN</h1>
+                <div class="chapter-meta">
+                    <span>August 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">40 min read</span>
+                    <span class="dot">●</span>
+                    <span>GAN Practice</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target">
+                    <!-- Rendered markdown goes here -->
+                </article>
+
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <a href="ch-04.html" class="nav-prev">
+                    <div class="nav-label">← Previous Lecture</div>
+                    <div class="nav-title">From f-Divergences to a Trainable GAN</div>
+                </a>
+                <a href="ch-06.html" class="nav-next">
+                    <div class="nav-label">Next Lecture →</div>
+                    <div class="nav-title">Domain Adaptation, Wasserstein GANs &amp; Latent Variable Models</div>
+                </a>
+            </div>
+        </main>
+
+        <footer
+            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*Ch.4 derived the GAN from convex duality and left it there — a correct objective with no intuition attached. This lecture goes the other way round: forget the conjugates for an hour and ask what the thing is actually doing. The answer is that a GAN is a generator being tutored by a classifier, and taking that view seriously raises a question the maths never had to face — why must the classifier keep retraining? The answer is the most useful picture in the course.*
+
+*Part I is the whole idea in pictures, with no machinery. Part II builds the thing that actually runs on images. Part III is where the field still argues: conditioning, translation without paired data, and the genuinely unsolved problem of telling whether any of it worked.*
+
+<div class="part-marker"><span class="part-label">Part I</span><span class="part-name">A generator with a tutor</span><span class="part-sub">Almost no equations. The three claims here — that fooling a classifier proves nothing, that the classifier must therefore keep moving, and that no ordinary regression loss can replace it — carry the whole lecture.</span></div>
+
+## 1. Where We Left Off
+
+Ch.4 took the general variational bound on an $f$-divergence,
+
+$$J(\theta, \omega) = \mathbb{E}_{x \sim P_x}\big[T_\omega(x)\big] - \mathbb{E}_{\tilde{x} \sim P_\theta}\big[f^*\big(T_\omega(\tilde{x})\big)\big]$$
+
+chose the naive-GAN generator $f(u) = u\log u - (u+1)\log(u+1)$, found that $\mathrm{dom}\,f^*$ forces the critic's output through a sigmoid, and wrote $D_\omega(x) = \sigma(T_\omega(x))$ to reach
+
+$$J(\theta, \omega) = \mathbb{E}_{x \sim P_x}\big[\log D_\omega(x)\big] + \mathbb{E}_{\tilde{x} \sim P_\theta}\big[\log\big(1 - D_\omega(\tilde{x})\big)\big]$$
+
+That right-hand side is **binary cross-entropy**. Not something resembling it — literally the loss you would write for a two-class classifier with real data labelled 1 and generated data labelled 0. The whole apparatus has collapsed into something suspiciously familiar, so it is worth asking what the model looks like if we start from *there* instead.
+
+---
+
+## 2. The GAN as a Classifier-Guided Model
+
+Strip away the derivation and here is the setup: data $D = \{x_1, \dots, x_n\}$ from an unknown $P_x$; a generator $g_\theta(z)$ mapping noise to samples $\hat{x} \sim P_\theta$; and a classifier $D_\omega$ trained to answer one question:
+
+$$D_\omega(x) = \begin{cases} 1 & \text{if } x \text{ came from } P_x \\ 0 & \text{if } x \text{ came from } P_\theta \end{cases}$$
+
+<figure><img src="assets/svg/classifier-guided.svg" alt="Real and fake batches feed a binary classifier whose input-gradient guides the generator" style="max-width:100%;"><figcaption>Figure 5.1: The classifier's label is not the useful output. Its gradient with respect to the input is.</figcaption></figure>
+
+The label is a by-product. What the generator consumes is the *derivative of the classifier's score with respect to the image* — a direction in pixel space meaning "change the picture this way and it will look more real". A classifier used normally answers questions; a classifier used here hands back directions.
+
+One question comes up immediately, and it exposes an assumption hiding in the notation: **what does the classifier output for an $x$ from neither distribution** — some arbitrary image that is neither in the dataset nor something the generator produced?
+
+The honest answer is that the question is outside the model's remit. By construction the classifier's input space is only the union of the two supports: it sees samples drawn from the dataset and samples the generator made, and nothing else. Its output elsewhere is unconstrained, because the training objective never mentioned those points. That is not sloppiness — it is the ordinary situation of any classifier evaluated off its training distribution. But it does mean "$D$ says 0.9" is only meaningful for inputs of the kind $D$ was trained on.
+
+---
+
+## 3. The Tempting Idea, and Why It Fails
+
+The plan writes itself: **keep tweaking $\theta$ until the classifier completely fails.** If $D_\omega$ cannot separate the two sets, the samples must be indistinguishable, so $P_\theta \approx P_x$.
+
+Two refinements come up here, and both are instructive dead ends. First: since real samples score 1 and fakes score 0, why not just maximise the sum of the classifier's outputs on generated samples? The reply is a question — maximise with respect to *what*? You have to be ruthless about which quantities are handles you can turn; with $D_\omega$ frozen the only handle is $\theta$. Second: yes, backpropagation is how you would compute that update — but let us check whether the plan is even *correct* before working out how to implement it.
+
+It is not. Take a two-dimensional feature space. Real data sits in one cluster, the generator's output in another. Train a linear classifier to separate them: it draws a boundary, calls one side real and the other fake. Freeze it, and let the generator move to make its samples land on the "real" side.
+
+<figure><img src="assets/svg/fixed-classifier-fails.svg" alt="A generator moves to a new region that a frozen classifier still labels real, without overlapping the true data" style="max-width:100%;"><figcaption>Figure 5.2: Total victory over the classifier, zero progress on the actual objective.</figcaption></figure>
+
+The generator does exactly that — and lands somewhere the true data never occupies. Every generated sample is now classified as real. The classifier has failed **completely**. And $P_{\theta_2}$ shares no region at all with $P_x$.
+
+> **Classifier failure does not imply $P_\theta = P_x$.** It implies $P_\theta$ found somewhere this *particular* boundary does not cover.
+
+Drag it yourself — the gesture makes the point faster than the paragraph:
+
+<div class="dgm-widget" id="widget-fixedclf"></div>
+
+Is this because we started with a bad classifier? No, and that is what makes the counter-example strong. Assume it was trained to convergence and separates the initial clusters perfectly. It still has this hole, because a decision boundary partitions the *entire plane* into two halves, and "real" is an enormous region of which the actual data occupies a tiny corner. The generator only has to reach the half-plane, not the corner.
+
+---
+
+## 4. Why the Classifier Has to Move Too
+
+The fix is the obvious objection to the counter-example: when the generator moves somewhere new, why would the classifier not redraw its boundary?
+
+Exactly — and that is the whole design. Retrain the classifier after every generator move and blind spots get patched as fast as they are exploited. Relocating no longer wins, because a new location is a new separable configuration that the next classifier will catch. The only arrangement surviving *every* boundary the classifier can draw is the one with nothing left to separate.
+
+<figure><img src="assets/svg/cat-and-mouse.svg" alt="Four panels showing the generator hopping and the classifier redrawing its boundary each round" style="max-width:100%;"><figcaption>Figure 5.3: Each round the generator exploits a blind spot and the next classifier removes it.</figcaption></figure>
+
+So the procedure becomes alternating: train $D_{\omega_1}$ against $P_{\theta_1}$; move $\theta$ to fool it, giving $P_{\theta_2}$; retrain to $D_{\omega_2}$; move again; repeat. A cat-and-mouse game — and Ch.4's two-phase loop, which arrived there as a mechanical consequence of min-max, now has an actual reason to exist. It is not an optimisation convenience. **A static critic is not merely weaker; it is measuring the wrong thing.**
+
+---
+
+## 5. Why Not Just Regress?
+
+A fair objection to all of this: we want generated images to look like real ones, so why not skip the adversary and minimise the pixel difference directly?
+
+Two things break. **There is no alignment** — nothing pairs noise vector $z_5$ with any particular photograph, and any pairing you invent is arbitrary. And more deeply, **$L_2$ regresses to the mean**: minimising expected squared error over a set of equally-valid targets returns their *conditional mean*. The mean of many valid handwritten 3s is not a 3; it is a blurred smear, because every stroke sits somewhere slightly different in each sample and averaging washes them all out.
+
+<figure><img src="assets/svg/l2-blur.svg" alt="Two sharp handwritten threes and their blurry pixel average" style="max-width:100%;"><figcaption>Figure 5.4: The L₂ optimum is the average of the acceptable answers, and the average is usually not acceptable.</figcaption></figure>
+
+This is the blur in every early autoencoder sample you have ever seen, and it is not a capacity problem — it is the loss function getting exactly what it asked for. The point that makes the adversarial setup necessary: **we do not want to match samples pixel by pixel, we want to match distributions.** A per-sample loss cannot express a distributional goal. A discriminator can, because it looks at whole populations and reports how they differ *as populations*.
+
+<div class="part-marker"><span class="part-label">Part II</span><span class="part-name">Building one that works on images</span><span class="part-sub">From the cat-and-mouse picture to a real architecture: the formal objective, the way it characteristically fails, and why every image GAN is convolutional.</span></div>
+
+## 6. The Minimax Objective, Recovered
+
+Formalise the game. Let $D_\omega(x) \in [0,1]$ be the predicted probability that $x$ is real. The classifier wants to be right: on real data it maximises $\mathbb{E}_{x \sim P_x}[\log D_\omega(x)]$, on fakes it maximises $\mathbb{E}_{\hat{x} \sim P_\theta}[\log(1 - D_\omega(\hat{x}))]$. The generator wants it to be wrong, which is to minimise the same quantity:
+
+$$\min_\theta \max_\omega J(\theta, \omega) = \min_\theta \max_\omega \Big( \mathbb{E}_{x \sim P_x}\big[\log D_\omega(x)\big] + \mathbb{E}_{z \sim \mathcal{N}(0,I)}\big[\log\big(1 - D_\omega(g_\theta(z))\big)\big] \Big)$$
+
+The same saddle-point problem as Ch.4 — reached this time by asking what a tutor and a student each want, rather than by taking a conjugate. Two derivations arriving at one objective from opposite directions is the strongest evidence the objective is right.
+
+---
+
+## 7. Mode Collapse
+
+The alternating game has a characteristic way of going wrong. If the generator can only produce one kind of thing at a time, it finds the single most convincing kind and produces only that — a model trained on all ten digits emitting nothing but sevens.
+
+Formally: if the generator's capacity supports a single mode, it occupies whichever mode currently scores best. The classifier adapts to catch that region, the generator relocates, and the cycle continues without $P_\theta$ ever *spreading* to cover $P_x$.
+
+<figure><img src="assets/svg/mode-collapse.svg" alt="A one-blob generator covering a single mode versus a four-blob generator covering all modes" style="max-width:100%;"><figcaption>Figure 5.5: The collapsed generator is not stuck because training failed. It is stuck because it has arrived.</figcaption></figure>
+
+The uncomfortable part is that this is **not an optimiser failure**. The demo below makes that concrete: the discriminator is not a network but the exact optimal critic $D^* = p/(p+q)$ from Ch.4, §10, computed analytically. No loose bound, no under-trained critic, no excuse.
+
+<div class="dgm-widget" id="widget-modecollapse"></div>
+
+With capacity 1 the blob climbs onto a mode and stops dead. The gradient there is exactly zero — by symmetry, since the blob sits on the peak of both the real mode and its own density — so it is a genuine stationary point of a perfectly optimised objective. Three quarters of the distribution is abandoned and no amount of further training recovers it. Raise the capacity and the blobs push each other apart (two blobs on one mode double $q$ there, which halves $D$, which drives one away) until every mode is claimed and the critic field flattens to $\frac12$.
+
+---
+
+## 8. After Training, Throw the Discriminator Away
+
+Once the game converges — ideally $P_\theta = P_x$ and $D_\omega \equiv \frac12$ everywhere — generation is almost anticlimactic: sample $z \sim \mathcal{N}(0,I)$, compute $\hat{x} = g_{\theta^*}(z)$, and **discard $D_{\omega^*}$ entirely**.
+
+<figure><img src="assets/svg/inference-discard.svg" alt="Inference pipeline: noise into the frozen generator produces novel samples, discriminator discarded" style="max-width:100%;"><figcaption>Figure 5.6: Generation after training is a single forward pass. Half the model you trained is thrown away.</figcaption></figure>
+
+The discriminator was scaffolding. It existed to supply a gradient and has no role at inference — you do not ship it, run it, or need it. The samples are genuinely new: $\hat{x}$ is not a training image nor a blend of retrieved neighbours, but a fresh point produced by a smooth map applied to a fresh noise draw, which happens to land where the data distribution has mass. [thispersondoesnotexist.com](https://thispersondoesnotexist.com) is precisely this loop — one frozen StyleGAN generator, one new $z$ per refresh, no discriminator anywhere in sight.
+
+---
+
+## 9. Architecture: from MLPs to DCGAN
+
+Everything so far is architecture-agnostic. In practice the architecture decides whether any of it works on images.
+
+**The flattening problem.** A plain MLP-GAN maps $z \in \mathbb{R}^{16}$ through fully connected layers to a flat vector of, say, $10{,}000$ numbers, then reshapes it into a $100 \times 100$ image. The reshape does all the spatial work, and it does it *after* every decision has been made. In the flat vector, the pixel above another pixel is 100 slots away — no different from any other distant coordinate. Adjacency, locality, translation: the entire structure of an image has to be rediscovered from scratch by dense layers with no bias toward it.
+
+**DCGAN** ([Radford et al., 2015](https://arxiv.org/abs/1511.06434) — their Figure 1 is the canonical picture of this generator) fixes this by never flattening. The discriminator is an ordinary CNN: image in, convolutions down, one scalar out. The generator is its mirror image and must *upsample*, growing $z$ into a full image with **transpose convolutions**.
+
+<figure><img src="assets/svg/mlp-vs-dcgan.svg" alt="MLP-GAN flattening versus DCGAN spatial feature maps" style="max-width:100%;"><figcaption>Figure 5.7: The generator and discriminator are mirror images: one expands a grid, the other contracts it.</figcaption></figure>
+
+A transpose convolution is the wiring of a normal convolution run backwards: instead of collecting a neighbourhood into one output, each input cell is multiplied by the kernel and that patch is *added into* the output. Seeing it move is worth more than any description. These are the original animations from the reference the lecture recommends — Dumoulin and Visin's *[A guide to convolution arithmetic for deep learning](https://arxiv.org/abs/1603.07285)* — which the authors release under the MIT licence for exactly this use:
+
+<figure><div class="fig-row"><div class="fig-cell"><img src="assets/conv-arith/no_padding_no_strides.gif" alt="Ordinary convolution, no padding, unit stride" style="max-width:180px;"><br>ordinary convolution<br>4×4 → 2×2, it <em>shrinks</em></div><div class="fig-cell"><img src="assets/conv-arith/no_padding_no_strides_transposed.gif" alt="Transposed convolution, no padding, unit stride" style="max-width:180px;"><br>its transpose<br>2×2 → 4×4, it <em>grows</em></div></div><figcaption>Figure 5.8: The same connection pattern used in both directions. Blue is input, green is output. Animations by <a href="https://github.com/vdumoulin/conv_arithmetic">Dumoulin &amp; Visin</a> (arXiv:1603.07285), MIT licence.</figcaption></figure>
+
+The dashed white cells in the second animation are the giveaway: to run the connections backwards, the input is conceptually padded with zeros *between* its own cells, then an ordinary convolution slides over that inflated grid. Stride, in the transposed direction, controls how far apart the input cells get spread — which is why increasing it multiplies the output size rather than dividing it:
+
+<figure><div class="fig-row"><div class="fig-cell"><img src="assets/conv-arith/padding_strides.gif" alt="Convolution with padding and stride 2" style="max-width:180px;"><br>conv, pad 1, stride 2<br>5×5 → 3×3</div><div class="fig-cell"><img src="assets/conv-arith/padding_strides_transposed.gif" alt="Transposed convolution with padding and stride 2" style="max-width:180px;"><br>its transpose<br>3×3 → 5×5</div><div class="fig-cell"><img src="assets/conv-arith/padding_strides_odd_transposed.gif" alt="Transposed convolution with odd padding and stride" style="max-width:180px;"><br>the awkward case<br>output size is ambiguous</div></div><figcaption>Figure 5.9: A DCGAN generator is a stack of the middle animation, repeated until the grid is image-sized. Animations by <a href="https://github.com/vdumoulin/conv_arithmetic">Dumoulin &amp; Visin</a>, MIT licence.</figcaption></figure>
+
+That third case matters in practice: when the stride does not divide the input size evenly, more than one output size is consistent with the same forward convolution, and the framework needs an extra `output_padding` argument to disambiguate. It is the single most common source of shape errors when writing a generator. The arithmetic to memorise:
+
+$$\text{out} = (\text{in} - 1)\cdot \text{stride} - 2\cdot\text{padding} + \text{kernel}$$
+
+<div class="dgm-widget" id="widget-transconv"></div>
+
+### What the uneven overlap actually does
+
+The calculator's shading shows something the animations only hint at: when stride does not divide the kernel evenly, some output cells collect contributions from more input cells than their neighbours. Those cells come out systematically brighter — and stacked over several layers, the pattern becomes visible in the samples themselves.
+
+<figure><div class="fig-row"><div class="fig-cell"><img src="assets/distill/im_sample_dcgan.png" alt="A DCGAN sample" class="pixelated" style="width:170px;"><br>a real DCGAN sample</div><div class="fig-cell"><img src="assets/distill/im_sample_dcgan_contrast.png" alt="The same DCGAN sample with contrast boosted, showing a checkerboard grid" class="pixelated" style="width:170px;"><br>the same image, contrast boosted<br>the grid is <em>in the model</em></div><div class="fig-cell"><img src="assets/distill/fix_zero_deconv_bird.png" alt="Artifacts from a strided deconvolution" class="pixelated" style="width:110px;"><br>strided deconv</div><div class="fig-cell"><img src="assets/distill/fix_two_deconv_bird.png" alt="The same image generated with resize-then-convolve" class="pixelated" style="width:110px;"><br>resize-then-convolve<br>artefact gone</div></div><figcaption>Figure 5.10: Checkerboard artefacts are arithmetic, not a training failure — visible in the diagram before a single weight is learned. Images from Odena, Dumoulin &amp; Olah, <a href="https://distill.pub/2016/deconv-checkerboard/">"Deconvolution and Checkerboard Artifacts"</a>, <em>Distill</em> (2016), CC-BY 2.0.</figcaption></figure>
+
+The standard fix is to stop using strided transpose convolutions for upsampling altogether: resize the feature map with nearest-neighbour or bilinear interpolation first, *then* apply an ordinary stride-1 convolution. Same increase in resolution, no uneven overlap, no grid. This is one of the few places in the whole subject where a visual defect has a completely mechanical explanation and a completely mechanical cure.
+
+---
+
+## 10. Why Only JS Gives You a Classifier
+
+A subtle question tying this lecture back to the last one. The "discriminator is a binary classifier" reading was developed for Jensen-Shannon. Does it hold for the other $f$-divergences?
+
+**It does not**, and the reason is the domain constraint from Ch.4, §9.
+
+| Divergence | $f(u)$ | $f^*(t)$ | $\mathrm{dom}\, f^*$ | activation $g_f(s)$ |
+| :--- | :--- | :--- | :--- | :--- |
+| Kullback–Leibler | $u \log u$ | $e^{t-1}$ | all of $\mathbb{R}$ | $s$ (linear) |
+| Pearson $\chi^2$ | $(u-1)^2$ | $t + t^2/4$ | all of $\mathbb{R}$ | $s$ (linear) |
+| Jensen–Shannon | $u\log u - (u{+}1)\log\frac{u+1}{2}$ | $-\log(2 - e^t)$ | $t < \log 2$ | $-\log(1 + e^{-s})$ |
+| Naive GAN | $u\log u - (u{+}1)\log(u{+}1)$ | $-\log(1 - e^t)$ | $t < 0$ | $-\log(1 + e^{-s})$ |
+
+<figure><img src="assets/svg/divergence-classifier.svg" alt="Bounded conjugate domain gives a probability, unbounded gives a regressor" style="max-width:100%;"><figcaption>Figure 5.11: A bounded domain is what makes the classifier story available. Unbounded domains give a regressor.</figcaption></figure>
+
+For JS and the naive GAN, $\mathrm{dom}\,f^*$ is **bounded above**, so the output activation squashes the critic into a bounded range and exponentiating gives $D \in [0,1]$ — a number you may legitimately read as a probability. That is what licenses the words "classifier", "real", "fake" and the binary-cross-entropy reading.
+
+For KL and $\chi^2$, $\mathrm{dom}\,f^*$ is all of $\mathbb{R}$. The optimal $T^*(x) = f'(P_x/P_\theta)$ is an unbounded function of the density ratio, free to run from $-\infty$ to $+\infty$, and no sensible reading calls that a probability. The network is a **regressor** estimating a density ratio.
+
+So the variational machinery — critic tightens the bound, generator minimises the divergence — is *identical* across the family. Only the classifier interpretation is special to JS. The intuition everyone teaches first is actually the narrower statement.
+
+<div class="part-marker"><span class="part-label">Part III</span><span class="part-name">Steering, translating, and the problem nobody has solved</span><span class="part-sub">Controlling what comes out, translating between domains with no paired data, and the awkward fact that evaluating generative models remains an open research question.</span></div>
+
+## 11. Conditional GANs
+
+Everything so far generates *something* from the data distribution with no way to say which. Ask for a face and you get a face; you cannot ask for a smiling one. The fix is almost embarrassingly simple — hand the label to the network along with the noise — with one non-obvious part.
+
+We move from modelling the marginal $P_X$ to the **conditional** $P(X \mid Y)$ ([Mirza &amp; Osindero, 2014](https://arxiv.org/abs/1411.1784)), where $Y$ is a class label, a text embedding, or any side information. Training data becomes pairs $\mathcal{D} = \{(x_i, y_i)\} \sim p_{XY}$, and $y$ enters every slot of the objective:
+
+$$\min_\theta \max_\omega J(\theta, \omega) = \mathbb{E}_{(x,y) \sim p_{XY}}\big[\log D_\omega(x, y)\big] + \mathbb{E}_{y \sim p_Y,\; z \sim p_z}\big[\log\big(1 - D_\omega(G_\theta(z, y), y)\big)\big]$$
+
+The first term draws a genuine $(x,y)$ pair and asks the discriminator to accept it. The second draws a condition and a noise vector, generates $\hat{x} = G_\theta(z,y)$, and asks the discriminator to reject the pair $(\hat{x}, y)$ — either because the image is unrealistic *or because it does not match $y$*.
+
+That is the non-obvious part: **the label must go to the discriminator too.** If only the generator saw it, the generator could ignore it entirely and still win by producing any realistic image, because a label-blind discriminator has no way to complain about a beautiful picture of the wrong class. Feeding $y$ to $D$ changes its question from "is this real?" to "is this a real example *of this class*?", and ignoring the label becomes a losing strategy.
+
+<figure><img src="assets/svg/cgan-arch.svg" alt="Conditional GAN architecture with y fed into both generator and discriminator" style="max-width:100%;"><figcaption>Figure 5.12: z chooses which sample. y chooses which kind. Both networks see y.</figcaption></figure>
+
+<div class="dgm-widget" id="widget-cgan"></div>
+
+**How is $y$ represented?** Discrete classes become **one-hot vectors** — for MNIST, $y \in \{0,1\}^{10}$. Text or continuous attributes become **embeddings**: TF-IDF, BERT, CLIP, whatever suits the domain.
+
+**How do you combine $x$ and $y$?** In an MLP, flatten $x$ and concatenate. In a CNN you cannot concatenate a vector to an image, so you **tile**: pass $y$ through a linear layer, broadcast across the spatial dimensions to $H \times W \times C_y$, and concatenate along channels to get $H \times W \times (C + C_y)$.
+
+<figure><img src="assets/svg/conditioning-tile.svg" alt="Tiling a one-hot condition vector across spatial dimensions and concatenating along channels" style="max-width:100%;"><figcaption>Figure 5.13: Broadcasting the label into channels — the standard way to condition a convolutional network.</figcaption></figure>
+
+**Training versus inference.** During training the dataset contains all classes mixed together and the model learns the joint structure from many pairings. At inference $y$ becomes a **control switch**: freeze $\theta$, set $y$ to the class you want, draw a fresh $z$, out comes a sample of that class. Different digit? Change $y$. Different instance of the same digit? Change $z$.
+
+**Is $X$ always an image?** No — nothing in the formulation is image-specific. In text-to-speech, $Y$ is a text sequence and $X$ a speech waveform, and the same conditional adversarial setup applies unchanged. GANs are general-purpose implicit density estimators; images are just where they were most photogenic.
+
+**How is this different from prompting GPT?** Fundamentally different machinery despite the surface similarity. GPT is **autoregressive**: it factorises the joint by the chain rule, $P(x_1, x_2, \dots) = \prod_i P(x_i \mid x_{<i})$, emitting one token at a time conditioned on everything already produced. A C-GAN is **adversarially trained** and produces its entire output in a single parallel forward pass, with no sequential decomposition anywhere. Different factorisation, different training principle, different failure modes.
+
+---
+
+## 12. Unpaired Translation
+
+Conditional GANs are excellent when you have paired data. Frequently you cannot get it. Turning summer photos into winter ones, or horses into zebras, would need the *same scene* in both conditions — the same street in July and January from the same angle, or an animal that is somehow both. For most interesting translation tasks the paired dataset does not exist and cannot be collected at any price.
+
+What you *can* get is two independent collections. CycleGAN's own horse↔zebra benchmark is 1,187 horse photos and 1,474 zebra photos scraped separately, with no correspondence between them at all:
+
+$$\{s_1, \dots, s_N\} \sim P_S \quad \text{(horses)}, \qquad \{t_1, \dots, t_M\} \sim P_T \quad \text{(zebras)}$$
+
+<figure><img src="assets/svg/paired-vs-unpaired.svg" alt="Paired data with one-to-one links versus two unpaired collections" style="max-width:100%;"><figcaption>Figure 5.14: The pairing is not missing from the dataset. It is missing from reality.</figcaption></figure>
+
+The goal is a mapping $G_1 : S \to T$ whose output distribution is indistinguishable from $P_T$. Two quick questions. *Should we not know which $s$ maps to which $t$?* For paired methods like pix2pix, yes — that is the requirement CycleGAN exists to remove. *And what if we do not know $P_S$ and $P_T$?* We never do; we only have samples. That is exactly why a discriminator stands in for the divergence, as in Ch.4: it compares two populations without either density ever being written down.
+
+---
+
+## 13. Why Adversarial Loss Alone Fails
+
+Train $G_1 : S \to T$ against a discriminator $D_T$ checking "does this look like a zebra?" and read the objective literally. It says: *make the output distribution look like $P_T$*. It says **nothing whatsoever about the input**.
+
+So $G_1$ can satisfy it perfectly by mapping every horse to the same convincing zebra, or by scrambling pose, background and composition entirely while still producing something zebra-shaped. Both are total victories by the stated objective and total failures at the task.
+
+<figure><img src="assets/svg/cyclegan-fail.svg" alt="All horses mapping to one zebra satisfies the discriminator but destroys the translation" style="max-width:100%;"><figcaption>Figure 5.15: The degenerate solution the adversarial loss happily permits, and why the round trip forbids it.</figcaption></figure>
+
+Nothing in an adversarial loss ties output to input. The mapping must be constrained further — specifically it must be forced to be **invertible**, because a map that throws information away cannot be undone.
+
+---
+
+## 14. Cycle Consistency
+
+The idea is a round trip. Translate a horse into a zebra, then translate that zebra back into a horse. If you get your original photograph back, the first translation must have preserved everything that made it *that* photograph — pose, background, lighting — and changed only what makes a horse a horse.
+
+What makes this elegant is that we never had to say *which* properties to preserve. We did not list "keep the background, keep the pose". We demanded the trip be reversible, and reversibility rules out throwing anything away.
+
+CycleGAN ([Zhu et al., 2017](https://arxiv.org/abs/1703.10593) — Figure 3 of the paper is the diagram below) trains **two** generators and **two** discriminators: $G_1 : S \to T$, $G_2 : T \to S$, with $D_T$ distinguishing real $t$ from $G_1(s)$ and $D_S$ distinguishing real $s$ from $G_2(t)$, subject to
+
+$$G_2\big(G_1(s)\big) \approx s \qquad \text{and} \qquad G_1\big(G_2(t)\big) \approx t$$
+
+<figure><img src="assets/svg/cyclegan-arch.svg" alt="CycleGAN forward and backward cycles with two generators, two discriminators and L1 reconstruction" style="max-width:100%;"><figcaption>Figure 5.16: Discriminators enforce "looks like the target domain". The L₁ terms enforce "is still the same animal, in the same pose".</figcaption></figure>
+
+<div class="dgm-widget" id="widget-cycle"></div>
+
+The full objective combines them,
+
+$$\mathcal{L}(G_1, G_2, D_S, D_T) = \mathcal{L}_{GAN}(G_1, D_T, S, T) + \mathcal{L}_{GAN}(G_2, D_S, T, S) + \lambda\, \mathcal{L}_{cyc}(G_1, G_2)$$
+
+with the adversarial terms in the usual form,
+
+$$\mathcal{L}_{GAN}(G_1, D_T, S, T) = \mathbb{E}_{t \sim P_T}\big[\log D_T(t)\big] + \mathbb{E}_{s \sim P_S}\big[\log\big(1 - D_T(G_1(s))\big)\big]$$
+
+and the cycle term measuring reconstruction directly in pixel space:
+
+$$\mathcal{L}_{cyc}(G_1, G_2) = \mathbb{E}_{s \sim P_S}\Big[\big\| G_2(G_1(s)) - s \big\|_1\Big] + \mathbb{E}_{t \sim P_T}\Big[\big\| G_1(G_2(t)) - t \big\|_1\Big]$$
+
+Yes, that comparison really is pixel-by-pixel, and $\lambda$ trades the concerns off. It is the **$L_1$ norm**, not $L_2$ — $L_1$ tolerates a few large deviations instead of smearing error everywhere, giving visibly sharper reconstructions. And §5's warning about pixel losses causing blur does not apply here: the reconstruction has exactly one correct answer, the original image, so the "average of many valid answers" failure never arises.
+
+**Is this just an autoencoder?** The shape is identical — $s \to G_1(s) \to G_2(G_1(s)) \approx s$ is an encode-decode round trip. The crucial difference is what sits in the middle. An autoencoder forces its intermediate through a **narrow bottleneck**, and that is what stops it learning the identity. In CycleGAN the intermediate is a **full-resolution image in the other domain** — no bottleneck at all, and nothing dimensional preventing $G_1$ from learning the identity and $G_2$ from undoing it, which would satisfy the cycle loss perfectly while performing no translation. What prevents that is the adversarial loss: the identity map leaves a horse looking like a horse and $D_T$ rejects it instantly.
+
+So the two losses constrain each other from opposite sides: **the cycle loss forbids discarding content, the adversarial loss forbids keeping the domain.** Neither alone would work, which is exactly why both are in the objective.
+
+Worth knowing what this does *not* buy. Cycle consistency preserves structure, so CycleGAN handles texture and colour changes well (horse↔zebra, summer↔winter, photo↔painting) and handles **geometric** changes badly — cat↔dog or apple↔orange with different shapes tend to fail, because a large shape change destroys exactly the information the round trip needs. The paper's own failure-case figure is worth looking at for this; it is an honest limitation rather than a tuning problem.
+
+---
+
+## 15. Evaluating GANs, and Why It Is Still Unsolved
+
+One question has no comfortable answer: how do you tell whether any of this worked? There is no likelihood to report — the model is implicit, that was the premise — and eyeballing samples does not scale and does not detect mode collapse.
+
+The current standard is the **Fréchet Inception Distance** ([Heusel et al., 2017](https://arxiv.org/abs/1706.08500)): push real and generated images through a frozen pre-trained Inception-V3, take activations from an intermediate layer, fit a multivariate Gaussian to each set, and report the Wasserstein-2 distance between them. Lower is better.
+
+<figure><img src="assets/svg/fid-metric.svg" alt="FID pipeline: images through Inception, fit Gaussians to features, measure distance" style="max-width:100%;"><figcaption>Figure 5.17: Comparing distributions of learned features rather than pixels — the only comparison that means anything here.</figcaption></figure>
+
+Working in feature space is the essential move. Two photographs of the same scene shifted by one pixel are enormously far apart in pixel space and nearly identical in feature space, and it is the second judgement we want. Comparing *distributions of features* is also what lets FID notice mode collapse: a generator emitting one perfect image gets an excellent per-image score and a terrible FID, because its feature covariance collapses to nearly zero while the real one is broad.
+
+That said, FID is a deeply imperfect instrument, and knowing its failure modes is the difference between reading a results table and believing one.
+
+**It assumes the features are Gaussian.** They are not. FID keeps only the mean and covariance, so two genuinely different feature distributions with matching first two moments score identically. The metric is blind by construction to everything higher-order.
+
+**It is biased by sample count.** FID computed on 5,000 samples is systematically worse than on 50,000, for the *same model*, because covariance estimates converge slowly. Numbers from different papers are only comparable if the sample budget matches — and it frequently does not. This is why KID (kernel Inception distance), which is unbiased, is sometimes reported alongside.
+
+**It inherits whatever Inception-V3 cares about.** The feature extractor was trained to classify ImageNet objects, so FID is most sensitive to the things that help ImageNet classification and least sensitive to everything else. On domains far from ImageNet — medical scans, satellite imagery, faces — its relevance is an assumption, not a result.
+
+**It collapses two different failures into one number.** A model producing beautiful samples of only half the distribution and one producing mediocre samples of all of it can score the same. This is the motivation for **precision and recall** metrics for generative models, which deliberately split fidelity from coverage.
+
+The honest summary is that evaluation remains an open problem. FID is the field's least-bad convention, not a solution, and a paper that wins on FID alone has demonstrated less than it appears to.
+
+---
+
+## 16. Summary Table
+
+| | Conditional GAN | CycleGAN |
+| :--- | :--- | :--- |
+| **Data needed** | paired, $\{(x_i, y_i)\} \sim p_{XY}$ | two unpaired sets, $P_S$ and $P_T$ |
+| **Generators** | one, $G(z, y)$ | two, $G_1 : S \to T$ and $G_2 : T \to S$ |
+| **Discriminators** | one, $D(x, y)$ | two, $D_S$ and $D_T$ |
+| **Extra constraint** | none beyond conditioning | cycle consistency, $L_1$ |
+| **What controls output** | the label $y$ | the input image $s$ |
+| **Typical use** | text-to-image, class-conditional generation | style transfer, domain adaptation |
+| **Known weakness** | ignores $y$ if $D$ cannot see it | fails on large geometric changes |
+
+---
+
+## 17. Implementation Checklist
+
+1. **Define the switch.** Convert class IDs to $C$-dimensional one-hot vectors.
+2. **Generator inputs.** Sample $z \sim \mathcal{N}(0,I)$; project or reshape $y$ and concatenate with $z$ before the transpose-conv stack.
+3. **Discriminator inputs.** Tile $y$ to the image's spatial dimensions and concatenate along channels, giving $3 + C$ input channels.
+4. **Alternate the updates.** Train $D$ and $G$ in separate phases, and make sure $D$ sees both real pairs $(x, y)$ and fake pairs $(\hat{x}, y)$ — feeding it real images with *mismatched* labels as an extra negative is a common and useful strengthening.
+5. **Check your shapes.** Run the transpose-conv formula by hand for every layer before training; a silent shape bug looks exactly like a training failure.
+6. **Consider resize-then-convolve** instead of strided transpose convolutions if you see grid patterns in your samples.
+7. **Prefer the non-saturating loss** (Ch.4, §13), and evaluate with FID at a fixed, reported sample count rather than staring at loss curves — which, as Ch.4, §12 argued, are not progress bars.
+
+---
+
+## 18. Key Takeaways
+
+1. **The GAN objective is literally binary cross-entropy**, so the discriminator reads as an ordinary real-versus-fake classifier — a far friendlier entry point than convex duality, reaching the same min-max objective.
+2. **Fooling a classifier does not mean matching a distribution.** A frozen boundary carves the whole space into two halves and the generator only has to reach the correct half, not the tiny region the data occupies.
+3. **That is why the discriminator must be retrained inside the loop.** Alternating training is not an optimisation convenience; a static critic measures the wrong thing.
+4. **$L_2$ regression cannot replace the adversary.** There is no pairing between noise and data, and squared error over many valid targets returns their blurry average.
+5. **Mode collapse is a stationary point, not an optimiser failure.** With an exactly optimal critic, a capacity-1 generator still parks on one mode and abandons the rest, and the gradient there is exactly zero.
+6. **Flattening an image destroys the structure the network needs**, so DCGAN keeps everything spatial — and checkerboard artefacts are arithmetic, predictable from the stride and kernel before training starts, and curable by resizing before convolving.
+7. **The classifier interpretation is specific to JS.** Bounded $\mathrm{dom}\,f^*$ gives a probability; for KL or $\chi^2$ the domain is all of $\mathbb{R}$ and the critic is a density-ratio regressor.
+8. **Conditioning is concatenation — into both networks.** $z$ picks the sample, $y$ picks the kind; giving $y$ to the discriminator is what stops the generator ignoring it.
+9. **Cycle consistency buys structure preservation without specifying what to preserve**, and its limits follow from the same argument: large geometric changes destroy the information the round trip needs.
+10. **Evaluation is genuinely unsolved.** FID assumes Gaussian features, is biased by sample count, inherits Inception's priorities, and merges fidelity with coverage into one number. It is the least-bad convention available.
+
+---
+
+*Next (Ch.6): the adversarial trick applied to features instead of pixels, then the repair for the flat-gradient problem Ch.4 diagnosed — the Wasserstein distance — and finally a change of direction entirely, into latent variable models and the bound that leads to VAEs.*
+    </script>
+
+    <script src="dgm-notes.js"></script>
+    <script src="dgm-widgets.js"></script>
+</body>
+
+</html>

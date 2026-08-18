@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/>
+    </marker>
+    <marker id="arrO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/>
+    </marker>
+  </defs>
+
+  <!-- Real data row -->
+  <rect x="30" y="40" width="150" height="56" rx="10" fill="rgba(217,119,6,0.06)" stroke="#d97706" stroke-width="1.4"/>
+  <text x="105" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="#d97706">REAL DATA</text>
+  <text x="105" y="82" text-anchor="middle" font-size="11" fill="#555">x ~ P&#8339; (the dataset)</text>
+
+  <rect x="250" y="40" width="180" height="56" rx="10" fill="#fff" stroke="#0e7490" stroke-width="1.5"/>
+  <text x="340" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">CRITIC T_ω(x)</text>
+  <text x="340" y="82" text-anchor="middle" font-size="11" fill="#555">scores real samples</text>
+
+  <rect x="500" y="40" width="230" height="56" rx="10" fill="#fafafa" stroke="#bbb" stroke-width="1.3"/>
+  <text x="615" y="63" text-anchor="middle" font-size="12" font-weight="600" fill="#333">𝔼 over data: (1/n) Σ T_ω(xᵢ)</text>
+  <text x="615" y="82" text-anchor="middle" font-size="11" fill="#888">a plain average — computable!</text>
+
+  <path d="M 180 68 L 247 68" stroke="#d97706" stroke-width="1.5" fill="none" marker-end="url(#arrO)"/>
+  <path d="M 430 68 L 497 68" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#arrT)"/>
+
+  <!-- Fake data row -->
+  <rect x="30" y="150" width="150" height="56" rx="10" fill="rgba(14,116,144,0.06)" stroke="#0e7490" stroke-width="1.4"/>
+  <text x="105" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">GENERATOR</text>
+  <text x="105" y="192" text-anchor="middle" font-size="11" fill="#555">x̂ = g_θ(z), z ~ 𝒩(0, I)</text>
+
+  <rect x="250" y="150" width="180" height="56" rx="10" fill="#fff" stroke="#0e7490" stroke-width="1.5"/>
+  <text x="340" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">f*(T_ω(x̂))</text>
+  <text x="340" y="192" text-anchor="middle" font-size="11" fill="#555">conjugate-warped scores of fakes</text>
+
+  <rect x="500" y="150" width="230" height="56" rx="10" fill="#fafafa" stroke="#bbb" stroke-width="1.3"/>
+  <text x="615" y="173" text-anchor="middle" font-size="12" font-weight="600" fill="#333">𝔼 over fakes: (1/m) Σ f*(T_ω(ŷⱼ))</text>
+  <text x="615" y="192" text-anchor="middle" font-size="11" fill="#888">also just an average — computable!</text>
+
+  <path d="M 180 178 L 247 178" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#arrT)"/>
+  <path d="M 430 178 L 497 178" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#arrT)"/>
+
+  <!-- objective -->
+  <path d="M 615 96 L 615 118 L 460 118 L 460 258 L 500 258" stroke="#bbb" stroke-width="1.2" fill="none"/>
+  <path d="M 615 206 L 615 228 L 460 228" stroke="#bbb" stroke-width="1.2" fill="none"/>
+
+  <rect x="180" y="240" width="400 " height="76" rx="12" fill="rgba(14,116,144,0.05)" stroke="#0e7490" stroke-width="1.6"/>
+  <text x="380" y="268" text-anchor="middle" font-size="13.5" font-weight="700" fill="#333" font-family="Georgia, serif" font-style="italic">bound(θ, ω) = 𝔼_P&#8339;[T_ω(x)] − 𝔼_P_θ[f*(T_ω(x̂))]</text>
+  <text x="380" y="296" text-anchor="middle" font-size="11.5" fill="#555">critic ω pushes it UP (tightens the bound) · generator θ pushes it DOWN (shrinks the divergence)</text>
+
+  <text x="130" y="268" text-anchor="end" font-size="11.5" font-weight="600" fill="#0e7490">max over ω ↑</text>
+  <text x="130" y="288" text-anchor="end" font-size="11.5" font-weight="600" fill="#d97706">min over θ ↓</text>
+
+  <text x="380" y="344" text-anchor="middle" font-size="11" fill="#666">The whole objective is two sample averages — no density formula ever needed. That's the trick.</text>
+</svg>

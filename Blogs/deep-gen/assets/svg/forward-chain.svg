@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 260" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="fc2-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker>
+    <marker id="fc2-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/></marker>
+    <filter id="n1"><feTurbulence baseFrequency="0.9" numOctaves="2" seed="3"/><feColorMatrix type="saturate" values="0"/></filter>
+  </defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">the forward chain: signal down, noise up, on a fixed schedule</text>
+
+  <g>
+    <rect x="34" y="46" width="66" height="66" rx="4" fill="#e8e8e8" stroke="#0e7490" stroke-width="1.5"/>
+    <circle cx="67" cy="79" r="20" fill="#3a3a3a"/><rect x="63" y="59" width="8" height="40" fill="#e8e8e8"/>
+    <text x="67" y="128" text-anchor="middle" font-size="10" font-weight="600" fill="#0e7490">x₀</text>
+    <text x="67" y="142" text-anchor="middle" font-size="8.6" fill="#999">ᾱ = 1.000</text>
+  </g>
+  <g opacity="0.94">
+    <rect x="164" y="46" width="66" height="66" rx="4" fill="#e8e8e8" stroke="#0e7490" stroke-width="1.3"/>
+    <circle cx="197" cy="79" r="20" fill="#3f3f3f"/><rect x="193" y="59" width="8" height="40" fill="#e6e6e6"/>
+    <rect x="164" y="46" width="66" height="66" filter="url(#n1)" opacity="0.16"/>
+    <text x="197" y="128" text-anchor="middle" font-size="10" font-weight="600" fill="#0e7490">x₁₀₀</text>
+    <text x="197" y="142" text-anchor="middle" font-size="8.6" fill="#999">ᾱ = 0.897</text>
+  </g>
+  <g>
+    <rect x="294" y="46" width="66" height="66" rx="4" fill="#dcdcdc" stroke="#999" stroke-width="1.3"/>
+    <circle cx="327" cy="79" r="20" fill="#5a5a5a" opacity="0.8"/><rect x="323" y="59" width="8" height="40" fill="#d8d8d8" opacity="0.8"/>
+    <rect x="294" y="46" width="66" height="66" filter="url(#n1)" opacity="0.42"/>
+    <text x="327" y="128" text-anchor="middle" font-size="10" font-weight="600" fill="#555">x₅₀₀</text>
+    <text x="327" y="142" text-anchor="middle" font-size="8.6" fill="#999">ᾱ = 0.079</text>
+  </g>
+  <g>
+    <rect x="424" y="46" width="66" height="66" rx="4" fill="#d4d4d4" stroke="#999" stroke-width="1.3"/>
+    <circle cx="457" cy="79" r="20" fill="#6e6e6e" opacity="0.35"/>
+    <rect x="424" y="46" width="66" height="66" filter="url(#n1)" opacity="0.66"/>
+    <text x="457" y="128" text-anchor="middle" font-size="10" font-weight="600" fill="#555">x₈₀₀</text>
+    <text x="457" y="142" text-anchor="middle" font-size="8.6" fill="#999">ᾱ = 0.002</text>
+  </g>
+  <g>
+    <rect x="554" y="46" width="66" height="66" rx="4" fill="#d0d0d0" stroke="#888" stroke-width="1.3"/>
+    <rect x="554" y="46" width="66" height="66" filter="url(#n1)" opacity="0.82"/>
+    <text x="587" y="128" text-anchor="middle" font-size="10" font-weight="600" fill="#555">x_T</text>
+    <text x="587" y="142" text-anchor="middle" font-size="8.6" fill="#999">ᾱ ≈ 4×10⁻⁵</text>
+  </g>
+
+  <g stroke="#0e7490" stroke-width="1.5" fill="none">
+    <path d="M 104 79 L 158 79" marker-end="url(#fc2-t)"/>
+    <path d="M 234 79 L 288 79" marker-end="url(#fc2-t)"/>
+    <path d="M 364 79 L 418 79" marker-end="url(#fc2-t)"/>
+    <path d="M 494 79 L 548 79" marker-end="url(#fc2-t)"/>
+  </g>
+  <text x="330" y="34" text-anchor="middle" font-size="9.6" fill="#0e7490">q(x_t | x_{t−1}) = 𝒩( √α_t · x_{t−1},  (1−α_t) I )   —   fixed, no parameters</text>
+
+  <path d="M 548 168 L 104 168" stroke="#d97706" stroke-width="1.8" fill="none" stroke-dasharray="6 4" marker-end="url(#fc2-o)"/>
+  <text x="330" y="162" text-anchor="middle" font-size="9.6" fill="#d97706">p_θ(x_{t−1} | x_t)  —  learned, one U-Net, shared across all t</text>
+
+  <rect x="640" y="46" width="104" height="66" rx="8" fill="rgba(120,120,120,0.10)" stroke="#888" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="692" y="70" text-anchor="middle" font-size="9.6" font-weight="600" fill="#555">x_T ~ 𝒩(0, I)</text>
+  <text x="692" y="86" text-anchor="middle" font-size="8.8" fill="#777">guaranteed by the</text>
+  <text x="692" y="98" text-anchor="middle" font-size="8.8" fill="#777">schedule, not learned</text>
+
+  <text x="380" y="198" text-anchor="middle" font-size="10.6" fill="#555">Any single box on the top row can be produced directly from x₀ — you never have to walk the chain to get there:</text>
+  <text x="380" y="218" text-anchor="middle" font-size="11" font-weight="600" fill="#0e7490">x_t = √ᾱ_t · x₀ + √(1 − ᾱ_t) · ε,      ᾱ_t = α₁α₂⋯α_t</text>
+  <text x="380" y="240" text-anchor="middle" font-size="10.4" fill="#999">which is what makes training a thousand-step model cost the same as training a one-step one.</text>
+</svg>
