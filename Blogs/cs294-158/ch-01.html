@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lecture 1 notes: why unsupervised learning at all — Hinton's parameter budget as arithmetic, LeCun's cake, and compression as the definition of understanding, plus a map of the generative families.">
+    <meta name="keywords"
+        content="Deep Unsupervised Learning, CS294-158, Generative Models, Self-Supervised Learning, Kolmogorov Complexity, Cross-Entropy, KL Divergence, Masked Autoencoders, LeCun Cake">
+    <meta name="author" content="Anshul Singh">
+    <title>Lecture 1: Motivation &amp; the Landscape — CS294-158 Notes</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="../notes/notes-core.css">
+    <link rel="stylesheet" href="cs294-notes-style.css">
+</head>
+
+<body>
+    <div class="reading-progress"></div>
+
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <a href="index.html">CS294-158 Notes</a>]
+            </p>
+        </header>
+
+        <main>
+            <div class="chapter-header">
+                <div class="chapter-number">Lecture 1</div>
+                <h1>Motivation &amp; the Landscape</h1>
+                <div class="chapter-meta">
+                    <span>August 2026</span>
+                    <span class="dot">●</span>
+                    <span id="reading-time">— min read</span>
+                    <span class="dot">●</span>
+                    <span>Foundations</span>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <article class="chapter-content" id="content-target">
+                    <!-- Rendered markdown goes here -->
+                </article>
+
+                <aside class="toc-sidebar">
+                    <div class="toc-inner">
+                        <div class="toc-title">On This Page</div>
+                        <ul class="toc-list"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="chapter-nav">
+                <span class="nav-placeholder"></span>
+                <a href="index.html" class="nav-next">
+                    <div class="nav-label">Series index →</div>
+                    <div class="nav-title">All lectures</div>
+                </a>
+            </div>
+        </main>
+
+        <footer
+            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*My notes from the first lecture. It is a motivation lecture — no method is derived, nothing is implemented — and my instinct with those is to skim. That was a mistake here. Three arguments in this lecture (Hinton's parameter budget, LeCun's cake, and compression as the definition of understanding) are the reason every later lecture is shaped the way it is, and two of them turn out to be arithmetic rather than analogy. So I have done the arithmetic. The rest is a map of the field, which I have kept because knowing where a method sits is most of knowing why it exists.*
+
+---
+
+**In short** — the ninety-second version, if I am coming back to this to remember what lecture 1 was for.
+
+- Unsupervised learning models $p(x)$ itself rather than a small label; the target is high-dimensional and genuinely multi-modal, which nothing in supervised learning has to represent.
+- Hinton's counting argument: a brain has $\approx 10^{14}$ synapses and $\approx 10^9$ seconds of life, and sensory input at $\approx 10^5$ bits/s supplies $10^{14}$ bits — exactly enough. Supervision, at around $1$ bit/s, supplies $10^9$, five orders short.
+- LeCun's cake says the same thing per sample: millions of bits from prediction, $10$–$10^4$ from a label, a few from a reward. LLM training stacks up in exactly those proportions.
+- Compression and understanding are one thing. Coding data from $p$ with a model $q$ costs $H(p) + D_{KL}(p \parallel q)$ bits, so **the file shrinks exactly as the model gets more correct**, and bits-per-dimension *is* the negative log-likelihood.
+- Kolmogorov complexity is the ideal version — shortest program that outputs the data — and is uncomputable, so it is a way to think rather than a number to report.
+- Transfer has the same statement: $K(\mathcal{D}_2 \mid \mathcal{D}_1) \le K(\mathcal{D}_2) + c$, and the size of the gap is the shared structure. That is what pre-training buys.
+- Each generative family buys one property with another: VAEs get probability and blur, GANs get sharpness and lose likelihood and coverage, autoregressive models get exact likelihood and pay $d$ forward passes, diffusion recovers stability and coverage.
+- MAE's $75\%$ masking is not a tuned hyperparameter — pixels are redundant, so a low ratio is solvable by interpolation and teaches nothing. The ratio is a dial on $H(x_{\text{masked}} \mid x_{\text{visible}})$.
+
+The three worth memorising:
+
+$$\mathbb{E}_{x \sim p}[-\log_2 q(x)] = H(p) + D_{KL}(p \parallel q) \qquad \text{bits/dim} = \tfrac{1}{d}\mathbb{E}_{x\sim p}[-\log_2 q_\theta(x)] \qquad K(\mathcal{D}_2 \mid \mathcal{D}_1) \le K(\mathcal{D}_2) + c$$
+
+What it unlocks: every likelihood number in the rest of the course is a file size, which is the currency Ch.2 starts spending.
+
+---
+
+## 1. What deep unsupervised learning actually means
+
+The definition given was: capturing rich patterns from raw, unannotated data with deep networks, without labels. That is easy to nod along to and easy to misread, so it is worth being concrete about what is being asked of the model.
+
+In supervised learning the target is small. An image classifier maps a $224 \times 224 \times 3$ image — call it $150{,}528$ numbers — onto a distribution over $1{,}000$ classes. Whatever the network learns internally, the thing it is *scored* on is a $1{,}000$-way categorical, and one that is usually near-deterministic: the correct answer has probability close to one.
+
+Unsupervised learning removes the target and asks for the input distribution itself. There is no $y$. The object being modelled is $p(x)$ over all $150{,}528$ dimensions at once, and that object is genuinely multi-modal — a photograph of a beach and a photograph of a wolf are both high-probability, and everything on the straight line between them in pixel space is not. Nothing in the supervised setup ever has to represent that.
+
+The field splits in two.
+
+**Generative modelling** learns $p(x)$ so it can be evaluated or sampled from. Being able to draw new $x$ that look like the data is the visible part; being able to say how probable a given $x$ is turns out to matter just as much, and §5 is entirely about that second capability.
+
+**Self-supervised learning** invents a supervised problem out of unlabelled data — hide part of the input and predict it from the rest, or decide whether two crops came from the same photograph. The label is manufactured from the data itself, so it is free and unlimited. The learned representation is the point; the puzzle is scaffolding, thrown away afterwards.
+
+The two are not rivals. Both extract training signal from raw data, and the argument in the next section is about how much signal is available at all — which applies to both equally.
+
+---
+
+## 2. Why bother: three arguments, two of which are arithmetic
+
+The lecture gave three reasons to care. I had heard all three before as slogans and had never checked any of them. Two survive being checked, and are much stronger as numbers than as slogans.
+
+### 2.1 Hinton's parameter budget
+
+The argument, from a 2014 talk, is a counting argument about brains.
+
+Start with the plain version. A brain has an enormous number of adjustable connections. A life is not very long. If the only thing that adjusted those connections were someone telling you the right answer, there would not be nearly enough telling to go around. Therefore most of what tunes a brain must come from the raw sensory stream, not from instruction.
+
+Now the numbers, which are the part I had never done.
+
+| symbol | meaning |
+| :--- | :--- |
+| $N$ | synapses in a human brain, $\approx 10^{14}$; the learnable parameters |
+| $T$ | seconds in a human life, $\approx 10^9$ (about 30 years) |
+| $B$ | information arriving per second through the senses, $\approx 10^5$ bits |
+| $B_{\text{sup}}$ | information arriving per second as explicit supervision |
+
+The budget question is how many bits of experience are available per parameter. Take the crudest possible accounting and say a parameter needs on the order of one bit to be pinned down. Then the parameters demand about $10^{14}$ bits, and the life supplies
+
+$$T \cdot B \;\overset{\text{one bit per parameter}}{=}\; 10^9 \text{ s} \times 10^5 \text{ bits/s} = 10^{14} \text{ bits} \tag{1}$$
+
+The two sides match. That is the whole argument, and it is a much sharper claim than "brains learn without labels": the sensory bandwidth is *exactly* the right order of magnitude to fill the brain's capacity over a lifetime, with nothing to spare.
+
+Now run the same accounting for supervision. Being told an answer — a word, a name, a correction — carries at most a few tens of bits, and it happens perhaps a few times a minute at the very best. Put $B_{\text{sup}}$ at $1$ bit per second, generously. Then a life of explicit instruction supplies
+
+$$T \cdot B_{\text{sup}} = 10^9 \text{ bits} \tag{2}$$
+
+which is five orders of magnitude short of $10^{14}$. A brain trained only on supervision would leave all but a hundred-thousandth of its capacity untouched.
+
+The fine print, because the argument is looser than it looks. "One bit per parameter" is a stand-in, not a theorem — the real capacity of a network in bits is a subtle question, and estimates of synapse count and of sensory bandwidth are both soft to within an order of magnitude or two. But the conclusion survives all of that slack: the gap between $10^{14}$ and $10^9$ is so wide that no plausible correction closes it. That is what makes a rough counting argument worth trusting — not that the numbers are exact, but that the answer does not depend on their being exact.
+
+Where this went next: the same accounting reappears in modern scaling arguments, where the binding constraint on frontier models is the supply of tokens rather than of parameters or compute — the [Chinchilla](https://arxiv.org/abs/2203.15556) result is this budget in a different currency.
+
+### 2.2 LeCun's cake
+
+The second argument is the one everybody has seen a photograph of: Yann LeCun's cake slide from his NeurIPS 2016 keynote.
+
+<figure><img src="assets/svg/lecake.svg" alt="A cake with a thin layer of icing and a single cherry, labelled with the information content per sample of unsupervised, supervised and reinforcement learning" style="max-width:100%;"><figcaption>Figure 1.1: The cake, redrawn after LeCun's NeurIPS 2016 keynote slide. The proportions are the argument — the bulk is predictive learning, and the label is a decoration on top of it.</figcaption></figure>
+
+The claim is about information per sample, and it is worth stating with the numbers attached because the ratios are the point:
+
+- **The cake — predictive or unsupervised learning.** Predicting a held-out part of the input from the rest. A masked patch of an image, the next second of video, the next word. Millions of bits per sample.
+- **The icing — supervised learning.** A class label out of $1{,}000$ carries at most $\log_2 1000 \approx 10$ bits. A bounding box, a segmentation mask, a caption: more, but still $10$ to $10^4$ bits.
+- **The cherry — reinforcement learning.** A scalar reward, delivered occasionally. A few bits per episode.
+
+The ratio between the layers is the same five-or-six orders of magnitude that came out of the brain calculation in (1) and (2), arrived at from a completely different direction. That agreement is why I now take the cake seriously rather than as a joke slide.
+
+What makes it more than a nice picture is that large language models turned out to be built in exactly these proportions, and in this order: an enormous unsupervised pre-training run on next-token prediction, a much smaller supervised fine-tuning stage, and a thin layer of reinforcement learning from human feedback on top. Nobody set out to implement the diagram. The economics of where training signal comes from produced it anyway.
+
+The honest caveat, which the slide does not carry: the cherry is small in bits and not small in effect. RLHF changes model behaviour out of all proportion to its information content, because it is not teaching facts — it is selecting among behaviours the pre-trained model already has. Bits per sample measures how much you are told, not how much it moves you.
+
+### 2.3 Understanding as compression
+
+The third argument is the deepest and the one I had the least grip on, so this section is the slow one.
+
+Before the derivations, the symbols used from here on:
+
+| symbol | meaning |
+| :--- | :--- |
+| $x$ | one data point; a vector of $d$ numbers (an image, a waveform, a token sequence) |
+| $d$ | its dimension — $150{,}528$ for a $224\times224$ RGB image |
+| $p(x)$ | the true data distribution. Never known, only sampled from |
+| $q_\theta(x)$ | the model's distribution, with learnable parameters $\theta$ |
+| $H(p)$ | entropy of $p$ in bits — the irreducible randomness, fixed by the data |
+| $D_{KL}(p \parallel q)$ | Kullback–Leibler divergence, in bits; zero exactly when $q = p$ |
+| $K(x)$ | Kolmogorov complexity — length in bits of the shortest program printing $x$ |
+
+**The plain version.** Compression and understanding are the same activity. To compress a file you must find its regularities — repeated structure, predictable continuations, redundancy — and describe them once rather than many times. Anything you have failed to compress is something whose pattern you have not found. So the shortest description of a dataset is a measure of how well it is understood.
+
+**The smallest case, which is where I finally believed it.** Take a biased coin: heads with probability $0.9$. Suppose I record a million flips.
+
+If I use one bit per flip, that is a million bits. But I know the coin is biased, and a code can exploit that: spend fewer bits on the common outcome and more on the rare one. Shannon says the best achievable average is the entropy
+
+$$H(p) = -\sum_x p(x) \log_2 p(x) = -0.9 \log_2 0.9 - 0.1 \log_2 0.1 \approx 0.469 \text{ bits per flip} \tag{3}$$
+
+So knowing the bias cuts the file roughly in half. The knowledge *is* the compression — there is no separate step where understanding gets converted into savings.
+
+Now suppose my model of the coin is wrong. I believe it is fair, $q = 0.5$, and build the code for that belief. Every flip now costs $-\log_2 q(x) = 1$ bit regardless of outcome, so the file is a million bits again. I have paid $1 - 0.469 = 0.531$ extra bits per flip for being wrong.
+
+**The derivation.** That penalty is not a coincidence of this example. Coding data drawn from $p$ with a code built for $q$ costs, per symbol, the cross-entropy
+
+$$\begin{aligned} \mathbb{E}_{x \sim p}\left[-\log_2 q(x)\right] &= -\sum_x p(x) \log_2 q(x) & \text{(definition of the expectation)} \\ &= -\sum_x p(x) \log_2 q(x) + \sum_x p(x)\log_2 p(x) - \sum_x p(x)\log_2 p(x) & \text{(add and subtract the same sum)} \\ &= -\sum_x p(x)\log_2 p(x) + \sum_x p(x) \log_2 \frac{p(x)}{q(x)} & \text{(group the first and third, and the second and third)} \\ &= \underbrace{H(p)}_{\text{unavoidable}} + \underbrace{D_{KL}(p \parallel q)}_{\text{paid for being wrong}} & \text{(definitions of entropy and KL)} \end{aligned} \tag{4}$$
+
+Reading (4): the cost of storing the data splits cleanly into a part nobody can avoid — $H(p)$, the genuine irreducible randomness — and a part that is exactly your model's error, $D_{KL}(p \parallel q)$. Since KL is non-negative and zero only when $q = p$, **the file gets smaller precisely as the model gets more correct**, and it cannot get smaller than $H(p)$ however clever you are. Checking against the coin: $H(p) = 0.469$, and $D_{KL}(p \parallel q)$ for $p=0.9$ against $q=0.5$ works out to $0.531$, which sums to the $1$ bit per flip the wrong code charged.
+
+**The general form.** For a high-dimensional $x$ and a model $q_\theta$, the quantity reported is the same expression normalised per dimension, so images of different sizes can be compared:
+
+$$\text{bits per dimension} = \frac{1}{d}\,\mathbb{E}_{x \sim p}\left[-\log_2 q_\theta(x)\right] \tag{5}$$
+
+And now the punchline that makes this a lecture about generative models rather than about information theory: (5) is, up to the change of base from $\ln$ to $\log_2$, exactly the negative log-likelihood that maximum-likelihood training minimises. **Training a generative model and building a compressor are literally the same optimisation.** Every likelihood number quoted for the rest of the course is a file size.
+
+<div class="note-widget" id="widget-bits"></div>
+
+**The fine print.** Three things (4) and (5) do not say.
+
+First, they give the *ideal* code length, an expectation over an infinite stream, and ignore that real codes must emit whole bits. Arithmetic coding gets within about two bits of the ideal for the entire message, so the gap is irrelevant at any realistic length — but the bound is about achievable average cost, not about a specific short file.
+
+Second, this is all *lossless*. Every bit of the original is recoverable. Lossy compression — JPEG, MP3 — is a different problem, trading reconstruction error against rate, and a good likelihood does not automatically give a good lossy codec.
+
+Third, and this one is a genuine hole in the argument as stated in the lecture: the model has to be transmitted too. If I ship you a billion-parameter network to decode a small file, the network's own description length counts. The honest accounting is two-part — the bits for the model plus the bits for the data given the model — which is the [minimum description length](https://en.wikipedia.org/wiki/Minimum_description_length) principle. It only disappears when the dataset is enormous relative to the model, which for modern pre-training corpora it is.
+
+**Kolmogorov complexity** is what happens when you push this to its limit and ask for the shortest program, in any language, that outputs the data:
+
+$$K(x) = \min_{P} \left\{ |P| : U(P) = x \right\} \tag{6}$$
+
+where $U$ is a fixed universal machine and $|P|$ is the program's length in bits. This is the ideal that (5) approximates: a neural network's weights and architecture *are* a program that regenerates the data, and a smaller such program means a deeper regularity found.
+
+Two pieces of fine print here as well. $K(x)$ is uncomputable — there is no procedure that finds the shortest program, and that is a theorem, not a gap in current technique. And it is only defined up to the choice of $U$: a different universal machine changes $K$ by an additive constant, which is harmless asymptotically and meaningless for a single fixed dataset. So Kolmogorov complexity is a way to think, not a quantity to report.
+
+[Solomonoff induction](https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference) turns (6) into a prior by assigning a hypothesis probability $2^{-K}$ — shorter programs are more likely — which is Occam's razor made formal and is optimal for prediction, and uncomputable for the same reason. AIXI bolts that prior onto sequential decision-making to define an optimal agent, with the same caveat.
+
+**Where this goes next: transfer.** The framing Ilya Sutskever uses is a conditional version. Having already compressed a dataset $\mathcal{D}_1$, compressing a second dataset $\mathcal{D}_2$ should cost less than compressing $\mathcal{D}_2$ alone, because the regularities already found are reusable:
+
+$$K(\mathcal{D}_2 \mid \mathcal{D}_1) \le K(\mathcal{D}_2) + c \tag{7}$$
+
+with $c$ a constant that does not depend on the data. Inequality (7) always holds, and the reason is worth spelling out: whatever the shortest program for $\mathcal{D}_2$ alone is, a conditional program can simply carry that same program and discard the $\mathcal{D}_1$ it was handed. Discarding an input costs a fixed number of instructions, independent of the data, which is the constant $c$. So the conditional cost can never exceed the unconditional one by more than $c$ — and the interesting cases are the ones where it is *strictly* smaller. That gap is precisely the shared structure between the two datasets. And that is the theoretical statement of what pre-training buys: fine-tuning is cheap exactly to the extent that the pre-training corpus and the target task share regularities. It is the same claim as "pre-training helps", stated in a way that says *when* it will help and *how much*.
+
+What this section established: understanding, compression and likelihood are three names for one quantity, related by (4) and (5); the ideal version (6) is uncomputable but tells us what we are approximating; and (7) says transfer works to the degree that two datasets share structure.
+
+---
+
+## 3. The paradigms, in the order they arrived
+
+Having argued that modelling $p(x)$ is worth doing, the lecture surveyed how people have actually done it. The order matters — each family is a reaction to what the previous one could not do.
+
+<figure><img src="assets/svg/timeline.svg" alt="Timeline of deep generative model families from Deep Belief Networks in 2006 to diffusion models in 2020 and after" style="max-width:100%;"><figcaption>Figure 1.2: The families and their descendants. The course works through each in turn, so this is the table of contents for the next twelve lectures as much as it is history.</figcaption></figure>
+
+**Deep belief networks (2006).** [Hinton, Osindero and Teh](https://www.cs.toronto.edu/~hinton/absps/fastnc.pdf) showed a stack of restricted Boltzmann machines could be trained greedily, layer by layer, and then sampled from to produce handwritten digits. By modern standards the samples are poor. What mattered was the existence proof: a deep neural network could be a generative model of images at all, at a moment when deep networks were barely trainable for anything.
+
+**Variational autoencoders (2013).** [Kingma and Welling](https://arxiv.org/abs/1312.6114) introduced an explicit latent-variable model with a tractable training objective, the evidence lower bound. You get a real probabilistic model, an encoder that gives you a latent representation, and a bound on the likelihood — so a VAE reports a number in the currency of (5). The known failure is blur: the reconstruction term averages over everything consistent with the latent, and the average of several plausible sharp images is a smeared one. Lecture 4 onwards is where this gets derived properly rather than asserted.
+
+**Generative adversarial networks (2014–2018).** [Goodfellow et al.](https://arxiv.org/abs/1406.2661) replaced the likelihood with a game: a generator producing samples, a discriminator trying to tell them from real data, trained against each other. [DCGAN](https://arxiv.org/abs/1511.06434) made it work convolutionally, [BigGAN](https://arxiv.org/abs/1809.11096) and [StyleGAN](https://arxiv.org/abs/1812.04948) took it to photorealism. The costs are all consequences of having thrown the likelihood away: mode collapse, where the generator covers some modes of the data and quietly abandons others; training that oscillates instead of converging, because a saddle point is not a minimum; and no way to evaluate the density of a given $x$, so a GAN cannot report a number in (5) at all.
+
+**Autoregressive models (2016 onwards).** Factorise the joint distribution into a product of conditionals over an ordering, $p(x) = \prod_i p(x_i \mid x_{<i})$, and model each conditional with a network. [WaveNet](https://arxiv.org/abs/1609.03499) did it on raw audio samples, [PixelCNN](https://arxiv.org/abs/1601.06759) on image pixels, and the GPT series on text tokens. These give exact likelihoods — no bound, no approximation — which makes them the best compressors in the family. The price is sequential sampling: generating $d$ dimensions costs $d$ forward passes.
+
+**Diffusion models (2020 onwards).** [Ho, Jain and Abbeel](https://arxiv.org/abs/2006.11239) — the last of those being this course's instructor — defined a fixed forward process that gradually adds noise until the data is destroyed, and learned the reverse. Training is a stable regression-like objective rather than a game, so mode collapse does not arise and coverage is not an issue, and sample quality overtook GANs. Diffusion now backs essentially every text-to-image system in use.
+
+Reading the list as a sequence: DBNs proved it was possible, VAEs made it probabilistic and got blur, GANs abandoned likelihood for sharpness and got instability and mode collapse, autoregressive models kept exact likelihood and paid in sampling time, and diffusion recovered stability and coverage while matching GAN fidelity. Every family is buying one property with another.
+
+---
+
+## 4. Where it is being used
+
+The survey of applications was fast, and I have kept it compressed, since each area is a lecture or a paper rather than something to learn from a list. The reason it is worth keeping at all is that the same handful of ideas — model the distribution, condition it on something, tokenise if the data is not naturally continuous — is doing all the work in every one of these.
+
+**Images and text-to-image.** Diffusion conditioned on a text embedding from CLIP or T5. The interesting evidence is compositional: a prompt describing a combination that certainly does not occur in the training data still produces a coherent image, which means the model has factorised the concepts rather than memorised the examples.
+
+**Audio and speech.** WaveNet generates raw waveform autoregressively at $16$–$24$ kHz, one sample at a time. Tacotron 2 splits the problem — text to mel-spectrogram, then a neural vocoder to waveform. The 2023 generation (AudioCraft, MusicGen, AudioGen) instead compresses audio into discrete tokens with a learned codec and runs an ordinary autoregressive language model over the token streams, which is the same move that made text generation work.
+
+**Video and world models.** Emu Video factorises the joint distribution: generate keyframes, then interpolate between them, rather than modelling all frames at once. VideoPoet tokenises video and audio and uses one autoregressive transformer over the lot. UniSim goes further and treats the video model as an interactive simulator — an agent acts, the model renders the consequence — so policies can be trained inside a learned world before touching a real one.
+
+**Language.** [Karpathy's character RNN](https://karpathy.github.io/2015/05/21/rnn-effectiveness/) is the cleanest demonstration in the whole lecture: predict the next character, nothing else, and the model acquires spelling, grammar, matched brackets and LaTeX syntax as a by-product. Scaling that from GPT-2 to GPT-4 replaced task-specific architectures with one pre-trained model, and produced in-context learning — describing a task in the prompt gets it done with no gradient update at all, which is not something the training objective ever asked for.
+
+**3D.** GRAF and GET3D learn 3D generative models from collections of unposed 2D images, by building the camera projection and the radiance field into the model so multi-view consistency holds by construction rather than by luck.
+
+**Science.** Protein and DNA sequences are treated as a language: masked or autoregressive pre-training over evolutionary sequence databases (TAPE, ESM) recovers secondary and tertiary structure without ever being shown a structure. This is the component that AlphaFold was built on top of.
+
+---
+
+## 5. Compression, in practice
+
+Section 2.3 established that likelihood and file size are the same quantity, related by (5). This section is what that buys once you have a good model.
+
+The plain statement: a compressor is a model of the data plus an arithmetic coder. The coder is generic and essentially optimal, so *all* the performance is in the model, and better models mean smaller files with no other change.
+
+Handcrafted codecs are models too, with their assumptions written by hand: JPEG assumes images are locally smooth and that high frequencies matter less to the eye; MP3 assumes a psychoacoustic masking curve. Those assumptions are decent averages over all images or all audio, and they are fixed. A learned model estimates the assumptions from the actual distribution it will be used on, which is why learned codecs beat handcrafted ones, and beat them by the widest margin at very low bitrates — exactly where the fixed assumptions are least able to bend.
+
+The fine print is the one from §2.3 that becomes practical here: the model must be shipped or shared, so the two-part cost is real. A learned codec is worth its weight only when a fixed decoder is amortised over a very large number of files, which is the case for a codec deployed to millions of devices and is not the case for a bespoke model trained on one dataset.
+
+---
+
+## 6. Self-supervision in vision, and how the common wisdom broke
+
+The last section is a case study in the field being wrong in public, which is the reason I have written it out rather than noting the dates.
+
+**The plain version.** Around 2015, the way to get a good vision model was to pre-train on labelled ImageNet and fine-tune. Everyone knew unsupervised pre-training was worse. Alexei Efros and Jitendra Malik bet a gelato on whether unsupervised pre-training would ever beat supervised for object detection. Efros took the unsupervised side.
+
+By 2019 [Contrastive Predictive Coding](https://arxiv.org/abs/1905.09272) reached parity. By 2021 [Masked Autoencoders](https://arxiv.org/abs/2111.06377) beat supervised pre-training outright. Efros won.
+
+**What was actually wrong.** The standing objection was that masked prediction — BERT's recipe, and hugely successful in language — does not transfer to vision. And a straightforward attempt at it does fail. The interesting question is why, and the answer is about redundancy.
+
+A word is dense. Delete one from a sentence and recovering it usually needs the meaning of the sentence. A pixel is not dense at all: it is nearly determined by its immediate neighbours. So masking a small fraction of an image sets a task that can be solved by local interpolation — average the surrounding pixels and you are close, having understood nothing about what the image contains. A network trained on that objective learns a smoothing filter, because a smoothing filter is a complete solution.
+
+The fix is to remove that shortcut by masking so much that interpolation cannot work. At $75$–$90\%$ masked, a hidden patch has no near neighbours left to copy from, and the only route to a good reconstruction is to recognise what the object is and infer the missing region from that. The task's difficulty is the mechanism: it forces semantics because nothing cheaper suffices.
+
+Stated in the language of §2.3: the useful quantity is the conditional entropy $H(x_{\text{masked}} \mid x_{\text{visible}})$. When it is near zero the task is free and teaches nothing. Masking is a dial on that quantity, and the ratios that work are the ones that keep it high.
+
+<div class="note-widget" id="widget-mask"></div>
+
+**The fine print.** The high ratio is doing two things at once, and MAE's results do not fully separate them. It makes the task hard, and it also makes training much cheaper — the encoder only sees the visible $25\%$, so each step is faster and larger models become affordable. Some of the gain is difficulty and some is simply more training within the same budget.
+
+**What it means beyond vision.** The transferable lesson is not "mask $75\%$". It is that a self-supervised task is only as good as the amount of information its solution requires, and that this depends on the redundancy of the data — which is a property of the modality, not a hyperparameter to copy across.
+
+---
+
+## 7. What I want to keep from this
+
+Three things, in order of how much they will change what I do.
+
+**Likelihood is file size.** Every bits-per-dimension number in this course is the answer to a concrete question — how small can this data be made — and (4) says the gap between the achieved size and the theoretical floor is exactly the model's error. This is the single idea I most under-rated before.
+
+**Unsupervised objectives scale because their supervision is free.** Labels are a bounded resource; raw data is not. That is why the curves in this field keep going and why the pre-train-then-adapt pattern displaced task-specific architectures, and (7) says why the adaptation is cheap.
+
+**The received wisdom in this field has a short shelf life.** Masking ratios, diffusion overtaking GANs, next-token prediction eating bespoke architectures — each was contrary to what was widely believed shortly before. Worth remembering when something is asserted to be settled.
+
+---
+
+## References
+
+- Hinton, Osindero and Teh (2006), [A Fast Learning Algorithm for Deep Belief Nets](https://www.cs.toronto.edu/~hinton/absps/fastnc.pdf)
+- Kingma and Welling (2013), [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114)
+- Goodfellow et al. (2014), [Generative Adversarial Networks](https://arxiv.org/abs/1406.2661)
+- Radford, Metz and Chintala (2015), [Unsupervised Representation Learning with Deep Convolutional GANs](https://arxiv.org/abs/1511.06434)
+- Karpathy (2015), [The Unreasonable Effectiveness of Recurrent Neural Networks](https://karpathy.github.io/2015/05/21/rnn-effectiveness/)
+- van den Oord et al. (2016), [WaveNet: A Generative Model for Raw Audio](https://arxiv.org/abs/1609.03499)
+- van den Oord et al. (2016), [Pixel Recurrent Neural Networks](https://arxiv.org/abs/1601.06759)
+- Brock, Donahue and Simonyan (2018), [Large Scale GAN Training](https://arxiv.org/abs/1809.11096)
+- Karras, Laine and Aila (2018), [A Style-Based Generator Architecture for GANs](https://arxiv.org/abs/1812.04948)
+- Hénaff et al. (2019), [Data-Efficient Image Recognition with Contrastive Predictive Coding](https://arxiv.org/abs/1905.09272)
+- Ho, Jain and Abbeel (2020), [Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2006.11239)
+- He et al. (2021), [Masked Autoencoders Are Scalable Vision Learners](https://arxiv.org/abs/2111.06377)
+- Hoffmann et al. (2022), [Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)
+
+    </script>
+
+    <script src="../notes/notes-core.js"></script>
+    <script src="widgets.js"></script>
+</body>
+
+</html>

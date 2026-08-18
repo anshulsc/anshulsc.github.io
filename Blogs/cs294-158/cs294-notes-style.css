@@ -1,0 +1,19 @@
+/* ═══════════════════════════════════════════════════════════
+   CS294-158 Notes — series skin.
+   Extends: ../research-style.css, then ../notes/notes-core.css
+
+   The core carries the layout, typography, TOC, progress bar and widget
+   chrome. This file sets only what is this series' own: the accent pair.
+   Berkeley blue and gold, so the series is distinguishable at a glance from
+   deep-gen's teal and the RL notes' purple.
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+    --accent: #1a4f7a;    /* Berkeley blue, lifted for 8.5:1 on white  */
+    --accent-2: #b5761a;  /* Berkeley gold, darkened to stay legible   */
+}
+
+/* The reading-progress bar is the one place the core hardcodes a gradient. */
+.reading-progress {
+    background: linear-gradient(90deg, #1a4f7a, #6fb3d2);
+}

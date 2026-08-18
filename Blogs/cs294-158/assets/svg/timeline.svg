@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="t-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#1a4f7a"/>
+    </marker>
+  </defs>
+
+  <line x1="60" y1="292" x2="720" y2="292" stroke="#bbb" stroke-width="1.2"/>
+  <g font-size="10.5" fill="#888" text-anchor="middle">
+    <text x="92" y="312">2006</text><text x="214" y="312">2013</text><text x="326" y="312">2014</text>
+    <text x="452" y="312">2016</text><text x="600" y="312">2020</text><text x="706" y="312">now</text>
+  </g>
+  <g fill="#bbb">
+    <circle cx="92" cy="292" r="2.6"/><circle cx="214" cy="292" r="2.6"/><circle cx="326" cy="292" r="2.6"/>
+    <circle cx="452" cy="292" r="2.6"/><circle cx="600" cy="292" r="2.6"/>
+  </g>
+
+  <!-- DBN -->
+  <rect x="42" y="40" width="112" height="42" rx="7" fill="#1a4f7a" opacity="0.08" stroke="#1a4f7a" stroke-width="1.3"/>
+  <text x="98" y="58" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a4f7a">Deep belief nets</text>
+  <text x="98" y="73" text-anchor="middle" font-size="9.5" fill="#666">it is possible at all</text>
+  <line x1="98" y1="82" x2="98" y2="286" stroke="#ccc" stroke-width="1" stroke-dasharray="2 3"/>
+
+  <!-- VAE -->
+  <rect x="160" y="96" width="112" height="42" rx="7" fill="#1a4f7a" opacity="0.08" stroke="#1a4f7a" stroke-width="1.3"/>
+  <text x="216" y="114" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a4f7a">VAEs</text>
+  <text x="216" y="129" text-anchor="middle" font-size="9.5" fill="#666">probabilistic, blurry</text>
+  <line x1="216" y1="138" x2="216" y2="286" stroke="#ccc" stroke-width="1" stroke-dasharray="2 3"/>
+
+  <!-- GAN -->
+  <rect x="278" y="40" width="104" height="42" rx="7" fill="#b5761a" opacity="0.10" stroke="#b5761a" stroke-width="1.3"/>
+  <text x="330" y="58" text-anchor="middle" font-size="11.5" font-weight="700" fill="#8a5a12">GANs</text>
+  <text x="330" y="73" text-anchor="middle" font-size="9.5" fill="#666">sharp, no likelihood</text>
+  <line x1="382" y1="61" x2="410" y2="61" stroke="#b5761a" stroke-width="1.2" marker-end="url(#t-ar)"/>
+  <text x="452" y="58" text-anchor="middle" font-size="10" fill="#8a5a12">DCGAN ’15</text>
+  <text x="452" y="72" text-anchor="middle" font-size="10" fill="#8a5a12">StyleGAN ’18</text>
+  <line x1="330" y1="82" x2="330" y2="286" stroke="#ccc" stroke-width="1" stroke-dasharray="2 3"/>
+
+  <!-- AR -->
+  <rect x="400" y="152" width="126" height="42" rx="7" fill="#1a4f7a" opacity="0.08" stroke="#1a4f7a" stroke-width="1.3"/>
+  <text x="463" y="170" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a4f7a">Autoregressive</text>
+  <text x="463" y="185" text-anchor="middle" font-size="9.5" fill="#666">exact likelihood, slow</text>
+  <line x1="526" y1="173" x2="556" y2="173" stroke="#1a4f7a" stroke-width="1.2" marker-end="url(#t-ar)"/>
+  <text x="614" y="170" text-anchor="middle" font-size="10" fill="#1a4f7a">WaveNet, PixelCNN</text>
+  <text x="614" y="184" text-anchor="middle" font-size="10" fill="#1a4f7a">→ GPT series</text>
+  <line x1="463" y1="194" x2="463" y2="286" stroke="#ccc" stroke-width="1" stroke-dasharray="2 3"/>
+
+  <!-- Diffusion -->
+  <rect x="548" y="212" width="132" height="44" rx="7" fill="#1a4f7a" opacity="0.14" stroke="#1a4f7a" stroke-width="1.6"/>
+  <text x="614" y="231" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a4f7a">Diffusion</text>
+  <text x="614" y="246" text-anchor="middle" font-size="9.5" fill="#666">stable, full coverage</text>
+  <line x1="614" y1="256" x2="614" y2="286" stroke="#ccc" stroke-width="1" stroke-dasharray="2 3"/>
+  <text x="614" y="272" text-anchor="middle" font-size="10" fill="#666">DALL·E, Imagen, Stable Diffusion</text>
+
+  <text x="380" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#333">Each family is a reaction to what the last one could not do</text>
+</svg>

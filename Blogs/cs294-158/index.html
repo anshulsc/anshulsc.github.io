@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Study notes from UC Berkeley CS294-158, Deep Unsupervised Learning — generative models and self-supervised learning, one chapter per lecture.">
+    <meta name="keywords"
+        content="CS294-158, Deep Unsupervised Learning, Berkeley, Pieter Abbeel, Generative Models, Self-Supervised Learning, Diffusion, VAE, GAN">
+    <meta name="author" content="Anshul Singh">
+    <title>CS294-158 Notes — Deep Unsupervised Learning</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../research-style.css">
+    <link rel="stylesheet" href="../notes/notes-core.css">
+    <link rel="stylesheet" href="cs294-notes-style.css">
+
+    <style>
+        .series-overview {
+            margin: 40px 0 48px;
+            padding: 24px 28px;
+            background: #fafafa;
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+
+        .series-overview h2 {
+            font-size: 1rem;
+            color: #333;
+            margin-top: 0;
+            border: none;
+            padding-bottom: 0;
+        }
+
+        .series-overview p {
+            font-size: 0.88rem;
+            color: #555;
+            line-height: 1.65;
+            margin-bottom: 0.8em;
+        }
+
+        .prereqs {
+            margin: 24px 0;
+            padding: 16px 20px;
+            border-left: 3px solid #f59e0b;
+            background: rgba(245, 158, 11, 0.04);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .prereqs strong {
+            color: #d97706;
+        }
+
+        .divider-label {
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #bbb;
+            margin: 48px 0 24px;
+            position: relative;
+        }
+
+        .divider-label::before,
+        .divider-label::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: calc(50% - 60px);
+            height: 1px;
+            background: #eee;
+        }
+
+        .divider-label::before {
+            left: 0;
+        }
+
+        .divider-label::after {
+            right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Background Scribbles -->
+        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
+            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <img src="../assets/scribbles/llm_arch.svg" class="scribble-svg"
+            style="top:150px; right:-240px; width:180px; opacity:0.1;">
+        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
+            style="top:600px; left:-220px; width:160px;">
+
+        <header class="site-header">
+            <p style="text-align:center">
+                [<a href="../../index.html">Home</a> /
+                <a href="../blog-index.html">Writing</a> /
+                <span style="font-weight:bold; color:#111;">CS294-158 Notes</span>]
+            </p>
+        </header>
+
+        <main>
+            <div class="series-hero">
+                <div class="chapter-number">Lecture Notes • 1 of 13</div>
+                <h1>Deep Unsupervised Learning</h1>
+                <p class="series-subtitle">
+                    Study notes from UC Berkeley's CS294-158 (Pieter Abbeel, Wilson Yan, Kevin Frans, Philipp Wu) —
+                    autoregressive models, flows, latent variable models, GANs, diffusion and self-supervised
+                    learning, one chapter per lecture.
+                </p>
+                <div class="series-meta">August 2026 · Anshul Singh · ~26 min so far</div>
+            </div>
+
+            <div class="series-overview">
+                <p style="margin-bottom:0;">
+                    One chapter per lecture, rewritten from my own raw notes so that each one is readable twice: a
+                    short recap at the top for coming back to, and the full derivation underneath for learning from.
+                    The course covers the two halves of learning without labels — building models of
+                    <em>p(x)</em> that can be sampled and evaluated, and inventing supervised problems out of
+                    unlabelled data so a network learns representations for free. The first lecture is the argument
+                    for why any of it is worth doing, and it turns out to rest on arithmetic rather than analogy.
+                </p>
+            </div>
+
+            <div class="prereqs">
+                <strong>Prerequisites:</strong> Linear algebra, multivariable calculus, a first course in
+                probability (expectations, distributions, conditioning), and comfort with PyTorch.
+                A little information theory helps but is built up from scratch in Lecture 1.
+            </div>
+
+            <div class="divider-label">Lectures</div>
+
+            <div class="learning-path">
+                <a href="ch-01.html" class="chapter-card">
+                    <div class="card-number">1</div>
+                    <div class="card-content">
+                        <div class="card-title">Motivation &amp; the Landscape</div>
+                        <div class="card-desc">Why learn without labels at all. Hinton's parameter budget done as
+                            actual arithmetic — 10<sup>14</sup> synapses against 10<sup>9</sup> seconds of life —
+                            LeCun's cake with the bits attached, and the argument that compression, likelihood and
+                            understanding are one quantity. Then the map: which generative family bought which
+                            property with which cost, and why masked autoencoders have to hide 75% of the image.</div>
+                        <div class="card-topics">
+                            <span class="topic-tag">Cross-Entropy</span>
+                            <span class="topic-tag">KL Divergence</span>
+                            <span class="topic-tag">Kolmogorov Complexity</span>
+                            <span class="topic-tag">Self-Supervision</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="series-overview" style="margin-top:24px;">
+                <p style="margin-bottom:0;">Lectures 2–13 go up as I work through them: autoregressive models,
+                    flows, latent variable models and VAEs, GANs, diffusion, self-supervised learning, large
+                    language models, video generation, semi-supervised learning and compression.</p>
+            </div>
+        </main>
+
+        <footer
+            style="margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+            &copy; 2026 Anshul Singh.
+        </footer>
+    </div>
+</body>
+
+</html>
