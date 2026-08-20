@@ -182,6 +182,11 @@ html[data-theme="dark"] {
     color: #c79bfa;
 }
 
+[data-theme="dark"] .news-badge.talk {
+    background: rgba(236, 72, 153, 0.2);
+    color: #f492c3;
+}
+
 [data-theme="dark"] .project-card {
     background: var(--dk-surface);
     border-color: var(--dk-border);

@@ -141,8 +141,8 @@ p {
    you actually read to the bottom of the page (or search for them). */
 .notes-vault {
     max-width: 800px;
-    margin: 90px auto 0;
-    padding-top: 28px;
+    margin: 8px auto 0;
+    padding-top: 0;
 }
 
 .notes-vault>summary {
