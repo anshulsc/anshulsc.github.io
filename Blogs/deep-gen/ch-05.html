@@ -4,10 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Lecture 5 notes: reading the GAN as a classifier-guided generative model, why a frozen classifier can be fooled without matching the distribution, mode collapse, DCGAN and transpose convolutions, Conditional GANs, and CycleGAN's cycle-consistency loss.">
-    <meta name="keywords"
-        content="GAN, Classifier-Guided Generation, Mode Collapse, DCGAN, Transpose Convolution, Conditional GAN, cGAN, CycleGAN, Cycle Consistency, Unpaired Image Translation, FID, Jensen-Shannon">
+    <meta name="description" content="Lecture 5 notes: reading the GAN as a classifier-guided generative model, why a frozen classifier can be fooled without matching the distribution, mode collapse, DCGAN and transpose convolutions, Conditional GANs, and CycleGAN's cycle-consistency loss.">
     <meta name="author" content="Anshul Singh">
     <title>Lecture 5: The Classifier View, Conditional GANs &amp; CycleGAN — DGM Notes</title>
 
@@ -17,9 +14,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
@@ -36,80 +31,40 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../research-style.css">
-    <link rel="stylesheet" href="dgm-notes-style.css">
+    <link rel="stylesheet" href="../notes/plain.css">
 
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../../css/theme.css">
-  <script src="../../js/theme.js"></script>
-  <!-- Passphrase gate for this notes series -->
-  <script src="../../js/gate.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
+    <!-- Passphrase gate for this notes series -->
+    <script src="../../js/gate.js"></script>
 </head>
 
-<body>
-    <div class="reading-progress"></div>
-
+<body class="plain">
     <div class="container">
-        <!-- Background Scribbles -->
-        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
-        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
-            style="top:600px; left:-220px; width:160px;">
 
         <header class="site-header">
-            <p style="text-align:center">
-                [<a href="../../index.html">Home</a> /
-                <a href="../blog-index.html">Writing</a> /
-                <a href="index.html">DGM Notes</a>]
-            </p>
+            [<a href="../../index.html">Home</a> /
+            <a href="../blog-index.html">Writing</a> /
+            <a href="index.html">DGM notes</a> /
+            <span class="here">The Classifier View, Conditional GANs &amp; CycleGAN</span>]
         </header>
 
         <main>
-            <div class="chapter-header">
-                <div class="chapter-number">Lecture 5</div>
-                <h1>The Classifier View, Conditional GANs &amp; CycleGAN</h1>
-                <div class="chapter-meta">
-                    <span>August 2026</span>
-                    <span class="dot">●</span>
-                    <span id="reading-time">40 min read</span>
-                    <span class="dot">●</span>
-                    <span>GAN Practice</span>
-                </div>
-            </div>
+            <h1>The Classifier View, Conditional GANs &amp; CycleGAN</h1>
 
-            <div class="content-layout">
-                <article class="chapter-content" id="content-target">
-                    <!-- Rendered markdown goes here -->
-                </article>
-
-                <aside class="toc-sidebar">
-                    <div class="toc-inner">
-                        <div class="toc-title">On This Page</div>
-                        <ul class="toc-list"></ul>
-                    </div>
-                </aside>
-            </div>
-
-            <div class="chapter-nav">
-                <a href="ch-04.html" class="nav-prev">
-                    <div class="nav-label">← Previous Lecture</div>
-                    <div class="nav-title">From f-Divergences to a Trainable GAN</div>
-                </a>
-                <a href="ch-06.html" class="nav-next">
-                    <div class="nav-label">Next Lecture →</div>
-                    <div class="nav-title">Domain Adaptation, Wasserstein GANs &amp; Latent Variable Models</div>
-                </a>
-            </div>
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
         </main>
 
-        <footer
-            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+        <footer class="site-footer">
             &copy; 2026 Anshul Singh
         </footer>
     </div>
 
     <script id="raw-markdown" type="text/template">
-*Ch.4 derived the GAN from convex duality and left it there — a correct objective with no intuition attached. This lecture goes the other way round: forget the conjugates for an hour and ask what the thing is actually doing. The answer is that a GAN is a generator being tutored by a classifier, and taking that view seriously raises a question the maths never had to face — why must the classifier keep retraining? The answer is the most useful picture in the course.*
+*Ch.4 derived the GAN from convex duality and left it there, a correct objective with no intuition attached. This one goes the other way round: a GAN is a generator being tutored by a classifier, and taking that view seriously raises a question the maths never had to face — why must the classifier keep retraining?*
 
 *Part I is the whole idea in pictures, with no machinery. Part II builds the thing that actually runs on images. Part III is where the field still argues: conditioning, translation without paired data, and the genuinely unsolved problem of telling whether any of it worked.*
 

@@ -1,67 +1,67 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" font-family="Inter, -apple-system, sans-serif">
-  <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#777"/></marker></defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">a flow cannot compress — so it stops carrying finished dimensions instead</text>
+  <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--fig-muted, #777)"/></marker></defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">a flow cannot compress, so it stops carrying finished dimensions instead</text>
 
-  <text x="380" y="42" text-anchor="middle" font-size="10" fill="#777">The latent must hold exactly as many numbers as the image. Factorisation does not change that —</text>
-  <text x="380" y="55" text-anchor="middle" font-size="10" fill="#777">it changes how much work each of those numbers still has left to do.</text>
+  <text x="380" y="42" text-anchor="middle" font-size="10" fill="var(--fig-muted, #777)">The latent must hold exactly as many numbers as the image. Factorisation does not change that,</text>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="380" y="55" text-anchor="middle" font-size="10" fill="var(--fig-muted, #777)">it changes how much work each of those numbers still has left to do.</text>
 
   <g>
-    <rect x="40" y="66" width="58" height="94" rx="4" fill="rgba(14,116,144,0.14)" stroke="#0e7490"/>
-    <text x="69" y="118" text-anchor="middle" font-size="10.4" fill="#0e7490">x</text>
-    <text x="69" y="176" text-anchor="middle" font-size="9.2" fill="#777">D dims</text>
+    <rect x="40" y="66" width="58" height="94" rx="4" fill="rgba(14,116,144,0.14)" stroke="var(--fig-teal, #0e7490)"/>
+    <text x="69" y="118" text-anchor="middle" font-size="10.4" fill="var(--fig-teal, #0e7490)">x</text>
+    <text x="69" y="176" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #777)">D dims</text>
 
-    <path d="M 100 113 h 26" stroke="#777" stroke-width="1.4" marker-end="url(#a3)"/>
-    <rect x="128" y="80" width="46" height="66" rx="4" fill="rgba(124,58,237,0.09)" stroke="#7c3aed"/>
-    <text x="151" y="110" text-anchor="middle" font-size="8.8" fill="#7c3aed">K flow</text>
-    <text x="151" y="122" text-anchor="middle" font-size="8.8" fill="#7c3aed">steps</text>
+    <path d="M 100 113 h 26" stroke="var(--fig-muted, #777)" stroke-width="1.4" marker-end="url(#a3)"/>
+    <rect x="128" y="80" width="46" height="66" rx="4" fill="rgba(124,58,237,0.09)" stroke="var(--fig-purple, #7c3aed)"/>
+    <text x="151" y="110" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">K flow</text>
+    <text x="151" y="122" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">steps</text>
 
-    <path d="M 176 113 h 24" stroke="#777" stroke-width="1.4" marker-end="url(#a3)"/>
-    <rect x="202" y="66" width="52" height="46" rx="4" fill="rgba(217,119,6,0.18)" stroke="#d97706"/>
-    <text x="228" y="93" text-anchor="middle" font-size="9.6" fill="#d97706">z⁽¹⁾</text>
-    <rect x="202" y="116" width="52" height="46" rx="4" fill="rgba(14,116,144,0.14)" stroke="#0e7490"/>
-    <text x="228" y="143" text-anchor="middle" font-size="9.6" fill="#0e7490">h⁽¹⁾</text>
-    <text x="228" y="178" text-anchor="middle" font-size="8.8" fill="#d97706">split: half done</text>
+    <path d="M 176 113 h 24" stroke="var(--fig-muted, #777)" stroke-width="1.4" marker-end="url(#a3)"/>
+    <rect x="202" y="66" width="52" height="46" rx="4" fill="rgba(217,119,6,0.18)" stroke="var(--fig-amber, #d97706)"/>
+    <text x="228" y="93" text-anchor="middle" font-size="10.5" fill="var(--fig-amber, #d97706)">z⁽¹⁾</text>
+    <rect x="202" y="116" width="52" height="46" rx="4" fill="rgba(14,116,144,0.14)" stroke="var(--fig-teal, #0e7490)"/>
+    <text x="228" y="143" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">h⁽¹⁾</text>
+    <text x="228" y="178" text-anchor="middle" font-size="10.5" fill="var(--fig-amber, #d97706)">split: half done</text>
 
-    <path d="M 256 139 h 24" stroke="#777" stroke-width="1.4" marker-end="url(#a3)"/>
-    <rect x="282" y="112" width="42" height="54" rx="4" fill="rgba(124,58,237,0.09)" stroke="#7c3aed"/>
-    <text x="303" y="136" text-anchor="middle" font-size="8.8" fill="#7c3aed">K flow</text>
-    <text x="303" y="148" text-anchor="middle" font-size="8.8" fill="#7c3aed">steps</text>
+    <path d="M 256 139 h 24" stroke="var(--fig-muted, #777)" stroke-width="1.4" marker-end="url(#a3)"/>
+    <rect x="282" y="112" width="42" height="54" rx="4" fill="rgba(124,58,237,0.09)" stroke="var(--fig-purple, #7c3aed)"/>
+    <text x="303" y="136" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">K flow</text>
+    <text x="303" y="148" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">steps</text>
 
-    <path d="M 326 139 h 22" stroke="#777" stroke-width="1.4" marker-end="url(#a3)"/>
-    <rect x="350" y="114" width="42" height="26" rx="4" fill="rgba(217,119,6,0.18)" stroke="#d97706"/>
-    <text x="371" y="131" text-anchor="middle" font-size="9" fill="#d97706">z⁽²⁾</text>
-    <rect x="350" y="144" width="42" height="26" rx="4" fill="rgba(14,116,144,0.14)" stroke="#0e7490"/>
-    <text x="371" y="161" text-anchor="middle" font-size="9" fill="#0e7490">h⁽²⁾</text>
+    <path d="M 326 139 h 22" stroke="var(--fig-muted, #777)" stroke-width="1.4" marker-end="url(#a3)"/>
+    <rect x="350" y="114" width="42" height="26" rx="4" fill="rgba(217,119,6,0.18)" stroke="var(--fig-amber, #d97706)"/>
+    <text x="371" y="131" text-anchor="middle" font-size="10.5" fill="var(--fig-amber, #d97706)">z⁽²⁾</text>
+    <rect x="350" y="144" width="42" height="26" rx="4" fill="rgba(14,116,144,0.14)" stroke="var(--fig-teal, #0e7490)"/>
+    <text x="371" y="161" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">h⁽²⁾</text>
 
-    <path d="M 394 157 h 20" stroke="#777" stroke-width="1.4" marker-end="url(#a3)"/>
-    <rect x="416" y="136" width="38" height="42" rx="4" fill="rgba(124,58,237,0.09)" stroke="#7c3aed"/>
-    <text x="435" y="161" text-anchor="middle" font-size="8.4" fill="#7c3aed">K steps</text>
-    <path d="M 456 157 h 18" stroke="#777" stroke-width="1.4" marker-end="url(#a3)"/>
-    <rect x="476" y="144" width="36" height="26" rx="4" fill="rgba(217,119,6,0.18)" stroke="#d97706"/>
-    <text x="494" y="161" text-anchor="middle" font-size="9" fill="#d97706">z⁽³⁾</text>
+    <path d="M 394 157 h 20" stroke="var(--fig-muted, #777)" stroke-width="1.4" marker-end="url(#a3)"/>
+    <rect x="416" y="136" width="38" height="42" rx="4" fill="rgba(124,58,237,0.09)" stroke="var(--fig-purple, #7c3aed)"/>
+    <text x="435" y="161" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">K steps</text>
+    <path d="M 456 157 h 18" stroke="var(--fig-muted, #777)" stroke-width="1.4" marker-end="url(#a3)"/>
+    <rect x="476" y="144" width="36" height="26" rx="4" fill="rgba(217,119,6,0.18)" stroke="var(--fig-amber, #d97706)"/>
+    <text x="494" y="161" text-anchor="middle" font-size="10.5" fill="var(--fig-amber, #d97706)">z⁽³⁾</text>
 
-    <path d="M 228 66 v -12 h 300 v 92 h -14" stroke="#d97706" stroke-width="1" stroke-dasharray="3 3" fill="none" opacity="0.55"/>
-    <path d="M 371 114 v -20 h 155 v 46" stroke="#d97706" stroke-width="1" stroke-dasharray="3 3" fill="none" opacity="0.55"/>
-    <rect x="524" y="66" width="56" height="112" rx="5" fill="rgba(217,119,6,0.1)" stroke="#d97706" stroke-width="1.6"/>
-    <text x="552" y="116" text-anchor="middle" font-size="10" fill="#d97706">z</text>
-    <text x="552" y="132" text-anchor="middle" font-size="8.8" fill="#d97706">= (z¹,z²,z³)</text>
-    <text x="552" y="194" text-anchor="middle" font-size="9.2" font-weight="600" fill="#d97706">still D dims</text>
+    <path d="M 228 66 v -12 h 300 v 92 h -14" stroke="var(--fig-amber, #d97706)" stroke-width="1" stroke-dasharray="3 3" fill="none" opacity="0.55"/>
+    <path d="M 371 114 v -20 h 155 v 46" stroke="var(--fig-amber, #d97706)" stroke-width="1" stroke-dasharray="3 3" fill="none" opacity="0.55"/>
+    <rect x="524" y="66" width="56" height="112" rx="5" fill="rgba(217,119,6,0.1)" stroke="var(--fig-amber, #d97706)" stroke-width="1.6"/>
+    <text x="552" y="116" text-anchor="middle" font-size="10" fill="var(--fig-amber, #d97706)">z</text>
+    <text x="552" y="132" text-anchor="middle" font-size="10.5" fill="var(--fig-amber, #d97706)">= (z¹,z²,z³)</text>
+    <text x="552" y="194" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--fig-amber, #d97706)">still D dims</text>
   </g>
 
-  <rect x="598" y="64" width="148" height="122" rx="8" fill="#fcfcfc" stroke="#e8e2d5"/>
-  <text x="672" y="83" text-anchor="middle" font-size="9.8" font-weight="700" fill="#333">what this buys</text>
-  <text x="608" y="102" font-size="8.6" fill="#555">Early z's leave after a few</text>
-  <text x="608" y="114" font-size="8.6" fill="#555">layers. They hold fine local</text>
-  <text x="608" y="126" font-size="8.6" fill="#555">detail, which needs little work.</text>
-  <text x="608" y="146" font-size="8.6" fill="#555">Late z's pass through every</text>
-  <text x="608" y="158" font-size="8.6" fill="#555">layer. They carry the global</text>
-  <text x="608" y="170" font-size="8.6" fill="#555">structure, which needs a lot.</text>
-  <text x="608" y="182" font-size="8.6" font-style="italic" fill="#0e7490">Compute follows need.</text>
+  <rect x="598" y="64" width="148" height="122" rx="8" fill="var(--fig-wash, #fcfcfc)" stroke="var(--fig-amber-bg, #e8e2d5)"/>
+  <text x="672" y="83" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--fig-ink, #333)">what this buys</text>
+  <text x="608" y="102" font-size="10.5" fill="var(--fig-ink-2, #555)">Early z's leave after a few</text>
+  <text x="608" y="114" font-size="10.5" fill="var(--fig-ink-2, #555)">layers. They hold fine local</text>
+  <text x="608" y="126" font-size="10.5" fill="var(--fig-ink-2, #555)">detail, which needs little work.</text>
+  <text x="608" y="146" font-size="10.5" fill="var(--fig-ink-2, #555)">Late z's pass through every</text>
+  <text x="608" y="158" font-size="10.5" fill="var(--fig-ink-2, #555)">layer. They carry the global</text>
+  <text x="608" y="170" font-size="10.5" fill="var(--fig-ink-2, #555)">structure, which needs a lot.</text>
+  <text x="608" y="182" font-size="10.5" font-style="italic" fill="var(--fig-teal, #0e7490)">Compute follows need.</text>
 
-  <line x1="30" y1="212" x2="730" y2="212" stroke="#e8e2d5"/>
-  <text x="380" y="236" text-anchor="middle" font-size="11" font-weight="700" fill="#333">the Glow step, and why its 1×1 convolution is factorised</text>
-  <text x="40" y="260" font-size="9.8" fill="#555">A 1×1 convolution mixes the channels at each pixel by one shared c×c matrix W. It exists because coupling layers only ever</text>
-  <text x="40" y="275" font-size="9.8" fill="#555">move one fixed half of the vector; W lets the split fall differently each time, and it is <tspan font-style="italic">learned</tspan> rather than a fixed permutation.</text>
-  <text x="40" y="296" font-size="9.8" fill="#555">Computing det W costs O(c³) and it must stay non-zero. Storing W as P·L·(U + diag(s)) makes the determinant Σ log|sⱼ| — cheap,</text>
-  <text x="40" y="311" font-size="9.8" fill="#555">and singular exactly when some sⱼ hits zero, which the log term drives to −∞ and the optimiser therefore avoids on its own.</text>
+  <line x1="30" y1="212" x2="730" y2="212" stroke="var(--fig-amber-bg, #e8e2d5)"/>
+  <text x="380" y="236" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fig-ink, #333)">the Glow step, and why its 1×1 convolution is factorised</text>
+  <text x="40" y="260" font-size="10.5" fill="var(--fig-ink-2, #555)">A 1×1 convolution mixes the channels at each pixel by one shared c×c matrix W. It exists because coupling layers only ever</text>
+  <text x="40" y="275" font-size="10.5" fill="var(--fig-ink-2, #555)">move one fixed half of the vector; W lets the split fall differently each time, and it is <tspan font-style="italic">learned</tspan> rather than a fixed permutation.</text>
+  <text x="40" y="296" font-size="10.5" fill="var(--fig-ink-2, #555)">Computing det W costs O(c³) and it must stay non-zero. Storing W as P·L·(U + diag(s)) makes the determinant Σ log|sⱼ|, cheap,</text>
+  <text x="40" y="311" font-size="10.5" fill="var(--fig-ink-2, #555)">and singular exactly when some sⱼ hits zero, which the log term drives to −∞ and the optimiser therefore avoids on its own.</text>
 </svg>

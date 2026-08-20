@@ -4,12 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Chapter 7: Applying RL to Large Language Models. RLHF, PPO for LLMs, Bradley-Terry reward modeling, and GRPO (Group Relative Policy Optimization).">
-    <meta name="keywords"
-        content="RLHF, GRPO, PPO for LLMs, Reward Model, Bradley-Terry, Outcome Supervision, Process Supervision, DeepSeek-R1, LLM Alignment">
+    <meta name="description" content="Chapter 7: Applying RL to Large Language Models. RLHF, PPO for LLMs, Bradley-Terry reward modeling, and GRPO (Group Relative Policy Optimization).">
     <meta name="author" content="Anshul Singh">
-    <title>Ch 7: RL Meets LLMs — PPO, GRPO & Reasoning — RL Notes</title>
+    <title>Ch 7: RL Meets LLMs: PPO, GRPO & Reasoning · RL Notes</title>
 
     <link rel="icon" type="image/png" href="../../images/favicon.png">
     <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
@@ -17,14 +14,13 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 
     <!-- Highlight.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
@@ -35,70 +31,38 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../research-style.css">
-    <link rel="stylesheet" href="rl-notes-style.css">
+    <link rel="stylesheet" href="../notes/plain.css">
 
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../../css/theme.css">
-  <script src="../../js/theme.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
 </head>
 
-<body>
-    <div class="reading-progress"></div>
-
+<body class="plain">
     <div class="container">
-        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
-        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
-            style="top:700px; left:-220px; width:160px;">
 
         <header class="site-header">
-            <p style="text-align:center">
-                [<a href="../../index.html">Home</a> /
-                <a href="../blog-index.html">Writing</a> /
-                <a href="index.html">RL Notes</a>]
-            </p>
+            [<a href="../../index.html">Home</a> /
+            <a href="../blog-index.html">Writing</a> /
+            <a href="index.html">RL notes</a> /
+            <span class="here">RL Meets LLMs: PPO, GRPO and Reasoning</span>]
         </header>
 
         <main>
-            <div class="chapter-header">
-                <div class="chapter-number">Chapter 7 of 7</div>
-                <h1>RL Meets LLMs — PPO, GRPO & Reasoning</h1>
-                <div class="chapter-meta">
-                    <span>June 2026</span>
-                    <span class="dot">●</span>
-                    <span id="reading-time">12 min read</span>
-                    <span class="dot">●</span>
-                    <span>LLM Alignment & reasoning</span>
-                </div>
-            </div>
+            <h1>RL Meets LLMs: PPO, GRPO and Reasoning</h1>
 
-            <div class="content-layout">
-                <article class="chapter-content" id="content-target"></article>
-                <aside class="toc-sidebar">
-                    <div class="toc-inner">
-                        <div class="toc-title">On This Page</div>
-                        <ul class="toc-list"></ul>
-                    </div>
-                </aside>
-            </div>
-
-            <div class="chapter-nav">
-                <a href="ch-06.html" class="nav-prev">
-                    <div class="nav-label">← Previous Chapter</div>
-                    <div class="nav-title">Policy Gradients — Optimizing the Policy Directly</div>
-                </a>
-                <div class="nav-placeholder"></div>
-            </div>
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
         </main>
 
-        <footer style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
-            &copy; 2024 Anshul Singh
+        <footer class="site-footer">
+            &copy; 2026 Anshul Singh
         </footer>
     </div>
 
     <script id="raw-markdown" type="text/template">
-*Everything from Chapters 1–6 was classical RL: agents in gridworlds, mountain cars, robotic vacuums. Now we map the entire framework onto language models — where the "agent" is an LLM, the "action" is generating a token, and the "reward" comes from a human judge or a math verifier. This chapter covers SFT limitations, RLHF, PPO for LLMs, reward modeling, and GRPO — the algorithm behind DeepSeek-R1 that eliminates the critic network entirely.*
+*Chapters 1 to 6 were gridworlds, mountain cars and robotic vacuums. This one points the same machinery at a language model — the agent is the model, an action is a single token, and the reward arrives only once the whole sequence is finished — and each place the mapping strains produces one of the fixes below: RLHF, PPO, and GRPO.*
 
 ---
 
@@ -139,7 +103,7 @@ $$G_t = \sum_{k=t}^{T} \gamma^{k-t} r_k$$
 *   **Advantage ($A_t$)**: A metric indicating if a specific token action performed better or worse than the average expected performance from that state: $A_t = Q(s_t, a_t) - V(s_t)$.
 
 ### State Transitions
-Deterministic concatenation — the next state is just the current state with the new token appended:
+Deterministic concatenation, in that the next state is the current state with the new token appended:
 $$s_{t+1} = s_t \cup \{o_t\} = (q, o_1, \dots, o_t)$$
 
 ### Worked Trace: "Roger" Example
@@ -406,7 +370,7 @@ Reward at each intermediate reasoning step:
 Reinforces correct reasoning steps individually → more reliable reasoning paths.
 
 ### Practical Finding (DeepSeek-R1)
-Process supervision provides marginal gains over outcome supervision on most benchmarks, but adds significant complexity. Outcome supervision is often sufficient — "keep it simple."
+Process supervision provides marginal gains over outcome supervision on most benchmarks, and adds significant complexity in exchange. Outcome supervision is usually the right default.
 
 ---
 
@@ -428,7 +392,7 @@ The inclusion of the $\frac{1}{|o_i|}$ term outside the token summation represen
 Prevent the active policy from drifting too far from the reference (SFT) model:
 $$D_{KL}(\pi_\theta \| \pi_{ref}) = \sum_{a \in \mathcal{V}} \pi_\theta(a|s) \log\frac{\pi_\theta(a|s)}{\pi_{ref}(a|s)}$$
 
-**Why critical in GRPO**: Without a critic to stabilize learning, the optimization is more vulnerable to variance. The KL penalty anchors the policy near the SFT model — preserving language coherence while adapting to rewards.
+**Why critical in GRPO**: Without a critic to stabilize learning, the optimization is more vulnerable to variance. The KL penalty anchors the policy near the SFT model, preserving language coherence while it adapts to the reward.
 
 Because the KL penalty is computed directly inside the loss rather than as a per-token reward modifier, GRPO often utilizes the **$K_3$ KL estimator** to maintain stable training dynamics and prevent negative KL values:
 $$\mathbb{D}_{KL}(\pi_\theta \parallel \pi_{\text{ref}}) = \frac{\pi_{\text{ref}}(o_t \mid q, o_{<t})}{\pi_\theta(o_t \mid q, o_{<t})} - \log \frac{\pi_{\text{ref}}(o_t \mid q, o_{<t})}{\pi_\theta(o_t \mid q, o_{<t})} - 1$$
@@ -541,25 +505,11 @@ $$A_i = \frac{r_i - \text{mean}(R)}{\text{std}(R)}$$
 
 ---
 
-## Key Takeaways
 
-1. **LLM generation = MDP**: State = prompt + tokens so far, Action = next token, Reward = end-of-sequence evaluation.
-2. **SFT Limitations**: Teacher-forced likelihood maximization cannot teach comparison or evaluation, lacks a negative signal, and fails to optimize for human preferences natively.
-3. **PPO for LLMs** requires 4 models in memory — dominated by the Critic's cost, and calculates GAE based on token-level rewards and values.
-4. **GRPO eliminates the Critic** by computing the advantage statistically from group normalization ($\mu, \sigma$) of parallel samples, reducing memory constraints drastically.
-5. **Length Normalization Heuristic**: The $1/|o_i|$ scaling factor ensures completions of different lengths contribute equitably to parameter updates, bypassing standard policy gradient length biases.
-6. **Per-Token vs. Per-Response Batching**: Averaging losses per response prevents long, verbose responses from completely dominating batch gradients (which occurs under standard global per-token averaging).
-7. **Variance Bias Mitigation**: Question-level difficulty variance is managed by clamping standard deviation or bypassing division for extremely easy/hard prompts.
-8. **Outcome supervision** (single final reward) is simpler and often sufficient; **process supervision** (step-level rewards) can improve reasoning reliability.
-9. **The KL penalty** against the reference model prevents catastrophic drift while allowing task-specific adaptation, optimized in GRPO via the non-negative $K_3$ estimator.
-
----
-
-*This is the end of the notes. The arc from Chapter 1 to here: we started with what RL even is (trial and error, reward, value), formalized it as MDPs and Bellman equations, learned to solve it without a model (MC, TD, Q-learning), scaled it with function approximation, optimized policies directly (policy gradients → PPO), and finally applied it to the thing that matters most today — teaching language models to reason.*
+*That is the end of the series. The arc, in one line: trial and error and the idea of value, formalized into MDPs and Bellman equations, solved without a model by MC and TD and Q-learning, scaled past the lookup table by function approximation, turned around to optimize the policy directly through policy gradients and PPO, and finally pointed at a language model. What is striking looking back is how little had to be invented at the last step. GRPO is a policy gradient with a cheaper advantage estimate, and the reason it works was settled in Chapter 6.*
     </script>
 
     <script src="rl-notes.js"></script>
-    <script src="assets/interactive/grpo-calculator.js"></script>
 </body>
 
 </html>

@@ -1,58 +1,58 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" font-family="Inter, -apple-system, sans-serif">
   <defs>
-    <marker id="md-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#888"/></marker>
-    <marker id="md-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker>
+    <marker id="md-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-muted-2, #888)"/></marker>
+    <marker id="md-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-teal, #0e7490)"/></marker>
   </defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">a flattened image has no neighbours — which is the whole argument for DCGAN</text>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">a flattened image has no neighbours, which is the whole argument for DCGAN</text>
 
   <!-- MLP row -->
-  <rect x="16" y="38" width="728" height="126" rx="10" fill="#fcfcfc" stroke="#e8d5d5"/>
-  <text x="34" y="58" font-size="11.5" font-weight="700" fill="#c0392b">MLP-GAN  ·  spatial structure is destroyed before the network ever sees it</text>
-  <rect x="40" y="74" width="52" height="52" rx="6" fill="#f2f2f2" stroke="#aaa"/>
-  <text x="66" y="105" text-anchor="middle" font-size="10.5" fill="#666">z (16)</text>
-  <path d="M 92 100 L 132 100" stroke="#888" stroke-width="1.5" fill="none" marker-end="url(#md-g)"/>
-  <text x="112" y="92" text-anchor="middle" font-size="8.6" fill="#888">FC</text>
-  <rect x="136" y="84" width="230" height="32" rx="4" fill="rgba(192,57,43,0.08)" stroke="#c0392b"/>
-  <text x="251" y="105" text-anchor="middle" font-size="10.5" fill="#c0392b">one flat vector of 10,000 numbers</text>
-  <path d="M 366 100 L 406 100" stroke="#888" stroke-width="1.5" fill="none" marker-end="url(#md-g)"/>
-  <text x="386" y="92" text-anchor="middle" font-size="8.6" fill="#888">reshape</text>
-  <rect x="410" y="72" width="56" height="56" rx="3" fill="rgba(192,57,43,0.06)" stroke="#c0392b"/>
+  <rect x="16" y="38" width="728" height="126" rx="10" fill="var(--fig-wash, #fcfcfc)" stroke="var(--fig-red-bg, #e8d5d5)"/>
+  <text x="34" y="58" font-size="11.5" font-weight="700" fill="var(--fig-red, #c0392b)">MLP-GAN  ·  spatial structure is destroyed before the network ever sees it</text>
+  <rect x="40" y="74" width="52" height="52" rx="6" fill="var(--fig-wash, #f2f2f2)" stroke="var(--fig-faint, #aaa)"/>
+  <text x="66" y="105" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #666)">z (16)</text>
+  <path d="M 92 100 L 132 100" stroke="var(--fig-muted-2, #888)" stroke-width="1.5" fill="none" marker-end="url(#md-g)"/>
+  <text x="112" y="92" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #888)">FC</text>
+  <rect x="136" y="84" width="230" height="32" rx="4" fill="rgba(192,57,43,0.08)" stroke="var(--fig-red, #c0392b)"/>
+  <text x="251" y="105" text-anchor="middle" font-size="10.5" fill="var(--fig-red, #c0392b)">one flat vector of 10,000 numbers</text>
+  <path d="M 366 100 L 406 100" stroke="var(--fig-muted-2, #888)" stroke-width="1.5" fill="none" marker-end="url(#md-g)"/>
+  <text x="386" y="92" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #888)">reshape</text>
+  <rect x="410" y="72" width="56" height="56" rx="3" fill="rgba(192,57,43,0.06)" stroke="var(--fig-red, #c0392b)"/>
   <g stroke="rgba(192,57,43,0.35)" stroke-width="0.6">
     <path d="M 424 72 v 56 M 438 72 v 56 M 452 72 v 56 M 410 86 h 56 M 410 100 h 56 M 410 114 h 56"/>
   </g>
-  <text x="438" y="144" text-anchor="middle" font-size="9.6" fill="#c0392b">100 × 100</text>
-  <text x="490" y="90" font-size="10" fill="#c0392b">pixel 1 and pixel 101 are vertical neighbours,</text>
-  <text x="490" y="105" font-size="10" fill="#c0392b">but in the flat vector they sit 100 slots apart —</text>
-  <text x="490" y="120" font-size="10" fill="#c0392b">the network has to rediscover geometry from scratch</text>
+  <text x="438" y="144" text-anchor="middle" font-size="10.5" fill="var(--fig-red, #c0392b)">100 × 100</text>
+  <text x="490" y="90" font-size="10" fill="var(--fig-red, #c0392b)">pixel 1 and pixel 101 are vertical neighbours,</text>
+  <text x="490" y="105" font-size="10" fill="var(--fig-red, #c0392b)">but in the flat vector they sit 100 slots apart,</text>
+  <text x="490" y="120" font-size="10" fill="var(--fig-red, #c0392b)">the network has to rediscover geometry from scratch</text>
 
   <!-- DCGAN row -->
-  <rect x="16" y="176" width="728" height="150" rx="10" fill="#fcfcfc" stroke="#dfe8ea"/>
-  <text x="34" y="196" font-size="11.5" font-weight="700" fill="#0e7490">DCGAN  ·  every intermediate value keeps a spatial address</text>
+  <rect x="16" y="176" width="728" height="150" rx="10" fill="var(--fig-wash, #fcfcfc)" stroke="var(--fig-teal-bg, #dfe8ea)"/>
+  <text x="34" y="196" font-size="11.5" font-weight="700" fill="var(--fig-teal, #0e7490)">DCGAN  ·  every intermediate value keeps a spatial address</text>
 
-  <rect x="46" y="238" width="22" height="22" rx="3" fill="rgba(14,116,144,0.10)" stroke="#0e7490"/>
-  <text x="57" y="278" text-anchor="middle" font-size="9.6" fill="#555">z</text>
-  <text x="57" y="291" text-anchor="middle" font-size="9" fill="#999">16×1×1</text>
-  <path d="M 74 249 L 112 249" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#md-t)"/>
-  <text x="93" y="242" text-anchor="middle" font-size="8.4" fill="#0e7490">T-conv</text>
+  <rect x="46" y="238" width="22" height="22" rx="3" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)"/>
+  <text x="57" y="278" text-anchor="middle" font-size="10.5" fill="var(--fig-ink-2, #555)">z</text>
+  <text x="57" y="291" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #999)">16×1×1</text>
+  <path d="M 74 249 L 112 249" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5" fill="none" marker-end="url(#md-t)"/>
+  <text x="93" y="242" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">T-conv</text>
 
-  <rect x="116" y="226" width="46" height="46" rx="3" fill="rgba(14,116,144,0.10)" stroke="#0e7490"/>
+  <rect x="116" y="226" width="46" height="46" rx="3" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)"/>
   <g stroke="rgba(14,116,144,0.3)" stroke-width="0.6"><path d="M 128 226 v 46 M 139 226 v 46 M 150 226 v 46 M 116 238 h 46 M 116 249 h 46 M 116 261 h 46"/></g>
-  <text x="139" y="291" text-anchor="middle" font-size="9" fill="#999">128×8×8</text>
-  <path d="M 168 249 L 206 249" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#md-t)"/>
-  <text x="187" y="242" text-anchor="middle" font-size="8.4" fill="#0e7490">T-conv</text>
+  <text x="139" y="291" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #999)">128×8×8</text>
+  <path d="M 168 249 L 206 249" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5" fill="none" marker-end="url(#md-t)"/>
+  <text x="187" y="242" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">T-conv</text>
 
-  <rect x="210" y="212" width="74" height="74" rx="3" fill="rgba(14,116,144,0.10)" stroke="#0e7490"/>
+  <rect x="210" y="212" width="74" height="74" rx="3" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)"/>
   <g stroke="rgba(14,116,144,0.3)" stroke-width="0.6"><path d="M 228 212 v 74 M 247 212 v 74 M 265 212 v 74 M 210 230 h 74 M 210 249 h 74 M 210 267 h 74"/></g>
-  <text x="247" y="299" text-anchor="middle" font-size="9" fill="#999">64×25×25</text>
-  <path d="M 290 249 L 326 249" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#md-t)"/>
+  <text x="247" y="299" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #999)">64×25×25</text>
+  <path d="M 290 249 L 326 249" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5" fill="none" marker-end="url(#md-t)"/>
 
-  <rect x="330" y="200" width="98" height="98" rx="3" fill="rgba(14,116,144,0.14)" stroke="#0e7490" stroke-width="1.5"/>
+  <rect x="330" y="200" width="98" height="98" rx="3" fill="rgba(14,116,144,0.14)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5"/>
   <g stroke="rgba(14,116,144,0.3)" stroke-width="0.6"><path d="M 354 200 v 98 M 379 200 v 98 M 403 200 v 98 M 330 224 h 98 M 330 249 h 98 M 330 273 h 98"/></g>
-  <text x="379" y="311" text-anchor="middle" font-size="9.4" font-weight="600" fill="#0e7490">3×100×100</text>
+  <text x="379" y="311" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--fig-teal, #0e7490)">3×100×100</text>
 
-  <text x="450" y="222" font-size="10.5" font-weight="600" fill="#0e7490">generator: transpose convolutions</text>
-  <text x="450" y="237" font-size="10" fill="#666">each step widens the grid and narrows the channels</text>
-  <text x="450" y="262" font-size="10.5" font-weight="600" fill="#d97706">discriminator: an ordinary CNN, run backwards</text>
-  <text x="450" y="277" font-size="10" fill="#666">100×100×3 → conv, conv, conv → one scalar in [0,1]</text>
-  <text x="450" y="298" font-size="10" fill="#999">mirror images of each other: one expands, one contracts</text>
+  <text x="450" y="222" font-size="10.5" font-weight="600" fill="var(--fig-teal, #0e7490)">generator: transpose convolutions</text>
+  <text x="450" y="237" font-size="10" fill="var(--fig-muted, #666)">each step widens the grid and narrows the channels</text>
+  <text x="450" y="262" font-size="10.5" font-weight="600" fill="var(--fig-amber, #d97706)">discriminator: an ordinary CNN, run backwards</text>
+  <text x="450" y="277" font-size="10" fill="var(--fig-muted, #666)">100×100×3 → conv, conv, conv → one scalar in [0,1]</text>
+  <text x="450" y="298" font-size="10" fill="var(--fig-muted-2, #999)">mirror images of each other: one expands, one contracts</text>
 </svg>

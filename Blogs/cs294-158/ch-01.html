@@ -4,10 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Lecture 1 notes: why unsupervised learning at all — Hinton's parameter budget as arithmetic, LeCun's cake, and compression as the definition of understanding, plus a map of the generative families.">
-    <meta name="keywords"
-        content="Deep Unsupervised Learning, CS294-158, Generative Models, Self-Supervised Learning, Kolmogorov Complexity, Cross-Entropy, KL Divergence, Masked Autoencoders, LeCun Cake">
+    <meta name="description" content="Lecture 1 notes: why unsupervised learning at all — Hinton's parameter budget as arithmetic, LeCun's cake, and compression as the definition of understanding, plus a map of the generative families.">
     <meta name="author" content="Anshul Singh">
     <title>Lecture 1: Motivation &amp; the Landscape — CS294-158 Notes</title>
 
@@ -17,9 +14,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
@@ -36,78 +31,40 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../research-style.css">
-    <link rel="stylesheet" href="../notes/notes-core.css">
-    <link rel="stylesheet" href="cs294-notes-style.css">
+    <link rel="stylesheet" href="../notes/plain.css">
 
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../../css/theme.css">
-  <script src="../../js/theme.js"></script>
-  <!-- Passphrase gate for this notes series -->
-  <script src="../../js/gate.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
+    <!-- Passphrase gate for this notes series -->
+    <script src="../../js/gate.js"></script>
 </head>
 
-<body>
-    <div class="reading-progress"></div>
-
+<body class="plain">
     <div class="container">
-        <!-- Background Scribbles -->
-        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
-        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
-            style="top:600px; left:-220px; width:160px;">
 
         <header class="site-header">
-            <p style="text-align:center">
-                [<a href="../../index.html">Home</a> /
-                <a href="../blog-index.html">Writing</a> /
-                <a href="index.html">CS294-158 Notes</a>]
-            </p>
+            [<a href="../../index.html">Home</a> /
+            <a href="../blog-index.html">Writing</a> /
+            <a href="index.html">CS294-158 notes</a> /
+            <span class="here">Motivation &amp; the Landscape</span>]
         </header>
 
         <main>
-            <div class="chapter-header">
-                <div class="chapter-number">Lecture 1</div>
-                <h1>Motivation &amp; the Landscape</h1>
-                <div class="chapter-meta">
-                    <span>August 2026</span>
-                    <span class="dot">●</span>
-                    <span id="reading-time">— min read</span>
-                    <span class="dot">●</span>
-                    <span>Foundations</span>
-                </div>
-            </div>
+            <h1>Motivation &amp; the Landscape</h1>
 
-            <div class="content-layout">
-                <article class="chapter-content" id="content-target">
-                    <!-- Rendered markdown goes here -->
-                </article>
-
-                <aside class="toc-sidebar">
-                    <div class="toc-inner">
-                        <div class="toc-title">On This Page</div>
-                        <ul class="toc-list"></ul>
-                    </div>
-                </aside>
-            </div>
-
-            <div class="chapter-nav">
-                <span class="nav-placeholder"></span>
-                <a href="index.html" class="nav-next">
-                    <div class="nav-label">Series index →</div>
-                    <div class="nav-title">All lectures</div>
-                </a>
-            </div>
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
         </main>
 
-        <footer
-            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+        <footer class="site-footer">
             &copy; 2026 Anshul Singh
         </footer>
     </div>
 
     <script id="raw-markdown" type="text/template">
-*My notes from the first lecture. It is a motivation lecture — no method is derived, nothing is implemented — and my instinct with those is to skim. That was a mistake here. Three arguments in this lecture (Hinton's parameter budget, LeCun's cake, and compression as the definition of understanding) are the reason every later lecture is shaped the way it is, and two of them turn out to be arithmetic rather than analogy. So I have done the arithmetic. The rest is a map of the field, which I have kept because knowing where a method sits is most of knowing why it exists.*
+*My notes from the first lecture. It is a motivation lecture — no method derived, nothing implemented — and my instinct with those is to skim, which was a mistake here: two of its three arguments (Hinton's parameter budget, LeCun's cake, compression as the definition of understanding) turn out to be arithmetic rather than analogy. So I have done the arithmetic.*
 
 ---
 
@@ -126,7 +83,7 @@ The three worth memorising:
 
 $$\mathbb{E}_{x \sim p}[-\log_2 q(x)] = H(p) + D_{KL}(p \parallel q) \qquad \text{bits/dim} = \tfrac{1}{d}\mathbb{E}_{x\sim p}[-\log_2 q_\theta(x)] \qquad K(\mathcal{D}_2 \mid \mathcal{D}_1) \le K(\mathcal{D}_2) + c$$
 
-What it unlocks: every likelihood number in the rest of the course is a file size, which is the currency Ch.2 starts spending.
+What it unlocks: every likelihood number in the rest of these notes is a file size, which is the currency Ch.2 starts spending.
 
 ---
 
@@ -239,7 +196,7 @@ Reading (4): the cost of storing the data splits cleanly into a part nobody can 
 
 $$\text{bits per dimension} = \frac{1}{d}\,\mathbb{E}_{x \sim p}\left[-\log_2 q_\theta(x)\right] \tag{5}$$
 
-And now the punchline that makes this a lecture about generative models rather than about information theory: (5) is, up to the change of base from $\ln$ to $\log_2$, exactly the negative log-likelihood that maximum-likelihood training minimises. **Training a generative model and building a compressor are literally the same optimisation.** Every likelihood number quoted for the rest of the course is a file size.
+And now the punchline that makes this a lecture about generative models rather than about information theory: (5) is, up to the change of base from $\ln$ to $\log_2$, exactly the negative log-likelihood that maximum-likelihood training minimises. **Training a generative model and building a compressor are literally the same optimisation.** Every likelihood number quoted for the rest of these notes is a file size.
 
 <div class="note-widget" id="widget-bits"></div>
 
@@ -275,7 +232,7 @@ What this section established: understanding, compression and likelihood are thr
 
 Having argued that modelling $p(x)$ is worth doing, the lecture surveyed how people have actually done it. The order matters — each family is a reaction to what the previous one could not do.
 
-<figure><img src="assets/svg/timeline.svg" alt="Timeline of deep generative model families from Deep Belief Networks in 2006 to diffusion models in 2020 and after" style="max-width:100%;"><figcaption>Figure 1.2: The families and their descendants. The course works through each in turn, so this is the table of contents for the next twelve lectures as much as it is history.</figcaption></figure>
+<figure><img src="assets/svg/timeline.svg" alt="Timeline of deep generative model families from Deep Belief Networks in 2006 to diffusion models in 2020 and after" style="max-width:100%;"><figcaption>Figure 1.2: The families and their descendants. These notes work through each in turn, so this is the table of contents for the next twelve lectures as much as it is history.</figcaption></figure>
 
 **Deep belief networks (2006).** [Hinton, Osindero and Teh](https://www.cs.toronto.edu/~hinton/absps/fastnc.pdf) showed a stack of restricted Boltzmann machines could be trained greedily, layer by layer, and then sampled from to produce handwritten digits. By modern standards the samples are poor. What mattered was the existence proof: a deep neural network could be a generative model of images at all, at a moment when deep networks were barely trainable for anything.
 
@@ -285,7 +242,7 @@ Having argued that modelling $p(x)$ is worth doing, the lecture surveyed how peo
 
 **Autoregressive models (2016 onwards).** Factorise the joint distribution into a product of conditionals over an ordering, $p(x) = \prod_i p(x_i \mid x_{<i})$, and model each conditional with a network. [WaveNet](https://arxiv.org/abs/1609.03499) did it on raw audio samples, [PixelCNN](https://arxiv.org/abs/1601.06759) on image pixels, and the GPT series on text tokens. These give exact likelihoods — no bound, no approximation — which makes them the best compressors in the family. The price is sequential sampling: generating $d$ dimensions costs $d$ forward passes.
 
-**Diffusion models (2020 onwards).** [Ho, Jain and Abbeel](https://arxiv.org/abs/2006.11239) — the last of those being this course's instructor — defined a fixed forward process that gradually adds noise until the data is destroyed, and learned the reverse. Training is a stable regression-like objective rather than a game, so mode collapse does not arise and coverage is not an issue, and sample quality overtook GANs. Diffusion now backs essentially every text-to-image system in use.
+**Diffusion models (2020 onwards).** [Ho, Jain and Abbeel](https://arxiv.org/abs/2006.11239) — the last of those being the instructor for these lectures — defined a fixed forward process that gradually adds noise until the data is destroyed, and learned the reverse. Training is a stable regression-like objective rather than a game, so mode collapse does not arise and coverage is not an issue, and sample quality overtook GANs. Diffusion now backs essentially every text-to-image system in use.
 
 Reading the list as a sequence: DBNs proved it was possible, VAEs made it probabilistic and got blur, GANs abandoned likelihood for sharpness and got instability and mode collapse, autoregressive models kept exact likelihood and paid in sampling time, and diffusion recovered stability and coverage while matching GAN fidelity. Every family is buying one property with another.
 
@@ -349,7 +306,7 @@ Stated in the language of §2.3: the useful quantity is the conditional entropy 
 
 Three things, in order of how much they will change what I do.
 
-**Likelihood is file size.** Every bits-per-dimension number in this course is the answer to a concrete question — how small can this data be made — and (4) says the gap between the achieved size and the theoretical floor is exactly the model's error. This is the single idea I most under-rated before.
+**Likelihood is file size.** Every bits-per-dimension number in these notes is the answer to a concrete question — how small can this data be made — and (4) says the gap between the achieved size and the theoretical floor is exactly the model's error. This is the single idea I most under-rated before.
 
 **Unsupervised objectives scale because their supervision is free.** Labels are a bounded resource; raw data is not. That is why the curves in this field keep going and why the pre-train-then-adapt pattern displaced task-specific architectures, and (7) says why the adaptation is cheap.
 
@@ -372,7 +329,6 @@ Three things, in order of how much they will change what I do.
 - Ho, Jain and Abbeel (2020), [Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2006.11239)
 - He et al. (2021), [Masked Autoencoders Are Scalable Vision Learners](https://arxiv.org/abs/2111.06377)
 - Hoffmann et al. (2022), [Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)
-
     </script>
 
     <script src="../notes/notes-core.js"></script>

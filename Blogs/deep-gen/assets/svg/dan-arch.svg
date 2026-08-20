@@ -1,54 +1,54 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="Inter, -apple-system, sans-serif">
   <defs>
-    <marker id="da-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker>
-    <marker id="da-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/></marker>
-    <marker id="da-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker>
+    <marker id="da-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-teal, #0e7490)"/></marker>
+    <marker id="da-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-amber, #d97706)"/></marker>
+    <marker id="da-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-purple, #7c3aed)"/></marker>
   </defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">one trunk, two heads pulling in different directions</text>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">one trunk, two heads pulling in different directions</text>
 
-  <rect x="20" y="66" width="104" height="42" rx="9" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.4"/>
-  <text x="72" y="84" text-anchor="middle" font-size="10.6" font-weight="600" fill="#0e7490">source x, label y</text>
-  <text x="72" y="99" text-anchor="middle" font-size="9.4" fill="#555">x ~ P_S</text>
+  <rect x="20" y="66" width="104" height="42" rx="9" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.4"/>
+  <text x="72" y="84" text-anchor="middle" font-size="10.6" font-weight="600" fill="var(--fig-teal, #0e7490)">source x, label y</text>
+  <text x="72" y="99" text-anchor="middle" font-size="10.5" fill="var(--fig-ink-2, #555)">x ~ P_S</text>
 
-  <rect x="20" y="150" width="104" height="42" rx="9" fill="rgba(217,119,6,0.10)" stroke="#d97706" stroke-width="1.4"/>
-  <text x="72" y="168" text-anchor="middle" font-size="10.6" font-weight="600" fill="#d97706">target x̂, no label</text>
-  <text x="72" y="183" text-anchor="middle" font-size="9.4" fill="#555">x̂ ~ P_T</text>
+  <rect x="20" y="150" width="104" height="42" rx="9" fill="rgba(217,119,6,0.10)" stroke="var(--fig-amber, #d97706)" stroke-width="1.4"/>
+  <text x="72" y="168" text-anchor="middle" font-size="10.6" font-weight="600" fill="var(--fig-amber, #d97706)">target x̂, no label</text>
+  <text x="72" y="183" text-anchor="middle" font-size="10.5" fill="var(--fig-ink-2, #555)">x̂ ~ P_T</text>
 
-  <path d="M 126 88 L 162 116" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#da-t)"/>
-  <path d="M 126 170 L 162 142" stroke="#d97706" stroke-width="1.5" fill="none" marker-end="url(#da-o)"/>
+  <path d="M 126 88 L 162 116" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5" fill="none" marker-end="url(#da-t)"/>
+  <path d="M 126 170 L 162 142" stroke="var(--fig-amber, #d97706)" stroke-width="1.5" fill="none" marker-end="url(#da-o)"/>
 
-  <path d="M 166 100 L 240 88 L 240 170 L 166 158 Z" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.8"/>
-  <text x="203" y="124" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0e7490">φ</text>
-  <text x="203" y="140" text-anchor="middle" font-size="9.4" fill="#0e7490">feature extractor</text>
-  <text x="203" y="188" text-anchor="middle" font-size="9.4" fill="#999">shared by both domains</text>
+  <path d="M 166 100 L 240 88 L 240 170 L 166 158 Z" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.8"/>
+  <text x="203" y="124" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--fig-teal, #0e7490)">φ</text>
+  <text x="203" y="140" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">feature extractor</text>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="203" y="188" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #999)">shared by both domains</text>
 
-  <path d="M 240 118 L 286 90" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#da-t)"/>
-  <path d="M 240 140 L 286 176" stroke="#555" stroke-width="1.5" fill="none" marker-end="url(#da-t)"/>
-  <text x="262" y="98" text-anchor="middle" font-size="9" fill="#0e7490">z_s</text>
-  <text x="258" y="172" text-anchor="middle" font-size="9" fill="#666">z_s, z_t</text>
+  <path d="M 240 118 L 286 90" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5" fill="none" marker-end="url(#da-t)"/>
+  <path d="M 240 140 L 286 176" stroke="var(--fig-ink-2, #555)" stroke-width="1.5" fill="none" marker-end="url(#da-t)"/>
+  <text x="262" y="98" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">z_s</text>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="258" y="172" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #666)">z_s, z_t</text>
 
-  <rect x="290" y="62" width="150" height="52" rx="9" fill="#fff" stroke="#0e7490" stroke-width="1.6"/>
-  <text x="365" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7490">task classifier h_θ</text>
-  <text x="365" y="99" text-anchor="middle" font-size="9.6" fill="#666">cross-entropy on source only</text>
-  <path d="M 440 88 L 476 88" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#da-t)"/>
-  <text x="500" y="85" font-size="10.4" fill="#0e7490">ŷ — the thing</text>
-  <text x="500" y="99" font-size="10.4" fill="#0e7490">we actually want</text>
+  <rect x="290" y="62" width="150" height="52" rx="9" fill="var(--fig-paper, #fff)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6"/>
+  <text x="365" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fig-teal, #0e7490)">task classifier h_θ</text>
+  <text x="365" y="99" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #666)">cross-entropy on source only</text>
+  <path d="M 440 88 L 476 88" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5" fill="none" marker-end="url(#da-t)"/>
+  <text x="500" y="85" font-size="10.4" fill="var(--fig-teal, #0e7490)">ŷ, the thing</text>
+  <text x="500" y="99" font-size="10.4" fill="var(--fig-teal, #0e7490)">we actually want</text>
 
-  <rect x="290" y="150" width="150" height="52" rx="9" fill="#fff" stroke="#d97706" stroke-width="1.6"/>
-  <text x="365" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="#d97706">domain critic T_w</text>
-  <text x="365" y="187" text-anchor="middle" font-size="9.6" fill="#666">source or target?</text>
-  <path d="M 440 176 L 476 176" stroke="#d97706" stroke-width="1.5" fill="none" marker-end="url(#da-o)"/>
-  <text x="500" y="173" font-size="10.4" fill="#d97706">a score in [0,1]</text>
-  <text x="500" y="187" font-size="10.4" fill="#999">thrown away at test time</text>
+  <rect x="290" y="150" width="150" height="52" rx="9" fill="var(--fig-paper, #fff)" stroke="var(--fig-amber, #d97706)" stroke-width="1.6"/>
+  <text x="365" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fig-amber, #d97706)">domain critic T_w</text>
+  <text x="365" y="187" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #666)">source or target?</text>
+  <path d="M 440 176 L 476 176" stroke="var(--fig-amber, #d97706)" stroke-width="1.5" fill="none" marker-end="url(#da-o)"/>
+  <text x="500" y="173" font-size="10.4" fill="var(--fig-amber, #d97706)">a score in [0,1]</text>
+  <text x="500" y="187" font-size="10.4" fill="var(--fig-muted-2, #999)">thrown away at test time</text>
 
-  <path d="M 330 206 C 300 250, 240 246, 210 178" stroke="#7c3aed" stroke-width="2" fill="none" stroke-dasharray="6 4" marker-end="url(#da-p)"/>
-  <text x="284" y="266" text-anchor="middle" font-size="10.4" font-weight="600" fill="#7c3aed">gradient arrives <tspan font-style="italic">negated</tspan></text>
-  <text x="284" y="281" text-anchor="middle" font-size="9.6" fill="#7c3aed">φ is trained to make T_w fail</text>
+  <path d="M 330 206 C 300 250, 240 246, 210 178" stroke="var(--fig-purple, #7c3aed)" stroke-width="2" fill="none" stroke-dasharray="6 4" marker-end="url(#da-p)"/>
+  <text x="284" y="266" text-anchor="middle" font-size="10.4" font-weight="600" fill="var(--fig-purple, #7c3aed)">gradient arrives <tspan font-style="italic">negated</tspan></text>
+  <text x="284" y="281" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">φ is trained to make T_w fail</text>
 
-  <rect x="500" y="222" width="244" height="82" rx="9" fill="rgba(14,116,144,0.04)" stroke="#0e7490" stroke-width="1.2"/>
-  <text x="622" y="242" text-anchor="middle" font-size="10.6" font-weight="700" fill="#0e7490">why φ needs both losses</text>
-  <text x="514" y="260" font-size="9.8" fill="#555">Domain loss alone has a trivial optimum:</text>
-  <text x="514" y="274" font-size="9.8" fill="#555">map every input to one constant vector.</text>
-  <text x="514" y="288" font-size="9.8" fill="#555">Domains align perfectly; features are</text>
-  <text x="514" y="300" font-size="9.8" fill="#c0392b">useless. The task loss is what forbids it.</text>
+  <rect x="500" y="222" width="244" height="82" rx="9" fill="rgba(14,116,144,0.04)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.2"/>
+  <text x="622" y="242" text-anchor="middle" font-size="10.6" font-weight="700" fill="var(--fig-teal, #0e7490)">why φ needs both losses</text>
+  <text x="514" y="260" font-size="10.5" fill="var(--fig-ink-2, #555)">Domain loss alone has a trivial optimum:</text>
+  <text x="514" y="274" font-size="10.5" fill="var(--fig-ink-2, #555)">map every input to one constant vector.</text>
+  <text x="514" y="288" font-size="10.5" fill="var(--fig-ink-2, #555)">Domains align perfectly; features are</text>
+  <text x="514" y="300" font-size="10.5" fill="var(--fig-red, #c0392b)">useless. The task loss is what forbids it.</text>
 </svg>

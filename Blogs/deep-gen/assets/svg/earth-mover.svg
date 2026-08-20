@@ -1,36 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="Inter, -apple-system, sans-serif">
   <defs>
-    <marker id="em-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker>
+    <marker id="em-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-purple, #7c3aed)"/></marker>
   </defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">the earth mover's distance: how much work to reshape one pile into the other</text>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">the earth mover's distance: how much work to reshape one pile into the other</text>
 
-  <line x1="40" y1="196" x2="720" y2="196" stroke="#999" stroke-width="1.2"/>
+  <line x1="40" y1="196" x2="720" y2="196" stroke="var(--fig-muted-2, #999)" stroke-width="1.2"/>
 
-  <path d="M 70 196 L 100 132 L 130 196 Z" fill="rgba(14,116,144,0.22)" stroke="#0e7490" stroke-width="1.6"/>
-  <path d="M 130 196 L 168 108 L 206 196 Z" fill="rgba(14,116,144,0.22)" stroke="#0e7490" stroke-width="1.6"/>
-  <text x="138" y="214" text-anchor="middle" font-size="10.6" font-weight="700" fill="#0e7490">P_x — the pile you have</text>
+  <path d="M 70 196 L 100 132 L 130 196 Z" fill="rgba(14,116,144,0.22)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6"/>
+  <path d="M 130 196 L 168 108 L 206 196 Z" fill="rgba(14,116,144,0.22)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6"/>
+  <text x="138" y="214" text-anchor="middle" font-size="10.6" font-weight="700" fill="var(--fig-teal, #0e7490)">P_x: the pile you have</text>
 
-  <path d="M 470 196 L 512 118 L 554 196 Z" fill="rgba(217,119,6,0.20)" stroke="#d97706" stroke-width="1.6" stroke-dasharray="6 4"/>
-  <path d="M 554 196 L 590 146 L 626 196 Z" fill="rgba(217,119,6,0.20)" stroke="#d97706" stroke-width="1.6" stroke-dasharray="6 4"/>
-  <text x="548" y="214" text-anchor="middle" font-size="10.6" font-weight="700" fill="#d97706">P_x̂ — the shape you want</text>
+  <path d="M 470 196 L 512 118 L 554 196 Z" fill="rgba(217,119,6,0.20)" stroke="var(--fig-amber, #d97706)" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <path d="M 554 196 L 590 146 L 626 196 Z" fill="rgba(217,119,6,0.20)" stroke="var(--fig-amber, #d97706)" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="548" y="214" text-anchor="middle" font-size="10.6" font-weight="700" fill="var(--fig-amber, #d97706)">P_x̂: the shape you want</text>
 
-  <path d="M 176 122 C 260 70, 400 70, 500 128" stroke="#7c3aed" stroke-width="2" fill="none" marker-end="url(#em-p)"/>
-  <path d="M 112 146 C 220 96, 460 108, 578 158" stroke="#7c3aed" stroke-width="1.6" fill="none" marker-end="url(#em-p)"/>
-  <text x="340" y="76" text-anchor="middle" font-size="10.6" font-weight="700" fill="#7c3aed">a transport plan γ(x, x̂)</text>
-  <text x="340" y="91" text-anchor="middle" font-size="9.6" fill="#7c3aed">how much mass moves from where, to where</text>
+  <path d="M 176 122 C 260 70, 400 70, 500 128" stroke="var(--fig-purple, #7c3aed)" stroke-width="2" fill="none" marker-end="url(#em-p)"/>
+  <path d="M 112 146 C 220 96, 460 108, 578 158" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.6" fill="none" marker-end="url(#em-p)"/>
+  <text x="340" y="76" text-anchor="middle" font-size="10.6" font-weight="700" fill="var(--fig-purple, #7c3aed)">a transport plan γ(x, x̂)</text>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="340" y="91" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">how much mass moves from where, to where</text>
 
-  <line x1="176" y1="176" x2="500" y2="176" stroke="#555" stroke-width="1" stroke-dasharray="3 3"/>
-  <text x="338" y="190" text-anchor="middle" font-size="9.6" fill="#555">distance travelled ‖x − x̂‖</text>
+  <line x1="176" y1="176" x2="500" y2="176" stroke="var(--fig-ink-2, #555)" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="338" y="190" text-anchor="middle" font-size="10.5" fill="var(--fig-ink-2, #555)">distance travelled ‖x − x̂‖</text>
 
-  <rect x="40" y="238" width="336" height="76" rx="9" fill="rgba(124,58,237,0.05)" stroke="#7c3aed" stroke-width="1.2"/>
-  <text x="208" y="258" text-anchor="middle" font-size="10.6" font-weight="700" fill="#7c3aed">work = mass × distance</text>
-  <text x="54" y="277" font-size="9.8" fill="#555">Many plans move the pile correctly. They cost</text>
-  <text x="54" y="291" font-size="9.8" fill="#555">different amounts. The Wasserstein distance is</text>
-  <text x="54" y="305" font-size="9.8" fill="#555">the cost of the <tspan font-style="italic">cheapest</tspan> one — an infimum.</text>
+  <rect x="40" y="238" width="336" height="76" rx="9" fill="rgba(124,58,237,0.05)" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.2"/>
+  <text x="208" y="258" text-anchor="middle" font-size="10.6" font-weight="700" fill="var(--fig-purple, #7c3aed)">work = mass × distance</text>
+  <text x="54" y="277" font-size="10.5" fill="var(--fig-ink-2, #555)">Many plans move the pile correctly. They cost</text>
+  <text x="54" y="291" font-size="10.5" fill="var(--fig-ink-2, #555)">different amounts. The Wasserstein distance is</text>
+  <text x="54" y="305" font-size="10.5" fill="var(--fig-ink-2, #555)">the cost of the <tspan font-style="italic">cheapest</tspan> one, an infimum.</text>
 
-  <rect x="392" y="238" width="336" height="76" rx="9" fill="rgba(14,116,144,0.05)" stroke="#0e7490" stroke-width="1.2"/>
-  <text x="560" y="258" text-anchor="middle" font-size="10.6" font-weight="700" fill="#0e7490">why this fixes the flat-gradient problem</text>
-  <text x="406" y="277" font-size="9.8" fill="#555">It never asks "do the piles overlap?" — only</text>
-  <text x="406" y="291" font-size="9.8" fill="#555">"how far must the dirt travel?". Slide the piles</text>
-  <text x="406" y="305" font-size="9.8" fill="#555">apart and the number grows smoothly, always.</text>
+  <rect x="392" y="238" width="336" height="76" rx="9" fill="rgba(14,116,144,0.05)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.2"/>
+  <text x="560" y="258" text-anchor="middle" font-size="10.6" font-weight="700" fill="var(--fig-teal, #0e7490)">why this fixes the flat-gradient problem</text>
+  <text x="406" y="277" font-size="10.5" fill="var(--fig-ink-2, #555)">It never asks "do the piles overlap?", only</text>
+  <text x="406" y="291" font-size="10.5" fill="var(--fig-ink-2, #555)">"how far must the dirt travel?". Slide the piles</text>
+  <text x="406" y="305" font-size="10.5" fill="var(--fig-ink-2, #555)">apart and the number grows smoothly, always.</text>
 </svg>

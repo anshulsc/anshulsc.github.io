@@ -4,12 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Chapter 6: Policy Gradient methods. REINFORCE, baselines, Advantage function, Actor-Critic, GAE, TRPO, and PPO algorithms.">
-    <meta name="keywords"
-        content="Policy Gradients, REINFORCE, Actor-Critic, GAE, TRPO, PPO, Reinforcement Learning, Direct Policy Optimization">
+    <meta name="description" content="Chapter 6: Policy Gradient methods. REINFORCE, baselines, Advantage function, Actor-Critic, GAE, TRPO, and PPO algorithms.">
     <meta name="author" content="Anshul Singh">
-    <title>Ch 6: Policy Gradients — RL Notes</title>
+    <title>Ch 6: Policy Gradients · RL Notes</title>
 
     <link rel="icon" type="image/png" href="../../images/favicon.png">
     <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
@@ -17,14 +14,13 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 
     <!-- Highlight.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
@@ -35,73 +31,38 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../research-style.css">
-    <link rel="stylesheet" href="rl-notes-style.css">
+    <link rel="stylesheet" href="../notes/plain.css">
 
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../../css/theme.css">
-  <script src="../../js/theme.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
 </head>
 
-<body>
-    <div class="reading-progress"></div>
-
+<body class="plain">
     <div class="container">
-        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
-        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
-            style="top:700px; left:-220px; width:160px;">
 
         <header class="site-header">
-            <p style="text-align:center">
-                [<a href="../../index.html">Home</a> /
-                <a href="../blog-index.html">Writing</a> /
-                <a href="index.html">RL Notes</a>]
-            </p>
+            [<a href="../../index.html">Home</a> /
+            <a href="../blog-index.html">Writing</a> /
+            <a href="index.html">RL notes</a> /
+            <span class="here">Policy Gradients: Optimizing the Policy Directly</span>]
         </header>
 
         <main>
-            <div class="chapter-header">
-                <div class="chapter-number">Chapter 6 of 7</div>
-                <h1>Policy Gradients — Optimizing the Policy Directly</h1>
-                <div class="chapter-meta">
-                    <span>June 2026</span>
-                    <span class="dot">●</span>
-                    <span id="reading-time">18 min read</span>
-                    <span class="dot">●</span>
-                    <span>Policy Optimization</span>
-                </div>
-            </div>
+            <h1>Policy Gradients: Optimizing the Policy Directly</h1>
 
-            <div class="content-layout">
-                <article class="chapter-content" id="content-target"></article>
-                <aside class="toc-sidebar">
-                    <div class="toc-inner">
-                        <div class="toc-title">On This Page</div>
-                        <ul class="toc-list"></ul>
-                    </div>
-                </aside>
-            </div>
-
-            <div class="chapter-nav">
-                <a href="ch-05.html" class="nav-prev">
-                    <div class="nav-label">← Previous Chapter</div>
-                    <div class="nav-title">Learning from Experience — MC, TD & Control</div>
-                </a>
-                <a href="ch-07.html" class="nav-next">
-                    <div class="nav-label">Next Chapter →</div>
-                    <div class="nav-title">RL Meets LLMs — PPO, GRPO & Reasoning</div>
-                </a>
-            </div>
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
         </main>
 
-        <footer style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
-            &copy; 2024 Anshul Singh
+        <footer class="site-footer">
+            &copy; 2026 Anshul Singh
         </footer>
     </div>
 
     <script id="raw-markdown" type="text/template">
-*Chapter 5 ended with function approximation: approximate $Q(s,a)$ with a neural network, then derive the policy via $\operatorname{argmax}$. But this indirect approach has a fundamental limitation — it requires a maximization step over actions, which breaks for continuous action spaces and can't represent stochastic policies naturally. The move to direct policy optimization is the single most important transition in this entire set of notes. Everything from here — REINFORCE, Actor-Critic, GAE, TRPO, PPO — flows from one idea: parameterize the policy $\pi_\theta$ and use gradient ascent to maximize expected return.*
+*Chapter 5 learned $Q(s,a)$ and recovered a policy from it by $\operatorname{argmax}$, which is intractable when actions are continuous and can only ever produce a deterministic policy. Parameterizing $\pi_\theta$ and running gradient ascent on expected return removes both, and REINFORCE, actor-critic, GAE, TRPO and PPO are all the same gradient with better estimates of the same quantity.*
 
 ---
 
@@ -259,7 +220,7 @@ $$\Delta\theta = \alpha \cdot G_t \cdot \frac{\nabla_\theta \pi(A_t|S_t,\theta)}
 ## 4. Baselines & the Advantage Function
 
 ### The Variance Problem
-REINFORCE is unbiased but has **high variance** — $G_t$ varies wildly between episodes, making convergence slow and noisy.
+REINFORCE is unbiased but has **high variance**, because $G_t$ varies wildly between episodes, which makes convergence slow and noisy.
 
 ### Subtracting a Baseline
 Subtract any action-independent baseline $b(s)$ from the return:
@@ -290,7 +251,7 @@ $$\theta_{t+1} = \theta_t + \alpha (G_t - \hat{v}(S_t, \mathbf{w})) \frac{\nabla
 ## 5. Actor-Critic: Online Policy Gradients
 
 ### The Remaining Problem
-REINFORCE (even with baseline) is a Monte Carlo method — needs complete episodes to compute $G_t$. Can't update mid-episode.
+REINFORCE, even with a baseline, is a Monte Carlo method. It needs a complete episode to compute $G_t$, so it cannot update mid-episode and cannot run on a task that never terminates.
 
 ### Solution: Replace $G_t$ with TD Target
 
@@ -377,16 +338,18 @@ Summing all these grouped terms together yields the final GAE estimator:
 $$\hat{A}_t^{GAE(\gamma,\lambda)} = \sum_{l=0}^{\infty} (\gamma\lambda)^l \delta_{t+l}$$
 
 ### The $\lambda$ Parameter
-* **$\lambda = 0$**: $\hat{A}_t = \delta_t$ — pure TD, high bias, low variance.
-* **$\lambda = 1$**: $\hat{A}_t = G_t - V(S_t)$ — pure MC, low bias, high variance.
-* **Practice**: $\lambda \in [0.95, 0.98]$ balances both. Used in PPO, GRPO.
+* **$\lambda = 0$**: $\hat{A}_t = \delta_t$, pure TD, high bias and low variance.
+* **$\lambda = 1$**: $\hat{A}_t = G_t - V(S_t)$, pure MC, low bias and high variance.
+* **Practice**: $\lambda \in [0.95, 0.98]$ balances both. Used in PPO and GRPO.
+
+Note that $\gamma$ and $\lambda$ both discount, and they are not the same knob. $\gamma$ defines the problem by saying what a future reward is worth, while $\lambda$ only tunes the estimator of an advantage the problem already fixed. Changing $\gamma$ changes the optimal policy; changing $\lambda$ does not.
 
 ---
 
 ## 7. TRPO: Trust Regions for Safe Updates
 
 ### The Problem with Vanilla Policy Gradients
-Standard gradient ascent can take destructively large steps — the policy changes so much in one update that it enters a bad region of parameter space and never recovers.
+Standard gradient ascent can take destructively large steps, changing the policy so much in one update that it lands in a bad region of parameter space and never recovers. Supervised learning tolerates a bad step because the next batch is drawn from the same fixed dataset. Here the policy generates its own future data, so a bad step also corrupts everything the agent will see next, and the damage compounds instead of washing out.
 
 ### Policy Performance Difference Identity
 For any two policies $\pi'$ and $\pi$:
@@ -573,8 +536,8 @@ $$\theta_{k+1} = \theta_k + \alpha^j \sqrt{\frac{2\delta}{g^T \mathbf{A}^{-1} g}
 
 ### The Computational Bottleneck
 $\mathbf{A}$ is $N \times N$ where $N$ = number of parameters. For modern neural networks:
-* Storing $\mathbf{A}$: $O(N^2)$ memory — prohibitive.
-* Computing $\mathbf{A}^{-1} g$: $O(N^3)$ — impractical.
+* Storing $\mathbf{A}$: $O(N^2)$ memory, which is prohibitive.
+* Computing $\mathbf{A}^{-1} g$: $O(N^3)$, which is impractical.
 * **Workaround**: Conjugate Gradient to approximate $\mathbf{A}^{-1} g$ without storing $\mathbf{A}$. Still complex.
 
 This bottleneck directly motivated PPO.
@@ -614,17 +577,12 @@ $$L^{CLIP}(\theta) = \mathbb{E}_t \left[ \min\left( r_t(\theta)\hat{A}_t, \; \op
 
 Why the complex $\min$ and $\operatorname{clip}$ formulation? Let's break it down into core intuitions:
 
-1. **The Ratio $r_t(\theta)$ is a Measure of Step Size**:
-   Instead of using raw log-probabilities like REINFORCE, PPO optimizes the ratio of the new policy's probability to the old policy's probability: $r_t(\theta) = \pi_\theta(A_t|S_t) / \pi_{\theta_{old}}(A_t|S_t)$.
-   * $r_t > 1$ means we are making the action *more* likely.
-   * $r_t < 1$ means we are making the action *less* likely.
-   
-2. **The "Pessimistic" $\min$ Operator acts as a Safety Limit**:
+1. **The "Pessimistic" $\min$ Operator acts as a Safety Limit**:
    By taking the minimum of the unclipped loss ($r_t \hat{A}_t$) and the clipped loss ($\operatorname{clip}(r_t, 1-\epsilon, 1+\epsilon) \hat{A}_t$), the objective establishes a conservative lower bound. It prevents the model from achieving a higher reward simply by making massive, unstable policy changes.
    
-3. **The Asymmetry of the Safety Net**:
+2. **The Asymmetry of the Safety Net**:
    * **For Good Actions ($\hat{A}_t > 0$)**: We want to make these actions more likely ($r_t > 1$). However, if we make them *too* likely (beyond $1+\epsilon$), the clipping kicks in. The gradient becomes zero, stopping further updates for this step. This prevents the policy from over-optimizing on a single batch of good data.
-   * **For Bad Actions ($\hat{A}_t < 0$)**: We want to make these actions less likely ($r_t < 1$). If the policy successfully decreases the probability below $1-\epsilon$, the gradient becomes zero — meaning we have suppressed it "enough" and don't need to waste gradients pushing it further.
+   * **For Bad Actions ($\hat{A}_t < 0$)**: We want to make these actions less likely ($r_t < 1$). If the policy successfully decreases the probability below $1-\epsilon$, the gradient becomes zero, meaning it has been suppressed enough and no more gradient need be spent on it.
    * **No Mercy for Mistaken Ascent**: If the policy accidentally makes a *bad* action more likely ($r_t > 1+\epsilon$), the clipped term is higher than the unclipped term (since clipping keeps it at $1+\epsilon$, but the unclipped goes to $1.5$ or higher, and multiplying by a negative advantage makes the unclipped value much more negative!). Due to the $\min$ operator, the model is forced to use the **unclipped, highly negative penalty**, pushing the policy back down aggressively.
 
 <div id="ppo-clipping-explorer"></div>
@@ -643,10 +601,7 @@ Why the complex $\min$ and $\operatorname{clip}$ formulation? Let's break it dow
 
 <figure><img src="assets/svg/ppo-clipping.svg?v=2" alt="PPO Clipping Loss Curves" style="max-width:550px;"><figcaption>Figure 6.2: PPO Clipped Surrogate Loss curves for Positive and Negative Advantages</figcaption></figure>
 
-*The PPO clipping graphs plot the surrogate loss $L^{CLIP}(\theta)$ as a function of the probability ratio $r_t(\theta)$ for two cases:
-1. **Advantage is positive ($A > 0$)**: The action is better than average. We want to make it more probable ($r_t > 1$). However, the loss is capped (clipped) at $1+\epsilon$ to prevent the policy from taking excessively large steps or becoming overconfident on this single sample.
-2. **Advantage is negative ($A < 0$)**: The action is worse than average. We want to make it less probable ($r_t < 1$). The loss is clipped at $1-\epsilon$ as $r_t$ decreases, but notice it is NOT clipped when $r_t > 1+\epsilon$ — meaning if the policy accidentally makes a bad action *more* probable, it faces a steep, unclipped penalty to force it back.
-The minimum operator in the PPO objective acts as a conservative bound, ensuring we only update the policy when it is safe to do so.*
+*The surrogate loss $L^{CLIP}(\theta)$ against the probability ratio $r_t(\theta)$, for positive and negative advantage. Three of the four directions flatten at the clip boundary; the fourth, a bad action made more probable, keeps falling. That single unflattened arm is the asymmetry described above, drawn.*
 
 ### Complete PPO Objective
 
@@ -656,7 +611,7 @@ $$L^{PPO}(\theta) = \mathbb{E}_t \left[ L^{CLIP}(\theta) - c_1 L^{VF}(\theta) + 
 |---|---|
 | $L^{CLIP}$ | Clipped policy gradient loss |
 | $L^{VF} = (V_\theta(S_t) - V_t^{target})^2$ | Value function accuracy |
-| $S[\pi_\theta](S_t)$ | Entropy bonus — encourages exploration |
+| $S[\pi_\theta](S_t)$ | Entropy bonus, encouraging exploration |
 
 ### PPO vs VPG vs TRPO
 
@@ -669,23 +624,11 @@ $$L^{PPO}(\theta) = \mathbb{E}_t \left[ L^{CLIP}(\theta) - c_1 L^{VF}(\theta) + 
 
 ---
 
-## Key Takeaways
 
-1. **Policy Gradient Theorem**: We can compute the gradient of expected return without knowing the state distribution's gradient.
-2. **REINFORCE**: Replace $q_\pi$ with sample return $G_t$ → model-free policy gradient.
-3. **Baselines**: Subtracting $v_\pi(s)$ introduces zero bias but massively reduces variance.
-4. **Actor-Critic**: Replace $G_t$ with TD target → online updates.
-5. **GAE**: Interpolate between TD and MC via $\lambda$ → tunable bias-variance.
-6. **TRPO**: Trust region constraint guarantees monotonic improvement, but requires second-order optimization.
-7. **PPO**: Clips the probability ratio → achieves TRPO's stability with first-order simplicity.
-
----
-
-*PPO gives us a stable, scalable policy optimizer. Now: how do we actually apply this to language models — where the "action" is a token, the "state" is a prompt, and the "reward" comes from a human or a verifier? → Chapter 7.*
+*So there is now a policy optimizer that is stable and cheap enough to run at scale. Chapter 7 points it at a language model, where an action is a token, a state is the prompt plus everything generated so far, and the reward arrives only at the end of the sequence from a human preference model or a verifier. Every one of those substitutions causes trouble, and GRPO is what falls out of fixing them.*
     </script>
 
     <script src="rl-notes.js"></script>
-    <script src="assets/interactive/ppo-clipping.js"></script>
 </body>
 
 </html>

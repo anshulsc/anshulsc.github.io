@@ -67,7 +67,7 @@
       '<div class="gate-box">' +
       '<img class="gate-mark" src="' + depth() + 'images/avatar.png" alt="">' +
       '<h1>These notes are locked</h1>' +
-      '<p>Course notes in progress — drop in the passphrase to read on.</p>' +
+      '<p>Course notes in progress. Drop in the passphrase to read on.</p>' +
       '<form><input type="password" autocomplete="current-password" ' +
       'placeholder="passphrase" aria-label="Passphrase" autofocus>' +
       '<button type="submit">Unlock</button></form>' +
@@ -88,7 +88,7 @@
       sha256(input.value).then(function (hex) {
         var ok = hex ? hex === HASH : input.value === 'knowledge';
         if (!ok) {
-          msg.textContent = 'Not quite — try again.';
+          msg.textContent = 'Not quite. Try again.';
           input.select();
           return;
         }

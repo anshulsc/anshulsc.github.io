@@ -4,10 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Lecture 3 notes: adversarial generative models — the generator as a noise-warping network, the f-divergence family, convex conjugates explained visually, and the variational bound that makes GANs trainable from samples alone.">
-    <meta name="keywords"
-        content="GAN, Adversarial Generative Models, f-Divergence, Convex Conjugate, Legendre-Fenchel, Variational Lower Bound, Discriminator, KL, Jensen-Shannon, Total Variation">
+    <meta name="description" content="Lecture 3 notes: adversarial generative models — the generator as a noise-warping network, the f-divergence family, convex conjugates explained visually, and the variational bound that makes GANs trainable from samples alone.">
     <meta name="author" content="Anshul Singh">
     <title>Lecture 3: Adversarial Models &amp; f-Divergences — DGM Notes</title>
 
@@ -17,9 +14,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
@@ -36,80 +31,40 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../research-style.css">
-    <link rel="stylesheet" href="dgm-notes-style.css">
+    <link rel="stylesheet" href="../notes/plain.css">
 
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../../css/theme.css">
-  <script src="../../js/theme.js"></script>
-  <!-- Passphrase gate for this notes series -->
-  <script src="../../js/gate.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
+    <!-- Passphrase gate for this notes series -->
+    <script src="../../js/gate.js"></script>
 </head>
 
-<body>
-    <div class="reading-progress"></div>
-
+<body class="plain">
     <div class="container">
-        <!-- Background Scribbles -->
-        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
-        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
-            style="top:600px; left:-220px; width:160px;">
 
         <header class="site-header">
-            <p style="text-align:center">
-                [<a href="../../index.html">Home</a> /
-                <a href="../blog-index.html">Writing</a> /
-                <a href="index.html">DGM Notes</a>]
-            </p>
+            [<a href="../../index.html">Home</a> /
+            <a href="../blog-index.html">Writing</a> /
+            <a href="index.html">DGM notes</a> /
+            <span class="here">Adversarial Models &amp; f-Divergences</span>]
         </header>
 
         <main>
-            <div class="chapter-header">
-                <div class="chapter-number">Lecture 3</div>
-                <h1>Adversarial Models &amp; f-Divergences</h1>
-                <div class="chapter-meta">
-                    <span>August 2026</span>
-                    <span class="dot">●</span>
-                    <span id="reading-time">22 min read</span>
-                    <span class="dot">●</span>
-                    <span>GANs</span>
-                </div>
-            </div>
+            <h1>Adversarial Models &amp; f-Divergences</h1>
 
-            <div class="content-layout">
-                <article class="chapter-content" id="content-target">
-                    <!-- Rendered markdown goes here -->
-                </article>
-
-                <aside class="toc-sidebar">
-                    <div class="toc-inner">
-                        <div class="toc-title">On This Page</div>
-                        <ul class="toc-list"></ul>
-                    </div>
-                </aside>
-            </div>
-
-            <div class="chapter-nav">
-                <a href="ch-02.html" class="nav-prev">
-                    <div class="nav-label">← Previous Lecture</div>
-                    <div class="nav-title">Prediction, Sampling &amp; Divergence Minimization</div>
-                </a>
-                <a href="ch-04.html" class="nav-next">
-                    <div class="nav-label">Next Lecture →</div>
-                    <div class="nav-title">From f-Divergences to a Trainable GAN</div>
-                </a>
-            </div>
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
         </main>
 
-        <footer
-            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+        <footer class="site-footer">
             &copy; 2026 Anshul Singh
         </footer>
     </div>
 
     <script id="raw-markdown" type="text/template">
-*My notes from the third lecture. This is where the course stopped being "probability review" and became genuinely new for me — especially the convex-analysis machinery (conjugates, suprema, variational bounds), which I'd never touched before. So these notes are deliberately slow on exactly those parts: every derivation step gets a plain-words version first, and the key geometric ideas have interactive demos. The destination is worth it: by the end, we can estimate the distance between two distributions using nothing but samples — which is the mathematical heart of every GAN.*
+*My notes from the third lecture, where things stopped being "probability review" and became genuinely new for me — conjugates, suprema, variational bounds. It is deliberately slow on exactly those parts, and the destination is worth it: by the end we can estimate the distance between two distributions from samples alone, which is the mathematical heart of every GAN.*
 
 ---
 
@@ -171,7 +126,7 @@ One design freedom worth noting: the **final layer's activation** is your choice
 
 ### Unconditional means *no steering wheel*
 
-Important expectation-setting: this setup is **unconditional** generation. There is no text prompt, no class label. Feed noise in, get a realistic-but-random sample out — you don't control *which* one. Wanting "a cup on a table" from a text description is **conditional** generation ($p(x \mid y)$, later in the course).
+Important expectation-setting: this setup is **unconditional** generation. There is no text prompt, no class label. Feed noise in, get a realistic-but-random sample out — you don't control *which* one. Wanting "a cup on a table" from a text description is **conditional** generation ($p(x \mid y)$, later in these notes).
 
 The cleanest real-world demo: [thispersondoesnotexist.com](https://thispersondoesnotexist.com). Every refresh draws a fresh $z \sim \mathcal{N}(0, I)$, pushes it through a big pre-trained $g_\theta$, and shows you a photorealistic human who has never existed. No prompt — just noise mapped onto the learned manifold of faces.
 

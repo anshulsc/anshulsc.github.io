@@ -1,35 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="Inter, -apple-system, sans-serif">
   <defs>
     <marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/>
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-teal, #0e7490)"/>
     </marker>
   </defs>
 
   <!-- Data -->
-  <rect x="255" y="25" width="250" height="52" rx="10" fill="rgba(14,116,144,0.06)" stroke="#0e7490" stroke-width="1.5"/>
-  <text x="380" y="47" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0e7490">DATASET D (finite samples)</text>
-  <text x="380" y="66" text-anchor="middle" font-size="11" fill="#555">drawn i.i.d. from an unknown distribution</text>
+  <rect x="255" y="25" width="250" height="52" rx="10" fill="rgba(14,116,144,0.06)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5"/>
+  <text x="380" y="47" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-teal, #0e7490)">DATASET D (finite samples)</text>
+  <text x="380" y="66" text-anchor="middle" font-size="11" fill="var(--fig-ink-2, #555)">drawn i.i.d. from an unknown distribution</text>
 
-  <path d="M 330 77 L 205 118" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#arr4)"/>
-  <path d="M 430 77 L 555 118" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#arr4)"/>
+  <path d="M 330 77 L 205 118" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5" fill="none" marker-end="url(#arr4)"/>
+  <path d="M 430 77 L 555 118" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5" fill="none" marker-end="url(#arr4)"/>
 
   <!-- Discriminative -->
-  <rect x="40" y="125" width="330" height="150" rx="12" fill="#fff" stroke="#0e7490" stroke-width="1.5"/>
-  <text x="205" y="152" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0e7490">DISCRIMINATIVE / SUPERVISED</text>
-  <line x1="60" y1="164" x2="350" y2="164" stroke="#eee"/>
-  <text x="60" y="188" font-size="11.5" fill="#444">• Data: pairs (xᵢ, yᵢ) ~ P&#8339;&#7466;</text>
-  <text x="60" y="210" font-size="11.5" fill="#444">• Goal: conditional density p(y | x)</text>
-  <text x="60" y="232" font-size="11.5" fill="#444">• Output: classify (y discrete) / regress (y ∈ ℝ)</text>
-  <text x="60" y="254" font-size="11.5" font-weight="600" fill="#0e7490">• Deliverable: PREDICTION</text>
+  <rect x="40" y="125" width="330" height="150" rx="12" fill="var(--fig-paper, #fff)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5"/>
+  <text x="205" y="152" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-teal, #0e7490)">DISCRIMINATIVE / SUPERVISED</text>
+  <line x1="60" y1="164" x2="350" y2="164" stroke="var(--fig-wash, #eee)"/>
+  <text x="60" y="188" font-size="11.5" fill="var(--fig-ink-2, #444)">• Data: pairs (xᵢ, yᵢ) ~ P&#8339;&#7466;</text>
+  <text x="60" y="210" font-size="11.5" fill="var(--fig-ink-2, #444)">• Goal: conditional density p(y | x)</text>
+  <text x="60" y="232" font-size="11.5" fill="var(--fig-ink-2, #444)">• Output: classify (y discrete) / regress (y ∈ ℝ)</text>
+  <text x="60" y="254" font-size="11.5" font-weight="600" fill="var(--fig-teal, #0e7490)">• Deliverable: PREDICTION</text>
 
   <!-- Generative -->
-  <rect x="390" y="125" width="330" height="150" rx="12" fill="#fff" stroke="#0e7490" stroke-width="1.5"/>
-  <text x="555" y="152" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0e7490">GENERATIVE / UNSUPERVISED</text>
-  <line x1="410" y1="164" x2="700" y2="164" stroke="#eee"/>
-  <text x="410" y="188" font-size="11.5" fill="#444">• Data: singletons {xᵢ} ~ P&#8339; (no labels)</text>
-  <text x="410" y="210" font-size="11.5" fill="#444">• Goal: marginal density p&#8339;(x)</text>
-  <text x="410" y="232" font-size="11.5" fill="#444">• Output: a mechanism to draw new samples</text>
-  <text x="410" y="254" font-size="11.5" font-weight="600" fill="#0e7490">• Deliverable: SAMPLING</text>
+  <rect x="390" y="125" width="330" height="150" rx="12" fill="var(--fig-paper, #fff)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5"/>
+  <text x="555" y="152" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-teal, #0e7490)">GENERATIVE / UNSUPERVISED</text>
+  <line x1="410" y1="164" x2="700" y2="164" stroke="var(--fig-wash, #eee)"/>
+  <text x="410" y="188" font-size="11.5" fill="var(--fig-ink-2, #444)">• Data: singletons {xᵢ} ~ P&#8339; (no labels)</text>
+  <text x="410" y="210" font-size="11.5" fill="var(--fig-ink-2, #444)">• Goal: marginal density p&#8339;(x)</text>
+  <text x="410" y="232" font-size="11.5" fill="var(--fig-ink-2, #444)">• Output: a mechanism to draw new samples</text>
+  <text x="410" y="254" font-size="11.5" font-weight="600" fill="var(--fig-teal, #0e7490)">• Deliverable: SAMPLING</text>
 
-  <text x="380" y="308" text-anchor="middle" font-size="11.5" fill="#666">Both paths solve the same underlying problem: estimating an unknown density from finite observations.</text>
+  <text x="380" y="308" text-anchor="middle" font-size="11.5" fill="var(--fig-muted, #666)">Both paths solve the same underlying problem: estimating an unknown density from finite observations.</text>
 </svg>

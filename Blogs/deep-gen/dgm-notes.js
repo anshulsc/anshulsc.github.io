@@ -24,16 +24,15 @@
     }
 
     // ── Table of Contents Generation ──
-    function initTOC() {
-        const content = document.querySelector('.chapter-content');
-        const tocList = document.querySelector('.toc-list');
-        if (!content || !tocList) return;
+    // ── Section anchors ──
+    // Split out of initTOC on purpose: the plain pages have no sidebar, and
+    // these ids are what every "§10" / "Ch.9, §10" cross-reference targets.
+    // Tying them to the presence of a TOC list silently broke every such link.
+    function initSectionAnchors() {
+        var content = document.querySelector('.chapter-content');
+        if (!content) return;
 
-        const headings = content.querySelectorAll('h2');
-        if (headings.length === 0) return;
-
-        headings.forEach(function (h, i) {
-            // Ensure heading has an ID
+        content.querySelectorAll('h2').forEach(function (h, i) {
             if (!h.id) {
                 h.id = 'section-' + i;
             }
@@ -45,7 +44,18 @@
                 anchor.style.cssText = 'position:absolute';
                 h.insertBefore(anchor, h.firstChild);
             }
+        });
+    }
 
+    function initTOC() {
+        const content = document.querySelector('.chapter-content');
+        const tocList = document.querySelector('.toc-list');
+        if (!content || !tocList) return;
+
+        const headings = content.querySelectorAll('h2');
+        if (headings.length === 0) return;
+
+        headings.forEach(function (h, i) {
             var li = document.createElement('li');
             var a = document.createElement('a');
             a.href = '#' + h.id;
@@ -404,9 +414,42 @@
         });
     }
 
+
+    // ── Inline the figure SVGs ──
+    // Swapping <img src="x.svg"> for the SVG markup itself puts the figure
+    // inside the page's stylesheet, so the --fig-* tokens in plain.css reach
+    // it and the drawing follows the light/dark theme. The SVGs keep their
+    // original colours as var() fallbacks, so if this never runs (file://,
+    // fetch blocked, JS off) the <img> simply stays where it is.
+    function inlineFigureSVGs() {
+        var imgs = document.querySelectorAll('figure img[src$=".svg"], figure img[src*=".svg?"]');
+        Array.prototype.forEach.call(imgs, function (img) {
+            var src = img.getAttribute('src');
+            fetch(src).then(function (r) {
+                return r.ok ? r.text() : null;
+            }).then(function (txt) {
+                if (!txt) return;
+                var doc = new DOMParser().parseFromString(txt, 'image/svg+xml');
+                if (doc.querySelector('parsererror')) return;
+                var svg = doc.querySelector('svg');
+                if (!svg) return;
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                var st = img.getAttribute('style');
+                if (st) svg.setAttribute('style', st);
+                if (img.alt) {
+                    svg.setAttribute('role', 'img');
+                    svg.setAttribute('aria-label', img.alt);
+                }
+                if (img.parentNode) img.parentNode.replaceChild(svg, img);
+            }).catch(function () { /* leave the <img> in place */ });
+        });
+    }
+
     // ── Initialize Everything ──
     function init() {
         renderMarkdown();
+        inlineFigureSVGs();
         calcReadingTime();
 
         // Highlight code blocks
@@ -419,6 +462,7 @@
 
         // Interactive features
         initProgressBar();
+        initSectionAnchors();
         initTOC();
         initCopyButtons();
         initRefPreviews();

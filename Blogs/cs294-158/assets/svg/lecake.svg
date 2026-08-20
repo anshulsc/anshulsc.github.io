@@ -1,39 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="Inter, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 0 776 400" font-family="Inter, -apple-system, sans-serif">
   <defs>
     <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 1 L 9 5 L 0 9 z" fill="#6b6b6b"/>
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-muted, #6b6b6b)"/>
     </marker>
   </defs>
 
-  <text x="380" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="#333">How much does one sample tell you?</text>
+  <text x="380" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fig-ink, #333)">How much does one sample tell you?</text>
 
   <!-- cherry -->
-  <circle cx="250" cy="74" r="13" fill="#c0392b"/>
-  <path d="M 250 61 C 254 48, 268 44, 274 42" stroke="#2f7a3f" stroke-width="2.2" fill="none"/>
-  <text x="300" y="72" font-size="12.5" font-weight="700" fill="#c0392b">Reinforcement learning</text>
-  <text x="300" y="89" font-size="11" fill="#666">a few bits per episode — a scalar reward, now and then</text>
+  <circle cx="250" cy="74" r="13" fill="var(--fig-red, #c0392b)"/>
+  <path d="M 250 61 C 254 48, 268 44, 274 42" stroke="var(--fig-green, #2f7a3f)" stroke-width="2.2" fill="none"/>
+  <text x="300" y="72" font-size="12.5" font-weight="700" fill="var(--fig-red, #c0392b)">Reinforcement learning</text>
+  <text x="300" y="89" font-size="11" fill="var(--fig-muted, #666)">a few bits per episode, a scalar reward, now and then</text>
 
   <!-- icing -->
-  <path d="M 120 118 h 260 a 12 12 0 0 1 0 24 h -260 a 12 12 0 0 1 0 -24 z" fill="#b5761a" opacity="0.92"/>
-  <text x="440" y="128" font-size="12.5" font-weight="700" fill="#8a5a12">Supervised learning</text>
-  <text x="440" y="145" font-size="11" fill="#666">10 to 10⁴ bits per sample — a 1000-way label is ~10 bits</text>
+  <path d="M 120 118 h 260 a 12 12 0 0 1 0 24 h -260 a 12 12 0 0 1 0 -24 z" fill="var(--fig-amber-2, #b5761a)" opacity="0.92"/>
+  <text x="440" y="128" font-size="12.5" font-weight="700" fill="var(--fig-amber-2, #8a5a12)">Supervised learning</text>
+  <text x="440" y="145" font-size="11" fill="var(--fig-muted, #666)">10 to 10⁴ bits per sample, a 1000-way label is ~10 bits</text>
 
   <!-- cake body -->
-  <rect x="120" y="150" width="260" height="185" rx="10" fill="#1a4f7a" opacity="0.10" stroke="#1a4f7a" stroke-width="1.6"/>
-  <line x1="120" y1="212" x2="380" y2="212" stroke="#1a4f7a" stroke-width="0.9" opacity="0.35"/>
-  <line x1="120" y1="274" x2="380" y2="274" stroke="#1a4f7a" stroke-width="0.9" opacity="0.35"/>
-  <text x="250" y="232" text-anchor="middle" font-size="14" font-weight="700" fill="#1a4f7a">Unsupervised /</text>
-  <text x="250" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#1a4f7a">predictive learning</text>
-  <text x="440" y="232" font-size="12.5" font-weight="700" fill="#1a4f7a">The bulk of it</text>
-  <text x="440" y="249" font-size="11" fill="#666">millions of bits per sample — predict the masked patch,</text>
-  <text x="440" y="264" font-size="11" fill="#666">the next second of video, the next word</text>
+  <rect x="120" y="150" width="260" height="185" rx="10" fill="var(--fig-blue, #1a4f7a)" opacity="0.10" stroke="var(--fig-blue, #1a4f7a)" stroke-width="1.6"/>
+  <line x1="120" y1="212" x2="380" y2="212" stroke="var(--fig-blue, #1a4f7a)" stroke-width="0.9" opacity="0.35"/>
+  <line x1="120" y1="274" x2="380" y2="274" stroke="var(--fig-blue, #1a4f7a)" stroke-width="0.9" opacity="0.35"/>
+  <text x="250" y="232" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fig-blue, #1a4f7a)">Unsupervised /</text>
+  <text x="250" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fig-blue, #1a4f7a)">predictive learning</text>
+  <text x="440" y="232" font-size="12.5" font-weight="700" fill="var(--fig-blue, #1a4f7a)">The bulk of it</text>
+  <text x="440" y="249" font-size="11" fill="var(--fig-muted, #666)">millions of bits per sample, predict the masked patch,</text>
+  <text x="440" y="264" font-size="11" fill="var(--fig-muted, #666)">the next second of video, the next word</text>
 
   <!-- plate -->
-  <path d="M 96 335 h 308 a 10 10 0 0 1 -10 12 h -288 a 10 10 0 0 1 -10 -12 z" fill="#ddd"/>
+  <path d="M 96 335 h 308 a 10 10 0 0 1 -10 12 h -288 a 10 10 0 0 1 -10 -12 z" fill="var(--fig-line, #ddd)"/>
 
   <!-- scale bar -->
-  <line x1="70" y1="74" x2="70" y2="335" stroke="#6b6b6b" stroke-width="1.2" marker-end="url(#ar)" marker-start="url(#ar)"/>
-  <text x="52" y="215" text-anchor="middle" font-size="11" fill="#666" transform="rotate(-90 52 215)">information per sample</text>
+  <line x1="70" y1="74" x2="70" y2="335" stroke="var(--fig-muted, #6b6b6b)" stroke-width="1.2" marker-end="url(#ar)" marker-start="url(#ar)"/>
+  <text x="52" y="215" text-anchor="middle" font-size="11" fill="var(--fig-muted, #666)" transform="rotate(-90 52 215)">information per sample</text>
 
-  <text x="380" y="378" text-anchor="middle" font-size="11" fill="#888">The five-or-six orders of magnitude between the layers is the same gap the brain calculation gives.</text>
+  <text x="380" y="378" text-anchor="middle" font-size="11" fill="var(--fig-muted-2, #888)">The five-or-six orders of magnitude between the layers is the same gap the brain calculation gives.</text>
 </svg>

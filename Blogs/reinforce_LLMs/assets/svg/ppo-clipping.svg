@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="100%" height="100%">
   <style>
-    .axis { stroke: #cccccc; stroke-width: 1.5; }
-    .grid { stroke: #eeeeee; stroke-width: 1; stroke-dasharray: 2,2; }
-    .curve { fill: none; stroke: #6e46be; stroke-width: 3; }
-    .clipped-curve { fill: none; stroke: #a3a3a3; stroke-width: 2.5; stroke-dasharray: 4,4; }
-    .text-main { font-family: 'Inter', system-ui, sans-serif; font-size: 12px; fill: #111111; font-weight: 600; }
-    .text-sub { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; fill: #666666; }
-    .text-title { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; fill: #111111; font-weight: 600; }
+    .axis { stroke: var(--fig-line, #cccccc); stroke-width: 1.5; }
+    .grid { stroke: var(--fig-wash, #eeeeee); stroke-width: 1; stroke-dasharray: 2,2; }
+    .curve { fill: none; stroke: var(--fig-purple, #6e46be); stroke-width: 3; }
+    .clipped-curve { fill: none; stroke: var(--fig-faint, #a3a3a3); stroke-width: 2.5; stroke-dasharray: 4,4; }
+    .text-main { font-family: 'Inter', system-ui, sans-serif; font-size: 12px; fill: var(--fig-ink, #111111); font-weight: 600; }
+    .text-sub { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; fill: var(--fig-muted, #666666); }
+    .text-title { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; fill: var(--fig-ink, #111111); font-weight: 600; }
   </style>
 
   <!-- Title/Labels -->
@@ -33,8 +33,8 @@
   <!-- Labels -->
   <text x="250" y="235" text-anchor="end" class="text-sub">ratio r_t</text>
   <text x="55" y="70" text-anchor="start" class="text-sub">Surrogate Loss</text>
-  <text x="150" y="235" text-anchor="middle" class="text-sub">1.0</text>
-  <text x="190" y="235" text-anchor="middle" class="text-sub">1+ε</text>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="150" y="235" text-anchor="middle" class="text-sub">1.0</text>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="190" y="235" text-anchor="middle" class="text-sub">1+ε</text>
   <text x="40" y="145" text-anchor="end" class="text-sub">(1+ε)A</text>
 
   <!-- ================= RIGHT GRAPH (A < 0) ================= -->
@@ -57,8 +57,8 @@
 
   <!-- Labels -->
   <text x="550" y="155" text-anchor="end" class="text-sub">ratio r_t</text>
-  <text x="355" y="70" text-anchor="start" class="text-sub">Surrogate Loss</text>
-  <text x="450" y="155" text-anchor="middle" class="text-sub">1.0</text>
-  <text x="410" y="155" text-anchor="middle" class="text-sub">1-ε</text>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="355" y="70" text-anchor="start" class="text-sub">Surrogate Loss</text>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="450" y="155" text-anchor="middle" class="text-sub">1.0</text>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="410" y="155" text-anchor="middle" class="text-sub">1-ε</text>
   <text x="340" y="185" text-anchor="end" class="text-sub">(1-ε)A</text>
 </svg>

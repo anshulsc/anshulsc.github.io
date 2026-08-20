@@ -4,12 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Chapter 3: Markov Decision Processes (MDPs), state-value and action-value functions, and the derivation of the Bellman and Bellman optimality equations.">
-    <meta name="keywords"
-        content="Markov Decision Process, MDP, Bellman Equation, Bellman Optimality, Value Functions, State-Value, Action-Value, Reinforcement Learning">
+    <meta name="description" content="Chapter 3: Markov Decision Processes (MDPs), state-value and action-value functions, and the derivation of the Bellman and Bellman optimality equations.">
     <meta name="author" content="Anshul Singh">
-    <title>Ch 3: MDPs, Value Functions & Bellman Equations — RL Notes</title>
+    <title>Ch 3: MDPs, Value Functions & Bellman Equations · RL Notes</title>
 
     <link rel="icon" type="image/png" href="../../images/favicon.png">
     <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
@@ -17,14 +14,13 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 
     <!-- Highlight.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
@@ -35,73 +31,38 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../research-style.css">
-    <link rel="stylesheet" href="rl-notes-style.css">
+    <link rel="stylesheet" href="../notes/plain.css">
 
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../../css/theme.css">
-  <script src="../../js/theme.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
 </head>
 
-<body>
-    <div class="reading-progress"></div>
-
+<body class="plain">
     <div class="container">
-        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
-        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
-            style="top:700px; left:-220px; width:160px;">
 
         <header class="site-header">
-            <p style="text-align:center">
-                [<a href="../../index.html">Home</a> /
-                <a href="../blog-index.html">Writing</a> /
-                <a href="index.html">RL Notes</a>]
-            </p>
+            [<a href="../../index.html">Home</a> /
+            <a href="../blog-index.html">Writing</a> /
+            <a href="index.html">RL notes</a> /
+            <span class="here">MDPs, Value Functions & Bellman Equations</span>]
         </header>
 
         <main>
-            <div class="chapter-header">
-                <div class="chapter-number">Chapter 3 of 7</div>
-                <h1>MDPs, Value Functions & Bellman Equations</h1>
-                <div class="chapter-meta">
-                    <span>June 2026</span>
-                    <span class="dot">●</span>
-                    <span id="reading-time">15 min read</span>
-                    <span class="dot">●</span>
-                    <span>Foundations</span>
-                </div>
-            </div>
+            <h1>MDPs, Value Functions & Bellman Equations</h1>
 
-            <div class="content-layout">
-                <article class="chapter-content" id="content-target"></article>
-                <aside class="toc-sidebar">
-                    <div class="toc-inner">
-                        <div class="toc-title">On This Page</div>
-                        <ul class="toc-list"></ul>
-                    </div>
-                </aside>
-            </div>
-
-            <div class="chapter-nav">
-                <a href="ch-02.html" class="nav-prev">
-                    <div class="nav-label">← Previous Chapter</div>
-                    <div class="nav-title">Bandits & The Exploration Problem</div>
-                </a>
-                <a href="ch-04.html" class="nav-next">
-                    <div class="nav-label">Next Chapter →</div>
-                    <div class="nav-title">Dynamic Programming — When You Know the World</div>
-                </a>
-            </div>
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
         </main>
 
-        <footer style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
-            &copy; 2024 Anshul Singh
+        <footer class="site-footer">
+            &copy; 2026 Anshul Singh
         </footer>
     </div>
 
     <script id="raw-markdown" type="text/template">
-*Bandits (Chapter 2) isolated the exploration-exploitation tradeoff in a single-state setting. Now we bring in the full picture: multiple states, state transitions, and the need to plan ahead. The Markov Decision Process (MDP) is the formal mathematical framework that captures all of this. By the end of this chapter, we'll have the Bellman equations — the recursive relationships that define what "optimal" means, and that every algorithm in Chapters 4–7 tries to solve or approximate.*
+*Chapter 2 isolated the exploration tradeoff by removing everything else; this chapter puts it all back — multiple states, transitions between them, and actions whose consequences arrive later. The Markov Decision Process holds those pieces, and the Bellman equations at the end define what "optimal" actually means, which Chapters 4 to 7 spend their time approximating.*
 
 ---
 
@@ -130,6 +91,8 @@ At discrete time steps $t = 0, 1, 2, 3, \dots$:
 2. **Action Selection** ($A_t$): Based on $S_t$, agent selects $A_t \in \mathcal{A}(s)$.
 3. **Transition and Reward** ($S_{t+1}, R_{t+1}$): Environment transitions to $S_{t+1} \in \mathcal{S}$ and sends reward $R_{t+1} \in \mathcal{R} \subset \mathbb{R}$.
 
+Note the index on the reward. It is $R_{t+1}$, not $R_t$, because the reward arrives with the next state rather than alongside the action that earned it. The convention trips people up constantly and it matters when reading any of the sums below.
+
 ### Notation
 * **Capital Letters** ($S_t, A_t, R_t$): Random variables at time $t$.
 * **Lowercase Letters** ($s, a, r$): Specific values/realizations (e.g., $s \in \mathcal{S}$).
@@ -138,12 +101,12 @@ At discrete time steps $t = 0, 1, 2, 3, \dots$:
 
 ## 2. The Agent's Policy ($\pi$)
 
-The policy formalizes the agent's decision-making strategy — a mapping from states to action probabilities:
+The policy formalizes the agent's decision-making strategy as a mapping from states to action probabilities:
 
 $$\pi_t(a \mid s) = \mathbb{P}(A_t = a \mid S_t = s)$$
 
 * If stationary (doesn't change over time): simply $\pi(a \mid s)$.
-* Can be deterministic (maps state → single action) or stochastic (maps state → probability distribution over actions).
+* Can be deterministic (maps state to a single action) or stochastic (maps state to a probability distribution over actions).
 
 ---
 
@@ -155,23 +118,27 @@ $$\pi_t(a \mid s) = \mathbb{P}(A_t = a \mid S_t = s)$$
 ### Formulating Goals Correctly
 Rewards must encode **what** to achieve, not **how** to achieve it.
 
-* **Bad (Chess)**: Reward $+1$ for capturing opponent's queen → agent may sacrifice the game to capture a queen.
-* **Good (Chess)**: Reward $+1$ for winning, $-1$ for losing, $0$ for draw → forces alignment with the actual objective.
+* **Bad (Chess)**: Reward $+1$ for capturing the opponent's queen. The agent may sacrifice the game to capture a queen.
+* **Good (Chess)**: Reward $+1$ for winning, $-1$ for losing, $0$ for a draw, which forces alignment with the actual objective.
+
+The failure mode in the bad version is worth naming, because it comes back at the very end of these notes. Reward a proxy for the goal and you get a policy that maximizes the proxy. Ch.7, §4 is the same problem wearing a different hat, where the proxy is a learned reward model and the agent finds its blind spots.
 
 ---
 
 ## 4. Returns ($G_t$)
 
-The agent's objective: maximize **cumulative** reward, not immediate reward. This cumulative measure = the **Return**.
+The agent's objective is to maximize **cumulative** reward rather than immediate reward. That cumulative measure is the **Return**.
 
 ### Episodic Tasks
-Interaction breaks into self-contained episodes ending at terminal state at time $T$:
+Interaction breaks into self-contained episodes ending at a terminal state at time $T$:
 $$G_t = R_{t+1} + R_{t+2} + R_{t+3} + \dots + R_T$$
 
 ### Continuing Tasks (Discounting)
-If the task runs forever ($T = \infty$), the return could diverge. Fix: introduce a **discount rate** $\gamma \in [0, 1)$:
+If the task runs forever ($T = \infty$), the return could diverge. The fix is a **discount rate** $\gamma \in [0, 1)$:
 
 $$G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \dots = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$$
+
+Discounting is doing two jobs at once here, and only one of them is philosophical. It keeps the sum finite, which is a mathematical necessity, and it expresses a preference for sooner rewards, which is a modelling choice. Most of the time the first job is the real reason.
 
 #### Intuitive Analogy
 ₹100 today is worth more than ₹100 five years from now (inflation). Similarly:
@@ -179,14 +146,14 @@ $$G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \dots = \sum_{k=0}^{\infty
 * Future rewards: scaled down exponentially ($\gamma^k R_{t+k+1}$)
 
 #### The Role of $\gamma$
-* **$\gamma = 0$ (Myopic)**: Only cares about immediate reward $R_{t+1}$. Ignores future.
-* **$\gamma \to 1$ (Far-Sighted)**: Values future rewards almost as much as immediate ones → encourages long-term planning.
+* **$\gamma = 0$ (Myopic)**: Only cares about immediate reward $R_{t+1}$. Ignores the future entirely.
+* **$\gamma \to 1$ (Far-Sighted)**: Values future rewards almost as much as immediate ones, which encourages long-term planning.
 
 ---
 
 ## 5. The Markov Property
 
-A state signal $S_t$ has the **Markov Property** if the current state contains all information needed to predict the future — the history of how the agent arrived is irrelevant.
+A state signal $S_t$ has the **Markov Property** if the current state contains everything needed to predict the future. How the agent got there is irrelevant.
 
 ### Mathematical Formulation
 $$\mathbb{P}(R_{t+1} = r, S_{t+1} = s' \mid S_t = s, A_t = a) = \mathbb{P}(R_{t+1} = r, S_{t+1} = s' \mid S_t, A_t, R_t, S_{t-1}, \dots, S_0, A_0)$$
@@ -202,16 +169,18 @@ The current state and action are **sufficient** to describe transition dynamics.
 | **Conversations** | Last spoken sentence | **No** | Need entire conversation context for a coherent response. |
 | **Draw Poker** | Cards in your hand | **No** | Need history of bets, discards, bluffing patterns. |
 
+The two failures in that table are both repairable, and the repair is always the same: fold the missing history into the state. A conversation becomes Markovian if the state is the whole transcript rather than the last sentence, which is exactly the move Ch.7, §1 makes when it treats a growing token sequence as the state.
+
 ---
 
 ## 6. Finite Markov Decision Processes
 
-An RL task with the Markov property = **Markov Decision Process (MDP)**. If state, action, and reward spaces are finite = **Finite MDP**.
+An RL task with the Markov property is a **Markov Decision Process (MDP)**. If the state, action and reward spaces are all finite it is a **Finite MDP**.
 
 The dynamics are governed by:
 $$p(s', r \mid s, a) = \mathbb{P}(S_{t+1} = s', R_{t+1} = r \mid S_t = s, A_t = a)$$
 
-From this single function, we derive:
+Everything else in this chapter is derived from that one function, which is worth appreciating. Four numbers describe the entire world.
 
 ### State-Transition Probabilities
 $$p(s' \mid s, a) = \sum_{r \in \mathcal{R}} p(s', r \mid s, a)$$
@@ -236,12 +205,14 @@ $$r(s, a, s') = \mathbb{E}[R_{t+1} \mid S_t = s, A_t = a, S_{t+1} = s'] = \sum_{
 * **Action**: Voltages applied to motors ($V_1, V_2$)
 * **Reward**: $+1$ per successful pick-and-place, $-0.02$ for jerky movements
 
+Note that the second reward term is a *how*, not a *what*, which §3 just warned against. It is there because the *what* alone admits solutions that shake the arm to pieces, and this is the usual honest compromise rather than a violation of the rule.
+
 ### Case Study 3: Recycling Robot (Finite MDP)
 An autonomous can-collecting robot with battery states {High, Low}:
 
 <figure><img src="assets/svg/recycling-robot.svg?v=2" alt="Recycling Robot State Transitions" style="max-width:550px;"><figcaption>Figure 3.1: Recycling Robot Finite MDP State Transition Diagram</figcaption></figure>
 
-*The state transition diagram for the recycling robot models its two energy levels as states (HIGH, LOW) and choices as actions (Search, Wait, Recharge), showing transition probabilities and immediate rewards.*
+*The state transition diagram models the robot's two energy levels as states (HIGH, LOW) and its choices as actions (Search, Wait, Recharge), with transition probabilities and immediate rewards on the arrows.*
 
 #### Full Transition Table
 
@@ -255,15 +226,15 @@ An autonomous can-collecting robot with battery states {High, Low}:
 | low | wait | low | $1$ | $r_{\text{wait}}$ |
 | low | recharge | high | $1$ | $0$ |
 
+The $-3$ on the rescue row is the only negative number in the table, and it is what makes the problem interesting. Without it, searching on a low battery is free and the optimal policy is trivial.
+
 ### Case Study 4: Cart-Pole
-* **As Episodic Task**: Episode ends when $|\theta| > 15^\circ$ or $|p| > 2.4\text{m}$. Reward $+1$ per step balanced. Return = total steps of success.
-* **As Continuing Task**: $R = -1$ on failure, $0$ otherwise. Discounted return penalizes future failures.
+* **As Episodic Task**: Episode ends when $|\theta| > 15^\circ$ or $|p| > 2.4\text{m}$. Reward $+1$ per step balanced, so the return is the number of steps survived.
+* **As Continuing Task**: $R = -1$ on failure, $0$ otherwise. The discounted return penalizes failures that arrive sooner more heavily than distant ones.
 
 ---
 
 ## 8. The State-Value Function $v_\pi(s)$
-
-Now we get to the heart of RL: **value functions**. Unlike immediate reward (short-term), value estimates the long-term cumulative reward. An agent may accept a negative immediate reward if it leads to a high-value state.
 
 The **state-value function** under policy $\pi$:
 
@@ -271,7 +242,8 @@ $$v_\pi(s) = \mathbb{E}_\pi [G_t \mid S_t = s] = \mathbb{E}_\pi \left[ \sum_{k=0
 
 * $v_\pi(s)$: Expected return starting from state $s$, following policy $\pi$ thereafter.
 * $\mathbb{E}_\pi[\cdot]$: Expectation under policy $\pi$.
-* $\gamma$: Discount rate — reward $k$ steps in the future is worth $\gamma^k$ times its immediate value.
+
+The subscript on the expectation is the part to hold onto. A value is never a property of a state alone, only of a state *and a policy*, and the same state has different values under different policies. Ch.4 spends its whole length exploiting that fact.
 
 ---
 
@@ -283,20 +255,20 @@ $$q_\pi(s, a) = \mathbb{E}_\pi [G_t \mid S_t = s, A_t = a] = \mathbb{E}_\pi \lef
 * **$v_\pi(s)$**: How good is it to **be** in state $s$?
 * **$q_\pi(s, a)$**: How good is it to **take action** $a$ from state $s$?
 
-The action-value function lets us compare actions directly — crucial for model-free control (→ Ch.5, §1).
+The difference looks cosmetic and is not. To act greedily on $v_\pi$ you must look one step ahead, and looking ahead requires knowing $p(s', r \mid s, a)$. Acting greedily on $q_\pi$ needs nothing but the table itself. That is precisely why model-free control (Ch.5, §1) learns $q$ rather than $v$.
 
 ---
 
 ## 10. The Bellman Equation for $v_\pi$
 
-Value functions satisfy a recursive relationship. The value of the current state can be expressed in terms of successor states' values.
+Value functions satisfy a recursive relationship: the value of the current state can be expressed in terms of its successors' values.
 
 ### Derivation
 
 Start with the definition:
 $$v_\pi(s) = \mathbb{E}_\pi [G_t \mid S_t = s]$$
 
-Expand $G_t$ into immediate reward + discounted future:
+Expand $G_t$ into immediate reward plus discounted future:
 $$v_\pi(s) = \mathbb{E}_\pi [R_{t+1} + \gamma G_{t+1} \mid S_t = s]$$
 
 Sum over all possible actions, next states, and rewards:
@@ -306,16 +278,20 @@ Since $\mathbb{E}_\pi [G_{t+1} \mid S_{t+1} = s'] = v_\pi(s')$:
 
 $$v_\pi(s) = \sum_{a} \pi(a \mid s) \sum_{s', r} p(s', r \mid s, a) \left[ r + \gamma v_\pi(s') \right]$$
 
+That last substitution is the entire trick, and it is only legal because of the Markov property from §5. The expected return from $s'$ does not depend on how the agent reached $s'$, so it is the same $v_\pi(s')$ regardless of the path taken to get there.
+
 ### Component Breakdown
-* $\pi(a \mid s)$: Policy — probability of taking action $a$ in state $s$.
-* $p(s', r \mid s, a)$: Transition dynamics — probability of landing in $s'$ with reward $r$.
+* $\pi(a \mid s)$: Policy, the probability of taking action $a$ in state $s$.
+* $p(s', r \mid s, a)$: Transition dynamics, the probability of landing in $s'$ with reward $r$.
 * $r$: Immediate reward.
-* $\gamma v_\pi(s')$: Discounted value of successor state.
+* $\gamma v_\pi(s')$: Discounted value of the successor state.
 
 ### Backup Diagram
 <figure><img src="assets/svg/bellman-backup.svg?v=2" alt="Bellman Backup Tree Diagram" style="max-width:400px;"><figcaption>Figure 3.2: Bellman Equation Backup Tree Diagram for $v_\pi(s)$</figcaption></figure>
 
-*The Bellman backup tree visualizes the recursive value calculation. Starting from a state node $s$ at the top, the branches represent actions $a$ chosen under policy $\pi(a|s)$ (black circles), which then lead to successor states $s'$ with transition probability $p(s',r|s,a)$ (open circles) and reward $r$.*
+*Reading the tree top down: a state node $s$, branching over actions $a$ weighted by $\pi(a \mid s)$ (black circles), each branching again over successor states $s'$ weighted by $p(s', r \mid s, a)$ (open circles) with reward $r$ collected on the way.*
+
+The two layers of branching are the two sums in the equation, in order. Every backup diagram in the rest of these notes is a variation on this picture.
 
 ### Worked Example (3 actions, 6 successor states)
 
@@ -327,10 +303,10 @@ Each term sums over successor states reachable by that action, weighted by trans
 
 ## 11. Optimal Value Functions
 
-The goal: find a policy that maximizes expected return. A policy $\pi$ is better than $\pi'$ if:
+A policy $\pi$ is better than $\pi'$ if it is at least as good from every state:
 $$\pi \geq \pi' \iff v_\pi(s) \geq v_{\pi'}(s) \quad \forall s \in \mathcal{S}$$
 
-There always exists at least one **optimal policy** $\pi_*$.
+That "for all $s$" makes the ordering partial rather than total, so two policies can each be better somewhere and neither better overall. The remarkable fact is that a policy beating every other one from every state always exists anyway. There is always at least one **optimal policy** $\pi_*$.
 
 ### Optimal State-Value Function
 $$v_*(s) = \max_{\pi} v_\pi(s) \quad \forall s \in \mathcal{S}$$
@@ -345,16 +321,16 @@ $$v_*(s) = \max_{a \in \mathcal{A}(s)} q_*(s, a)$$
 
 $$v_*(s) = \max_{a \in \mathcal{A}(s)} \sum_{s', r} p(s', r \mid s, a) \left[ r + \gamma v_*(s') \right]$$
 
-Key difference from the standard Bellman equation: instead of averaging over actions (weighted by $\pi(a|s)$), we **maximize** — assuming the agent will greedily choose the best action.
+One symbol changed. Where the standard Bellman equation averages over actions weighted by $\pi(a \mid s)$, this one takes the maximum, on the assumption that an optimal agent picks the best action rather than sampling. The consequence of that swap is larger than it looks: $\max$ is not linear, so this is no longer a system of linear equations and cannot be solved by matrix inversion. Ch.4 exists because of that one operator.
 
 ---
 
 ## 12. Worked Example: Recycling Robot Bellman Optimality Equations
 
-Using the recycling robot from §7 (Case Study 3), we write explicit Bellman optimality equations.
+Using the recycling robot from §7, written out explicitly.
 
 ### For state $s = \text{High}$:
-Agent chooses Search or Wait — take the max:
+The agent chooses Search or Wait, so take the max of the two:
 
 $$v_*(\text{High}) = \max \begin{cases}
 \alpha \left[ R_{\text{search}} + \gamma v_*(\text{High}) \right] + (1-\alpha) \left[ R_{\text{search}} + \gamma v_*(\text{Low}) \right], \\
@@ -362,7 +338,7 @@ R_{\text{wait}} + \gamma v_*(\text{High})
 \end{cases}$$
 
 ### For state $s = \text{Low}$:
-Agent chooses Search, Wait, or Recharge — take the max:
+Three options now, so take the max of three:
 
 $$v_*(\text{Low}) = \max \begin{cases}
 \beta \left[ R_{\text{search}} + \gamma v_*(\text{Low}) \right] + (1-\beta) \left[ -3 + \gamma v_*(\text{High}) \right], \\
@@ -370,25 +346,17 @@ R_{\text{wait}} + \gamma v_*(\text{Low}), \\
 \gamma v_*(\text{High})
 \end{cases}$$
 
-### Convergent Values (via value iteration, → Ch.4)
+Notice that $v_*$ appears on both sides of both equations. They are not formulas you evaluate, they are constraints a solution has to satisfy, which is why solving them takes iteration.
+
+### Convergent Values (via value iteration, Ch.4)
 * $v_*(\text{High}) \approx 25.42$
 * $v_*(\text{Low}) \approx 22.88$
 
-Substituting these values back reveals which action yields the max in each state → the **optimal policy** $\pi_*$.
+Substituting these back shows which action attains the max in each state, and reading off those actions gives the **optimal policy** $\pi_*$. The values were never the goal; the policy hiding inside them was.
 
 ---
 
-## Key Takeaways
-
-1. **MDPs** formalize the sequential decision-making problem: states, actions, transitions, rewards.
-2. **The Markov property** says the current state is all you need — history is irrelevant.
-3. **Value functions** ($v_\pi$, $q_\pi$) quantify long-term expected return.
-4. **The Bellman equation** expresses value recursively: current value = immediate reward + discounted future value.
-5. **The Bellman optimality equation** defines what "optimal" means: choose the action that maximizes expected value.
-
----
-
-*We now know what "optimal" looks like mathematically (Bellman optimality equation). But how do we actually compute it? If we know the full model $p(s',r|s,a)$, we can use Dynamic Programming → Chapter 4. If we don't have a model, we learn from experience → Chapter 5.*
+*So "optimal" now has a precise definition, and it is a fixed point of the Bellman optimality equation. Computing it is a separate problem. With the full model $p(s', r \mid s, a)$ in hand, dynamic programming solves it directly, which is Chapter 4. Without a model, the agent has to learn from experience instead, which is Chapter 5.*
     </script>
 
     <script src="rl-notes.js"></script>

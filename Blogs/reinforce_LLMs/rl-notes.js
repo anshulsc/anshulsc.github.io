@@ -193,8 +193,41 @@
     }
 
     // ── Initialize Everything ──
+
+    // ── Inline the figure SVGs ──
+    // Swapping <img src="x.svg"> for the SVG markup itself puts the figure
+    // inside the page's stylesheet, so the --fig-* tokens in plain.css reach
+    // it and the drawing follows the light/dark theme. The SVGs keep their
+    // original colours as var() fallbacks, so if this never runs (file://,
+    // fetch blocked, JS off) the <img> simply stays where it is.
+    function inlineFigureSVGs() {
+        var imgs = document.querySelectorAll('figure img[src$=".svg"], figure img[src*=".svg?"]');
+        Array.prototype.forEach.call(imgs, function (img) {
+            var src = img.getAttribute('src');
+            fetch(src).then(function (r) {
+                return r.ok ? r.text() : null;
+            }).then(function (txt) {
+                if (!txt) return;
+                var doc = new DOMParser().parseFromString(txt, 'image/svg+xml');
+                if (doc.querySelector('parsererror')) return;
+                var svg = doc.querySelector('svg');
+                if (!svg) return;
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                var st = img.getAttribute('style');
+                if (st) svg.setAttribute('style', st);
+                if (img.alt) {
+                    svg.setAttribute('role', 'img');
+                    svg.setAttribute('aria-label', img.alt);
+                }
+                if (img.parentNode) img.parentNode.replaceChild(svg, img);
+            }).catch(function () { /* leave the <img> in place */ });
+        });
+    }
+
     function init() {
         renderMarkdown();
+        inlineFigureSVGs();
         calcReadingTime();
 
         // Highlight code blocks

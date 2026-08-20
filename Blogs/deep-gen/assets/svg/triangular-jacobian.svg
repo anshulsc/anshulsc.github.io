@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 290" font-family="Inter, -apple-system, sans-serif">
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">restrict which inputs each output may see, and an O(d³) determinant becomes O(d)</text>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">restrict which inputs each output may see, and an O(d³) determinant becomes O(d)</text>
 
-  <rect x="16" y="40" width="234" height="196" rx="10" fill="#fcfcfc" stroke="#e8d5d5"/>
-  <text x="133" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#c0392b">an arbitrary map</text>
-  <text x="133" y="78" text-anchor="middle" font-size="9.4" fill="#777">every output sees every input</text>
+  <rect x="16" y="40" width="234" height="196" rx="10" fill="var(--fig-wash, #fcfcfc)" stroke="var(--fig-red-bg, #e8d5d5)"/>
+  <text x="133" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fig-red, #c0392b)">an arbitrary map</text>
+  <text x="133" y="78" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #777)">every output sees every input</text>
   <g>
-    <rect x="58" y="92" width="150" height="106" fill="rgba(200,60,60,0.08)" stroke="#c0392b" stroke-width="1.2"/>
+    <rect x="58" y="92" width="150" height="106" fill="rgba(200,60,60,0.08)" stroke="var(--fig-red, #c0392b)" stroke-width="1.2"/>
     <g stroke="rgba(200,60,60,0.3)" stroke-width="0.7">
       <path d="M 88 92 v 106 M 118 92 v 106 M 148 92 v 106 M 178 92 v 106"/>
       <path d="M 58 113 h 150 M 58 134 h 150 M 58 155 h 150 M 58 176 h 150"/>
@@ -18,14 +18,14 @@
       <circle cx="73" cy="186" r="3"/><circle cx="103" cy="186" r="3"/><circle cx="133" cy="186" r="3"/><circle cx="163" cy="186" r="3"/><circle cx="193" cy="186" r="3"/>
     </g>
   </g>
-  <text x="133" y="216" text-anchor="middle" font-size="10.4" font-weight="700" fill="#c0392b">det costs O(d³)</text>
-  <text x="133" y="230" text-anchor="middle" font-size="9.2" fill="#c0392b">d = 100,000 → hopeless</text>
+  <text x="133" y="216" text-anchor="middle" font-size="10.4" font-weight="700" fill="var(--fig-red, #c0392b)">det costs O(d³)</text>
+  <text x="133" y="230" text-anchor="middle" font-size="10.5" fill="var(--fig-red, #c0392b)">d = 100,000 → hopeless</text>
 
-  <rect x="262" y="40" width="234" height="196" rx="10" fill="#fcfcfc" stroke="#dfe8ea"/>
-  <text x="379" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7490">an increasing triangular map</text>
-  <text x="379" y="78" text-anchor="middle" font-size="9.4" fill="#777">output j sees only inputs 1…j</text>
+  <rect x="262" y="40" width="234" height="196" rx="10" fill="var(--fig-wash, #fcfcfc)" stroke="var(--fig-teal-bg, #dfe8ea)"/>
+  <text x="379" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fig-teal, #0e7490)">an increasing triangular map</text>
+  <text x="379" y="78" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #777)">output j sees only inputs 1…j</text>
   <g>
-    <rect x="304" y="92" width="150" height="106" fill="rgba(14,116,144,0.06)" stroke="#0e7490" stroke-width="1.2"/>
+    <rect x="304" y="92" width="150" height="106" fill="rgba(14,116,144,0.06)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.2"/>
     <g stroke="rgba(14,116,144,0.25)" stroke-width="0.7">
       <path d="M 334 92 v 106 M 364 92 v 106 M 394 92 v 106 M 424 92 v 106"/>
       <path d="M 304 113 h 150 M 304 134 h 150 M 304 155 h 150 M 304 176 h 150"/>
@@ -36,27 +36,27 @@
       <circle cx="319" cy="165" r="3"/><circle cx="349" cy="165" r="3"/><circle cx="379" cy="165" r="3"/>
       <circle cx="319" cy="186" r="3"/><circle cx="349" cy="186" r="3"/><circle cx="379" cy="186" r="3"/><circle cx="409" cy="186" r="3"/>
     </g>
-    <g fill="#0e7490">
+    <g fill="var(--fig-teal, #0e7490)">
       <circle cx="319" cy="102" r="4.4"/><circle cx="349" cy="123" r="4.4"/><circle cx="379" cy="144" r="4.4"/>
       <circle cx="409" cy="165" r="4.4"/><circle cx="439" cy="186" r="4.4"/>
     </g>
-    <path d="M 312 95 L 446 193" stroke="#0e7490" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
+    <path d="M 312 95 L 446 193" stroke="var(--fig-teal, #0e7490)" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
   </g>
-  <text x="379" y="216" text-anchor="middle" font-size="10.4" font-weight="700" fill="#0e7490">det = product of the diagonal</text>
-  <text x="379" y="230" text-anchor="middle" font-size="9.2" fill="#0e7490">O(d) — a single pass</text>
+  <text x="379" y="216" text-anchor="middle" font-size="10.4" font-weight="700" fill="var(--fig-teal, #0e7490)">det = product of the diagonal</text>
+  <text x="379" y="230" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">O(d): a single pass</text>
 
-  <rect x="508" y="40" width="236" height="196" rx="10" fill="rgba(14,116,144,0.04)" stroke="#0e7490" stroke-width="1.2"/>
-  <text x="626" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7490">and nothing is lost</text>
-  <text x="522" y="84" font-size="9.8" fill="#555">A triangular map looks like a severe</text>
-  <text x="522" y="98" font-size="9.8" fill="#555">restriction. It is not.</text>
-  <text x="522" y="122" font-size="9.8" font-style="italic" fill="#0e7490">Bogachev et al. (2005): for any two</text>
-  <text x="522" y="136" font-size="9.8" font-style="italic" fill="#0e7490">smooth densities and a fixed variable</text>
-  <text x="522" y="150" font-size="9.8" font-style="italic" fill="#0e7490">ordering, there exists a unique</text>
-  <text x="522" y="164" font-size="9.8" font-style="italic" fill="#0e7490">increasing triangular map taking one</text>
-  <text x="522" y="178" font-size="9.8" font-style="italic" fill="#0e7490">to the other.</text>
-  <text x="522" y="202" font-size="9.8" fill="#555">So the cheap family is already fully</text>
-  <text x="522" y="216" font-size="9.8" fill="#555">expressive — the restriction costs</text>
-  <text x="522" y="230" font-size="9.8" fill="#555">speed, not capacity.</text>
+  <rect x="508" y="40" width="236" height="196" rx="10" fill="rgba(14,116,144,0.04)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.2"/>
+  <text x="626" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fig-teal, #0e7490)">and nothing is lost</text>
+  <text x="522" y="84" font-size="10.5" fill="var(--fig-ink-2, #555)">A triangular map looks like a severe</text>
+  <text x="522" y="98" font-size="10.5" fill="var(--fig-ink-2, #555)">restriction. It is not.</text>
+  <text x="522" y="122" font-size="10.5" font-style="italic" fill="var(--fig-teal, #0e7490)">Bogachev et al. (2005): for any two</text>
+  <text x="522" y="136" font-size="10.5" font-style="italic" fill="var(--fig-teal, #0e7490)">smooth densities and a fixed variable</text>
+  <text x="522" y="150" font-size="10.5" font-style="italic" fill="var(--fig-teal, #0e7490)">ordering, there exists a unique</text>
+  <text x="522" y="164" font-size="10.5" font-style="italic" fill="var(--fig-teal, #0e7490)">increasing triangular map taking one</text>
+  <text x="522" y="178" font-size="10.5" font-style="italic" fill="var(--fig-teal, #0e7490)">to the other.</text>
+  <text x="522" y="202" font-size="10.5" fill="var(--fig-ink-2, #555)">So the cheap family is already fully</text>
+  <text x="522" y="216" font-size="10.5" fill="var(--fig-ink-2, #555)">expressive: the restriction costs</text>
+  <text x="522" y="230" font-size="10.5" fill="var(--fig-ink-2, #555)">speed, not capacity.</text>
 
-  <text x="380" y="268" text-anchor="middle" font-size="10.6" fill="#555">The diagonal entries must also be strictly positive — that is the "increasing" part, and it is what makes the map invertible.</text>
+  <text x="380" y="268" text-anchor="middle" font-size="10.6" fill="var(--fig-ink-2, #555)">The diagonal entries must also be strictly positive, that is the "increasing" part, and it is what makes the map invertible.</text>
 </svg>

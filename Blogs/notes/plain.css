@@ -1,0 +1,830 @@
+/* ═══════════════════════════════════════════════════════════
+   plain.css — the spartan skin for the personal notes.
+
+   These notes are for me, not for an audience, so the page is
+   stripped back to text: no cards, no borders, no shading, no
+   tags, no hero, no reading times. A heading, a paragraph, a
+   list of links. Everything that survives — figures, widgets,
+   math, cross-reference popovers — survives because it teaches
+   something, not because it decorates.
+
+   Shared by every notes series that opts in via
+   <body class="plain">. reinforce_LLMs/ deliberately does not:
+   it keeps rl-notes-style.css and its old look.
+
+   Dark-mode rules live here rather than in css/theme.css, and
+   are written as [data-theme="dark"] body.plain … so they beat
+   theme.css's older two-class selectors no matter which file
+   loads last.
+   ═══════════════════════════════════════════════════════════ */
+
+body.plain {
+    /* Light-mode greys are set by measured contrast on white, not
+       by eye. The real cause of washed-out text here was weight,
+       not colour: 17px Fira Sans at 300 is a hairline on white
+       however dark you make it, so the body runs at 400 and the
+       greys were pulled in behind it. */
+    --ink: #000000;
+    --body: #1a1a1a;
+    --muted: #4a4a4a;
+    --faint: #5f5f5f;
+    --rule: #dcdcdc;
+    --link: #6e46be;
+    --link-hover: #b088f9;
+    --page: #ffffff;
+    --wash: #fafafa;
+
+    margin: 0;
+    background: var(--page);
+    color: var(--body);
+    font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body.plain strong,
+body.plain b {
+    font-weight: 600;
+}
+
+/* ── Layout ─────────────────────────────────────────────── */
+
+body.plain .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px 96px;
+}
+
+/* Breadcrumb. The only navigation on the page — with prev/next
+   gone, the way out of a chapter is back up to the index. */
+body.plain .site-header {
+    padding: 40px 0 0;
+    margin-bottom: 56px;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+body.plain .site-header a {
+    color: var(--muted);
+}
+
+body.plain .site-header a:hover {
+    color: var(--link);
+}
+
+body.plain .site-header .here {
+    color: var(--ink);
+}
+
+body.plain .site-footer {
+    margin-top: 88px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    font-size: 0.82rem;
+    color: var(--faint);
+}
+
+/* ── Links ──────────────────────────────────────────────── */
+
+body.plain a {
+    color: var(--link);
+    text-decoration: none;
+}
+
+body.plain a:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
+}
+
+/* ── Page title and lede ────────────────────────────────── */
+
+body.plain h1 {
+    font-size: 1.9rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--ink);
+    margin: 0 0 20px;
+    letter-spacing: -0.01em;
+}
+
+body.plain .lede {
+    font-size: 1.02rem;
+    color: var(--body);
+    margin: 0 0 18px;
+}
+
+body.plain .lede:last-of-type {
+    margin-bottom: 36px;
+}
+
+/* ── The index: nested link lists, and nothing else ─────── */
+
+body.plain .note-index h2 {
+    font-size: 1.12rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 40px 0 10px;
+    padding: 0;
+    border: none;
+}
+
+body.plain .note-index h2:first-of-type {
+    margin-top: 32px;
+}
+
+body.plain .note-index ul {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 2px;
+}
+
+body.plain .note-index ul ul {
+    padding-left: 22px;
+    margin: 2px 0 6px;
+}
+
+body.plain .note-index li {
+    margin: 3px 0;
+    position: relative;
+    padding-left: 16px;
+}
+
+body.plain .note-index li::before {
+    content: '·';
+    position: absolute;
+    left: 2px;
+    color: var(--faint);
+}
+
+/* An entry with no link is a note I have not written yet. Same
+   as the reference site: the gaps are part of the map. */
+body.plain .note-index li.todo {
+    color: var(--faint);
+}
+
+body.plain .note-index li.todo::before {
+    content: '·';
+    color: #d8d8d8;
+}
+
+/* A short trailing gloss, for when the title alone is opaque. */
+body.plain .note-index .gloss {
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+body.plain .note-index .gloss::before {
+    content: ' · ';
+}
+
+/* ── Chapter body ───────────────────────────────────────── */
+
+body.plain .chapter-content {
+    max-width: none;
+}
+
+body.plain .chapter-content h2 {
+    font-size: 1.28rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.35;
+    margin: 52px 0 14px;
+    padding: 0;
+    border: none;
+}
+
+body.plain .chapter-content h3 {
+    font-size: 1.06rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 34px 0 10px;
+    padding: 0;
+    border: none;
+}
+
+body.plain .chapter-content h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--body);
+    margin: 26px 0 8px;
+}
+
+body.plain .chapter-content p {
+    margin: 0 0 18px;
+}
+
+body.plain .chapter-content ul,
+body.plain .chapter-content ol {
+    margin: 0 0 18px;
+    padding-left: 26px;
+}
+
+body.plain .chapter-content li {
+    margin: 6px 0;
+}
+
+/* Section breaks: whitespace, not a line. No margin of its own —
+   the following h2 already brings 52px, and stacking the two left
+   a gap you could lose a paragraph in. */
+body.plain .chapter-content hr {
+    border: none;
+    height: 0;
+    margin: 0;
+}
+
+body.plain .chapter-content blockquote {
+    margin: 24px 0;
+    padding: 0 0 0 20px;
+    border-left: 2px solid var(--rule);
+    color: var(--muted);
+    font-style: italic;
+}
+
+/* The italic paragraph a chapter opens on. */
+body.plain .chapter-content > p > em:only-child {
+    color: var(--muted);
+}
+
+/* ── Code ───────────────────────────────────────────────── */
+
+body.plain .chapter-content pre {
+    position: relative;
+    margin: 24px 0;
+    padding: 16px 18px;
+    background: var(--wash);
+    border: none;
+    border-radius: 0;
+    overflow-x: auto;
+    font-size: 0.83rem;
+    line-height: 1.6;
+}
+
+body.plain .chapter-content code {
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+body.plain .chapter-content p code,
+body.plain .chapter-content li code,
+body.plain .chapter-content td code {
+    font-size: 0.86em;
+    background: var(--wash);
+    padding: 1px 5px;
+    color: var(--ink);
+}
+
+body.plain .code-copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 3px 9px;
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--muted);
+    background: var(--page);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+body.plain .chapter-content pre:hover .code-copy-btn {
+    opacity: 1;
+}
+
+body.plain .code-copy-btn:hover {
+    color: var(--ink);
+}
+
+body.plain .code-copy-btn.copied {
+    color: #2f8a4c;
+    opacity: 1;
+}
+
+/* ── Tables ─────────────────────────────────────────────── */
+
+body.plain .chapter-content table {
+    width: 100%;
+    margin: 24px 0;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    display: block;
+    overflow-x: auto;
+}
+
+body.plain .chapter-content thead th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--ink);
+    background: none;
+    padding: 8px 14px 8px 0;
+    border-bottom: 1px solid #cfcfcf;
+}
+
+body.plain .chapter-content tbody td {
+    padding: 8px 14px 8px 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+}
+
+body.plain .chapter-content tbody tr:hover {
+    background: none;
+}
+
+/* ── Figures ────────────────────────────────────────────── */
+
+body.plain .chapter-content figure {
+    margin: 34px 0;
+    text-align: center;
+}
+
+body.plain .chapter-content figure img,
+body.plain .chapter-content figure svg {
+    max-width: 100%;
+    height: auto;
+}
+
+body.plain .chapter-content figcaption {
+    margin-top: 12px;
+    font-size: 0.84rem;
+    color: var(--muted);
+    line-height: 1.6;
+    text-align: left;
+}
+
+body.plain .chapter-content .fig-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin: 34px 0;
+}
+
+body.plain .chapter-content .fig-row .fig-cell {
+    flex: 1 1 260px;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+body.plain .chapter-content img.pixelated {
+    image-rendering: pixelated;
+}
+
+/* ── Figure palette ─────────────────────────────────────────
+   The SVGs reference these as var(--fig-ink, #1a1a1a) and so on,
+   always with the original colour as the fallback. That means a
+   figure opened on its own, or still sitting in an <img> before
+   notes JS inlines it, renders exactly as it always did; only an
+   inlined figure inside the page picks the theme up.
+
+   Tokens are semantic, not literal: "ink" is whatever text should
+   be, which is near-black on a light page and near-white on a dark
+   one. Inverting them here is what makes the figures theme-aware
+   rather than painting a light panel behind dark line art. */
+
+body.plain {
+    --fig-ink: #1a1a1a;
+    --fig-ink-2: #4a4a4a;
+    --fig-muted: #6a6a6a;
+    --fig-muted-2: #8a8a8a;
+    --fig-faint: #b0b0b0;
+    --fig-line: #d8d8d8;
+    --fig-wash: #f6f6f6;
+    --fig-paper: #ffffff;
+    --fig-solid: #1c1c1c;
+
+    --fig-teal: #0e7490;
+    --fig-teal-2: #4a9b9b;
+    --fig-teal-bg: #dfe8ea;
+    --fig-amber: #d97706;
+    --fig-amber-2: #a35f05;
+    --fig-amber-bg: #e8e2d5;
+    --fig-purple: #7c3aed;
+    --fig-purple-bg: #fcfaff;
+    --fig-red: #c0392b;
+    --fig-red-bg: #e8d5d5;
+    --fig-blue: #1a4f7a;
+    --fig-blue-bg: #e8f0fe;
+    --fig-green: #2f7a3f;
+    --fig-green-bg: #e8f5e9;
+}
+
+[data-theme="dark"] body.plain {
+    --fig-ink: #e8e8e8;
+    --fig-ink-2: #c2c2c2;
+    --fig-muted: #a0a0a0;
+    --fig-muted-2: #8a8a8a;
+    --fig-faint: #6a6a6a;
+    --fig-line: #3c3c3c;
+    --fig-wash: #1b1b1b;
+    --fig-paper: #121212;
+    --fig-solid: #d0d0d0;
+
+    /* Accents lifted until they carry on a dark ground; the hue is
+       kept so a figure reads the same in either theme. */
+    --fig-teal: #4fb3cc;
+    --fig-teal-2: #6fc4c4;
+    --fig-teal-bg: #10323c;
+    --fig-amber: #e5a544;
+    --fig-amber-2: #c9902f;
+    --fig-amber-bg: #332a1a;
+    --fig-purple: #a98bf0;
+    --fig-purple-bg: #1f1a2e;
+    --fig-red: #e8756a;
+    --fig-red-bg: #33201e;
+    --fig-blue: #5fa3d8;
+    --fig-blue-bg: #16243a;
+    --fig-green: #5fbf6f;
+    --fig-green-bg: #16301c;
+}
+
+/* An inlined figure fills its figure box the way the <img> did. */
+body.plain .chapter-content figure svg,
+body.plain .note-index figure svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* ── Math ───────────────────────────────────────────────── */
+
+body.plain .katex {
+    font-size: 1.02em;
+}
+
+body.plain .katex-display {
+    margin: 22px 0;
+    padding: 2px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* ── Callouts, flattened ────────────────────────────────────
+   These were tinted boxes. A note is still worth marking off,
+   but a hairline rule and a small label does the job without
+   turning the page into a set of trays. */
+
+body.plain .note-box {
+    margin: 26px 0;
+    padding: 2px 0 2px 20px;
+    background: none !important;
+    border: none;
+    border-left: 2px solid #cfcfcf !important;
+    border-radius: 0;
+}
+
+body.plain .note-box .note-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted) !important;
+    margin-bottom: 6px;
+}
+
+body.plain .note-box p:last-child {
+    margin-bottom: 0;
+}
+
+/* Part markers: a rule and a line of text, not a banner. */
+body.plain .chapter-content .part-marker {
+    margin: 64px 0 34px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    background: none;
+    border-radius: 0;
+}
+
+body.plain .chapter-content .part-marker .part-label {
+    display: inline;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    background: none;
+    padding: 0;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+body.plain .chapter-content .part-marker .part-label::after {
+    content: ' · ';
+    color: var(--faint);
+}
+
+body.plain .chapter-content .part-marker .part-name {
+    display: inline;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+body.plain .chapter-content .part-marker .part-sub {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+body.plain .chapter-content details.collapsible {
+    margin: 24px 0;
+    border: none;
+    border-left: 2px solid var(--rule);
+    padding-left: 20px;
+    background: none;
+}
+
+body.plain .chapter-content details.collapsible summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+/* ── Cross-references and their hover previews ──────────────
+   Kept in full. Not having to leave the page to check what
+   "§10" said is the single most useful thing on these pages. */
+
+body.plain .chapter-content .ref-link,
+body.plain .chapter-content a.chapter-link {
+    color: var(--link);
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+body.plain .chapter-content .ref-link:hover,
+body.plain .chapter-content .ref-link:focus,
+body.plain .chapter-content a.chapter-link:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
+}
+
+body.plain .ref-pop {
+    background: var(--page);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
+}
+
+body.plain .ref-pop-label {
+    color: var(--muted);
+    background: var(--wash);
+    border-bottom: 1px solid var(--rule);
+}
+
+body.plain .ref-pop-body {
+    color: var(--body);
+}
+
+/* ── Widgets ────────────────────────────────────────────────
+   The one place a frame is allowed. A widget is a different
+   kind of object from prose and needs to read as one, but it
+   gets a hairline and neutral chrome rather than the old tinted
+   panel. dgm-widgets.js is untouched. */
+
+body.plain :is(.dgm-widget, .note-widget) {
+    margin: 34px 0;
+    padding: 20px 22px;
+    background: var(--wash);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    font-size: 0.92rem;
+}
+
+body.plain :is(.dgm-widget, .note-widget) .w-title {
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+}
+
+body.plain :is(.dgm-widget, .note-widget) button {
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--ink);
+    background: var(--page);
+    border: 1px solid #cfcfcf;
+    border-radius: 3px;
+    padding: 5px 13px;
+    cursor: pointer;
+    margin: 0 8px 8px 0;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+body.plain :is(.dgm-widget, .note-widget) button:hover {
+    border-color: var(--ink);
+}
+
+body.plain :is(.dgm-widget, .note-widget) button.secondary {
+    color: var(--muted);
+}
+
+body.plain :is(.dgm-widget, .note-widget) canvas {
+    max-width: 100%;
+    background: var(--page);
+}
+
+body.plain :is(.dgm-widget, .note-widget) :is(.w-note, .verdict) {
+    font-size: 0.86rem;
+    color: var(--muted);
+}
+
+/* ── Dark ───────────────────────────────────────────────────
+   Same rules, inverted tokens. Selectors are deliberately
+   three-deep so they out-specify the older [data-theme="dark"]
+   .chapter-content … rules still sitting in css/theme.css. */
+
+[data-theme="dark"] body.plain {
+    /* Same contrast rule as the light tokens: --faint was 3.6:1
+       on the dark ground, under AA, so it comes up to 5.0:1. */
+    --ink: #ededed;
+    --body: #c9c9c9;
+    --muted: #949494;
+    --faint: #828282;
+    --rule: #2e2e2e;
+    --link: #b088f9;
+    --link-hover: #c9b3ff;
+    --page: #101010;
+    --wash: #171717;
+
+    background: var(--page);
+    color: var(--body);
+}
+
+[data-theme="dark"] body.plain h1,
+[data-theme="dark"] body.plain .note-index h2,
+[data-theme="dark"] body.plain .chapter-content h2,
+[data-theme="dark"] body.plain .chapter-content h3,
+[data-theme="dark"] body.plain .chapter-content h4 {
+    color: var(--ink);
+    border: none;
+    background: none;
+}
+
+[data-theme="dark"] body.plain .chapter-content p,
+[data-theme="dark"] body.plain .chapter-content li,
+[data-theme="dark"] body.plain .lede {
+    color: var(--body);
+}
+
+[data-theme="dark"] body.plain .chapter-content blockquote {
+    color: var(--muted);
+    border-left-color: var(--rule);
+}
+
+[data-theme="dark"] body.plain .chapter-content pre {
+    background: var(--wash);
+    border: none;
+}
+
+[data-theme="dark"] body.plain .chapter-content p code,
+[data-theme="dark"] body.plain .chapter-content li code,
+[data-theme="dark"] body.plain .chapter-content td code {
+    background: var(--wash);
+    color: var(--ink);
+}
+
+[data-theme="dark"] body.plain .code-copy-btn {
+    background: var(--page);
+    border: 1px solid var(--rule);
+    color: var(--muted);
+    box-shadow: none;
+}
+
+[data-theme="dark"] body.plain .chapter-content thead th {
+    color: var(--ink);
+    background: none;
+    border-bottom: 1px solid #454545;
+}
+
+[data-theme="dark"] body.plain .chapter-content tbody td {
+    border-bottom: 1px solid var(--rule);
+}
+
+[data-theme="dark"] body.plain .chapter-content figcaption {
+    color: var(--muted);
+}
+
+[data-theme="dark"] body.plain .note-box {
+    background: none !important;
+    border: none;
+    border-left: 2px solid #454545 !important;
+}
+
+[data-theme="dark"] body.plain .note-box .note-label {
+    color: var(--muted) !important;
+}
+
+[data-theme="dark"] body.plain .chapter-content .part-marker {
+    border-top-color: var(--rule);
+    background: none;
+}
+
+[data-theme="dark"] body.plain .chapter-content .part-marker .part-name {
+    color: var(--ink);
+}
+
+[data-theme="dark"] body.plain .chapter-content .part-marker .part-label,
+[data-theme="dark"] body.plain .chapter-content .part-marker .part-sub {
+    color: var(--muted);
+}
+
+[data-theme="dark"] body.plain .chapter-content .fig-row .fig-cell {
+    background: none;
+    border: none;
+}
+
+/* A figure that has not been inlined yet (no JS, file:// preview)
+   still carries its original light-page colours, so it keeps the
+   light backing. Inlined SVGs are theme-aware and get nothing. */
+[data-theme="dark"] body.plain .chapter-content figure img[src$=".svg"] {
+    background: #f7f7f7;
+    border-radius: 3px;
+    padding: 10px;
+}
+
+[data-theme="dark"] body.plain :is(.dgm-widget, .note-widget) {
+    background: var(--wash);
+    border-color: var(--rule);
+}
+
+[data-theme="dark"] body.plain :is(.dgm-widget, .note-widget) button {
+    background: var(--page);
+    border-color: #454545;
+    color: var(--ink);
+}
+
+[data-theme="dark"] body.plain :is(.dgm-widget, .note-widget) button:hover {
+    border-color: var(--ink);
+}
+
+/* Widget canvases are drawn with dark ink, same as the SVGs. */
+[data-theme="dark"] body.plain :is(.dgm-widget, .note-widget) canvas {
+    background: #f7f7f7;
+    border-radius: 3px;
+}
+
+[data-theme="dark"] body.plain .ref-pop {
+    background: #181818;
+    border-color: var(--rule);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] body.plain .ref-pop-label {
+    background: var(--wash);
+    border-bottom-color: var(--rule);
+    color: var(--muted);
+}
+
+/* ── Small screens ──────────────────────────────────────── */
+
+@media (max-width: 640px) {
+    body.plain {
+        font-size: 16px;
+    }
+
+    body.plain .container {
+        padding: 0 18px 64px;
+    }
+
+    body.plain h1 {
+        font-size: 1.55rem;
+    }
+
+    body.plain .chapter-content h2 {
+        font-size: 1.16rem;
+        margin-top: 40px;
+    }
+
+    body.plain .site-header {
+        padding-top: 28px;
+        margin-bottom: 40px;
+    }
+}
+
+/* ── Print ──────────────────────────────────────────────── */
+
+@media print {
+
+    body.plain .site-header,
+    body.plain .site-footer,
+    body.plain .code-copy-btn,
+    body.plain .theme-toggle,
+    body.plain :is(.dgm-widget, .note-widget) {
+        display: none;
+    }
+
+    body.plain .container {
+        max-width: none;
+    }
+}

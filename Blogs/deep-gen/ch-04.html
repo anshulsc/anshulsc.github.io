@@ -4,10 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Lecture 4 notes: the f-GAN derivation end to end, built up from undergraduate intuition to graduate-level proof — non-negativity of f-divergences, the Fenchel conjugate, the variational bound, the optimal discriminator, why the vanilla GAN loss is Jensen-Shannon shifted by log 4, and the training loop.">
-    <meta name="keywords"
-        content="f-GAN, Variational Divergence Minimization, Fenchel Conjugate, Jensen's Inequality, Optimal Discriminator, Jensen-Shannon Divergence, GAN Training, Minimax, Saddle Point, Non-saturating Loss, Convex Analysis">
+    <meta name="description" content="Lecture 4 notes: the f-GAN derivation end to end, built up from undergraduate intuition to graduate-level proof — non-negativity of f-divergences, the Fenchel conjugate, the variational bound, the optimal discriminator, why the vanilla GAN loss is Jensen-Shannon shifted by log 4, and the training loop.">
     <meta name="author" content="Anshul Singh">
     <title>Lecture 4: From f-Divergences to a Trainable GAN — DGM Notes</title>
 
@@ -17,9 +14,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
@@ -36,80 +31,40 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../research-style.css">
-    <link rel="stylesheet" href="dgm-notes-style.css">
+    <link rel="stylesheet" href="../notes/plain.css">
 
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../../css/theme.css">
-  <script src="../../js/theme.js"></script>
-  <!-- Passphrase gate for this notes series -->
-  <script src="../../js/gate.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
+    <!-- Passphrase gate for this notes series -->
+    <script src="../../js/gate.js"></script>
 </head>
 
-<body>
-    <div class="reading-progress"></div>
-
+<body class="plain">
     <div class="container">
-        <!-- Background Scribbles -->
-        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
-        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
-            style="top:600px; left:-220px; width:160px;">
 
         <header class="site-header">
-            <p style="text-align:center">
-                [<a href="../../index.html">Home</a> /
-                <a href="../blog-index.html">Writing</a> /
-                <a href="index.html">DGM Notes</a>]
-            </p>
+            [<a href="../../index.html">Home</a> /
+            <a href="../blog-index.html">Writing</a> /
+            <a href="index.html">DGM notes</a> /
+            <span class="here">From f-Divergences to a Trainable GAN</span>]
         </header>
 
         <main>
-            <div class="chapter-header">
-                <div class="chapter-number">Lecture 4</div>
-                <h1>From f-Divergences to a Trainable GAN</h1>
-                <div class="chapter-meta">
-                    <span>August 2026</span>
-                    <span class="dot">●</span>
-                    <span id="reading-time">45 min read</span>
-                    <span class="dot">●</span>
-                    <span>f-GANs</span>
-                </div>
-            </div>
+            <h1>From f-Divergences to a Trainable GAN</h1>
 
-            <div class="content-layout">
-                <article class="chapter-content" id="content-target">
-                    <!-- Rendered markdown goes here -->
-                </article>
-
-                <aside class="toc-sidebar">
-                    <div class="toc-inner">
-                        <div class="toc-title">On This Page</div>
-                        <ul class="toc-list"></ul>
-                    </div>
-                </aside>
-            </div>
-
-            <div class="chapter-nav">
-                <a href="ch-03.html" class="nav-prev">
-                    <div class="nav-label">← Previous Lecture</div>
-                    <div class="nav-title">Adversarial Models &amp; f-Divergences</div>
-                </a>
-                <a href="ch-05.html" class="nav-next">
-                    <div class="nav-label">Next Lecture →</div>
-                    <div class="nav-title">The Classifier View, Conditional GANs &amp; CycleGAN</div>
-                </a>
-            </div>
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
         </main>
 
-        <footer
-            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+        <footer class="site-footer">
             &copy; 2026 Anshul Singh
         </footer>
     </div>
 
     <script id="raw-markdown" type="text/template">
-*This is the chapter where all the machinery cashes out. Ch.3 got us to a variational bound and stopped there, with the function $f$ still unchosen. Here we choose one — and the entire vanilla GAN, invented in 2014 out of pure intuition, falls out of the algebra: its loss, its sigmoid, its two-phase training loop, even the constant $\log 4$ that nobody could explain at the time.*
+*This is the chapter where all the machinery cashes out. Ch.3 got us to a variational bound with the function $f$ still unchosen; here we choose one, and the entire vanilla GAN — its loss, its sigmoid, its two-phase training loop, even the constant $\log 4$ that nobody could explain at the time — falls out of the algebra.*
 
 *The convex analysis was new to me, so these notes climb rather than jump. Part I tells the whole story with small numbers and no machinery — read only that and you will still understand what a GAN is doing and why. Part II proves all of it properly. Part III is the part nobody tells you: where the assumptions actually bite, what the theory does not promise, and which of these cracks the next few papers were written to fix. Nothing is dropped on the way up; each part re-enters the same material at greater depth.*
 
@@ -577,7 +532,7 @@ $$\Longrightarrow \quad D_{JS}(P_x \parallel P_\theta) = \log 2 \quad \text{— 
 
 This is the precise, provable version of the practitioner's complaint that "the discriminator wins and training dies". It is not instability; it is the objective being mathematically flat.
 
-The fix is to stop using a divergence that only sees whether supports overlap, and use one that measures *how far apart* they are. The Wasserstein (earth-mover) distance does exactly that: it stays finite and has usable gradients even for disjoint supports. Getting there requires leaving the $f$-divergence family entirely and changing what the critic is constrained to be — from "any function in the network's range" to "any 1-Lipschitz function" — which is the subject of the [WGAN paper](https://arxiv.org/abs/1701.07875) and the next stretch of the course.
+The fix is to stop using a divergence that only sees whether supports overlap, and use one that measures *how far apart* they are. The Wasserstein (earth-mover) distance does exactly that: it stays finite and has usable gradients even for disjoint supports. Getting there requires leaving the $f$-divergence family entirely and changing what the critic is constrained to be — from "any function in the network's range" to "any 1-Lipschitz function" — which is the subject of the [WGAN paper](https://arxiv.org/abs/1701.07875) and the next stretch of these notes.
 
 Worth noticing what just happened: every step of Parts I and II was correct, and the conclusion is still that this objective has a serious structural weakness. That is what the fine print is for.
 
@@ -617,7 +572,7 @@ $$\frac{\partial \, \hat{x}}{\partial \, \text{logits}} = 0 \quad \text{almost e
 
 <figure><img src="assets/svg/discrete-gradient.svg" alt="Continuous outputs let gradients flow while discrete token sampling blocks them" style="max-width:100%;"><figcaption>Figure 4.7: The path from critic to generator is a chain of derivatives. One zero anywhere and the whole product is zero.</figcaption></figure>
 
-Zero gradient almost everywhere means no learning signal at all. The critic can be as good as you like; there is no road for its opinion to travel back on. This is why autoregressive maximum-likelihood models — which never differentiate through a sampled token, because they train on ground-truth tokens — took over language modelling completely. Workarounds exist (Gumbel-softmax relaxations, RL-style estimators, working in a continuous latent space) and the course returns to them.
+Zero gradient almost everywhere means no learning signal at all. The critic can be as good as you like; there is no road for its opinion to travel back on. This is why autoregressive maximum-likelihood models — which never differentiate through a sampled token, because they train on ground-truth tokens — took over language modelling completely. Workarounds exist (Gumbel-softmax relaxations, RL-style estimators, working in a continuous latent space) and these notes return to them.
 
 ---
 

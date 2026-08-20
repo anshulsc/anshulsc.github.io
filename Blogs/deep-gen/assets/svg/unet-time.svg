@@ -1,55 +1,55 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" font-family="Inter, -apple-system, sans-serif">
   <defs>
-    <marker id="ut-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker>
-    <marker id="ut-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker>
+    <marker id="ut-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-teal, #0e7490)"/></marker>
+    <marker id="ut-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-purple, #7c3aed)"/></marker>
   </defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">a scalar cannot survive next to 12,288 numbers — so it is projected and injected everywhere</text>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">a scalar cannot survive next to 12,288 numbers, so it is projected and injected everywhere</text>
 
-  <rect x="24" y="60" width="46" height="46" rx="4" fill="rgba(14,116,144,0.16)" stroke="#0e7490" stroke-width="1.4"/>
-  <text x="47" y="88" text-anchor="middle" font-size="10" fill="#0e7490">x_t</text>
-  <path d="M 74 83 L 100 83" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#ut-t)"/>
+  <rect x="24" y="60" width="46" height="46" rx="4" fill="rgba(14,116,144,0.16)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.4"/>
+  <text x="47" y="88" text-anchor="middle" font-size="10" fill="var(--fig-teal, #0e7490)">x_t</text>
+  <path d="M 74 83 L 100 83" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5" fill="none" marker-end="url(#ut-t)"/>
 
-  <path d="M 104 62 L 148 78 L 148 122 L 104 106 Z" fill="rgba(14,116,144,0.12)" stroke="#0e7490" stroke-width="1.4"/>
-  <path d="M 152 78 L 190 92 L 190 132 L 152 122 Z" fill="rgba(14,116,144,0.12)" stroke="#0e7490" stroke-width="1.4"/>
-  <rect x="194" y="94" width="34" height="34" rx="4" fill="rgba(14,116,144,0.2)" stroke="#0e7490" stroke-width="1.4"/>
-  <text x="211" y="115" text-anchor="middle" font-size="8.6" fill="#0e7490">d′</text>
-  <path d="M 232 92 L 270 78 L 270 122 L 232 128 Z" fill="rgba(217,119,6,0.12)" stroke="#d97706" stroke-width="1.4"/>
-  <path d="M 274 78 L 318 62 L 318 106 L 274 122 Z" fill="rgba(217,119,6,0.12)" stroke="#d97706" stroke-width="1.4"/>
-  <path d="M 322 83 L 348 83" stroke="#d97706" stroke-width="1.5" fill="none" marker-end="url(#ut-t)"/>
-  <rect x="352" y="60" width="46" height="46" rx="4" fill="rgba(217,119,6,0.16)" stroke="#d97706" stroke-width="1.4"/>
-  <text x="375" y="88" text-anchor="middle" font-size="9.4" fill="#d97706">ε̂_θ</text>
+  <path d="M 104 62 L 148 78 L 148 122 L 104 106 Z" fill="rgba(14,116,144,0.12)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.4"/>
+  <path d="M 152 78 L 190 92 L 190 132 L 152 122 Z" fill="rgba(14,116,144,0.12)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.4"/>
+  <rect x="194" y="94" width="34" height="34" rx="4" fill="rgba(14,116,144,0.2)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.4"/>
+  <text x="211" y="115" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">d′</text>
+  <path d="M 232 92 L 270 78 L 270 122 L 232 128 Z" fill="rgba(217,119,6,0.12)" stroke="var(--fig-amber, #d97706)" stroke-width="1.4"/>
+  <path d="M 274 78 L 318 62 L 318 106 L 274 122 Z" fill="rgba(217,119,6,0.12)" stroke="var(--fig-amber, #d97706)" stroke-width="1.4"/>
+  <path d="M 322 83 L 348 83" stroke="var(--fig-amber, #d97706)" stroke-width="1.5" fill="none" marker-end="url(#ut-t)"/>
+  <rect x="352" y="60" width="46" height="46" rx="4" fill="rgba(217,119,6,0.16)" stroke="var(--fig-amber, #d97706)" stroke-width="1.4"/>
+  <text x="375" y="88" text-anchor="middle" font-size="10.5" fill="var(--fig-amber, #d97706)">ε̂_θ</text>
 
-  <path d="M 126 58 C 160 30, 250 30, 292 58" stroke="#999" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
-  <path d="M 170 74 C 190 52, 240 52, 252 74" stroke="#999" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
-  <text x="211" y="42" text-anchor="middle" font-size="8.8" fill="#999">skip connections keep the fine detail</text>
-  <text x="211" y="150" text-anchor="middle" font-size="9.4" fill="#999">contract, then expand — output is the same shape as the input</text>
+  <path d="M 126 58 C 160 30, 250 30, 292 58" stroke="var(--fig-muted-2, #999)" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+  <path d="M 170 74 C 190 52, 240 52, 252 74" stroke="var(--fig-muted-2, #999)" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="211" y="42" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #999)">skip connections keep the fine detail</text>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="211" y="150" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #999)">contract, then expand, output is the same shape as the input</text>
 
-  <rect x="24" y="192" width="90" height="34" rx="7" fill="#f4f4f4" stroke="#888" stroke-width="1.3"/>
-  <text x="69" y="213" text-anchor="middle" font-size="10.4" fill="#555">t  (a scalar)</text>
-  <path d="M 118 209 L 144 209" stroke="#7c3aed" stroke-width="1.5" fill="none" marker-end="url(#ut-p)"/>
-  <rect x="148" y="188" width="118" height="42" rx="7" fill="rgba(124,58,237,0.08)" stroke="#7c3aed" stroke-width="1.5"/>
-  <text x="207" y="205" text-anchor="middle" font-size="9.8" font-weight="600" fill="#7c3aed">sinusoidal embedding</text>
-  <text x="207" y="220" text-anchor="middle" font-size="8.8" fill="#7c3aed">scalar → D dimensions</text>
-  <path d="M 270 209 L 296 209" stroke="#7c3aed" stroke-width="1.5" fill="none" marker-end="url(#ut-p)"/>
-  <rect x="300" y="192" width="62" height="34" rx="7" fill="#fff" stroke="#7c3aed" stroke-width="1.4"/>
-  <text x="331" y="213" text-anchor="middle" font-size="9.8" fill="#7c3aed">MLP</text>
-  <path d="M 366 209 L 392 209" stroke="#7c3aed" stroke-width="1.5" fill="none" marker-end="url(#ut-p)"/>
-  <rect x="396" y="186" width="128" height="46" rx="7" fill="rgba(124,58,237,0.05)" stroke="#7c3aed" stroke-width="1.3"/>
-  <text x="460" y="203" text-anchor="middle" font-size="9.6" fill="#7c3aed">project to the block's</text>
-  <text x="460" y="216" text-anchor="middle" font-size="9.6" fill="#7c3aed">channel count, then</text>
-  <text x="460" y="228" text-anchor="middle" font-size="9.6" fill="#7c3aed">broadcast over H × W</text>
+  <rect x="24" y="192" width="90" height="34" rx="7" fill="var(--fig-wash, #f4f4f4)" stroke="var(--fig-muted-2, #888)" stroke-width="1.3"/>
+  <text x="69" y="213" text-anchor="middle" font-size="10.4" fill="var(--fig-ink-2, #555)">t  (a scalar)</text>
+  <path d="M 118 209 L 144 209" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.5" fill="none" marker-end="url(#ut-p)"/>
+  <rect x="148" y="188" width="118" height="42" rx="7" fill="rgba(124,58,237,0.08)" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.5"/>
+  <text x="207" y="205" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--fig-purple, #7c3aed)">sinusoidal embedding</text>
+  <text x="207" y="220" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">scalar → D dimensions</text>
+  <path d="M 270 209 L 296 209" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.5" fill="none" marker-end="url(#ut-p)"/>
+  <rect x="300" y="192" width="62" height="34" rx="7" fill="var(--fig-paper, #fff)" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.4"/>
+  <text x="331" y="213" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">MLP</text>
+  <path d="M 366 209 L 392 209" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.5" fill="none" marker-end="url(#ut-p)"/>
+  <rect x="396" y="186" width="128" height="46" rx="7" fill="rgba(124,58,237,0.05)" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.3"/>
+  <text x="460" y="203" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">project to the block's</text>
+  <text x="460" y="216" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">channel count, then</text>
+  <text x="460" y="228" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">broadcast over H × W</text>
 
-  <path d="M 460 182 C 460 150, 300 140, 211 132" stroke="#7c3aed" stroke-width="1.6" fill="none" stroke-dasharray="5 3" marker-end="url(#ut-p)"/>
-  <path d="M 470 182 C 470 156, 400 146, 292 118" stroke="#7c3aed" stroke-width="1.2" fill="none" stroke-dasharray="5 3" opacity="0.6"/>
-  <path d="M 450 182 C 440 158, 200 148, 126 104" stroke="#7c3aed" stroke-width="1.2" fill="none" stroke-dasharray="5 3" opacity="0.6"/>
-  <text x="560" y="172" font-size="9.6" fill="#7c3aed">added into every residual block,</text>
-  <text x="560" y="185" font-size="9.6" fill="#7c3aed">on the way down and the way up</text>
+  <path d="M 460 182 C 460 150, 300 140, 211 132" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.6" fill="none" stroke-dasharray="5 3" marker-end="url(#ut-p)"/>
+  <path d="M 470 182 C 470 156, 400 146, 292 118" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.2" fill="none" stroke-dasharray="5 3" opacity="0.6"/>
+  <path d="M 450 182 C 440 158, 200 148, 126 104" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.2" fill="none" stroke-dasharray="5 3" opacity="0.6"/>
+  <text x="560" y="172" font-size="10.5" fill="var(--fig-purple, #7c3aed)">added into every residual block,</text>
+  <text x="560" y="185" font-size="10.5" fill="var(--fig-purple, #7c3aed)">on the way down and the way up</text>
 
-  <rect x="548" y="200" width="196" height="70" rx="9" fill="rgba(200,60,60,0.05)" stroke="#c0392b" stroke-width="1.2"/>
-  <text x="646" y="218" text-anchor="middle" font-size="10" font-weight="700" fill="#c0392b">why not just concatenate t?</text>
-  <text x="560" y="235" font-size="9.4" fill="#c0392b">One extra channel against 12,288</text>
-  <text x="560" y="248" font-size="9.4" fill="#c0392b">numbers is noise. The signal is</text>
-  <text x="560" y="261" font-size="9.4" fill="#c0392b">washed out and t is ignored.</text>
+  <rect x="548" y="200" width="196" height="70" rx="9" fill="rgba(200,60,60,0.05)" stroke="var(--fig-red, #c0392b)" stroke-width="1.2"/>
+  <text x="646" y="218" text-anchor="middle" font-size="10" font-weight="700" fill="var(--fig-red, #c0392b)">why not just concatenate t?</text>
+  <text x="560" y="235" font-size="10.5" fill="var(--fig-red, #c0392b)">One extra channel against 12,288</text>
+  <text x="560" y="248" font-size="10.5" fill="var(--fig-red, #c0392b)">numbers is noise. The signal is</text>
+  <text x="560" y="261" font-size="10.5" fill="var(--fig-red, #c0392b)">washed out and t is ignored.</text>
 
-  <text x="380" y="300" text-anchor="middle" font-size="10.6" fill="#555">And t is not a class label — it tells the network <tspan font-style="italic">how much noise to remove</tspan>. Without it the same input could be a nearly clean image or pure noise.</text>
+  <text x="380" y="300" text-anchor="middle" font-size="10.6" fill="var(--fig-ink-2, #555)">And t is not a class label, it tells the network <tspan font-style="italic">how much noise to remove</tspan>. Without it the same input could be a nearly clean image or pure noise.</text>
 </svg>

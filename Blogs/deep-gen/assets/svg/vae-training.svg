@@ -1,51 +1,51 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" font-family="Inter, -apple-system, sans-serif">
   <defs>
-    <marker id="vt-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker>
-    <marker id="vt-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/></marker>
-    <marker id="vt-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker>
+    <marker id="vt-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-teal, #0e7490)"/></marker>
+    <marker id="vt-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-amber, #d97706)"/></marker>
+    <marker id="vt-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-purple, #7c3aed)"/></marker>
   </defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">two gradient sources, meeting at the encoder</text>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">two gradient sources, meeting at the encoder</text>
 
   <!-- forward pass -->
-  <rect x="30" y="92" width="62" height="46" rx="8" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.4"/>
-  <text x="61" y="120" text-anchor="middle" font-size="11.5" fill="#0e7490">x</text>
-  <path d="M 96 115 L 126 115" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#vt-t)"/>
+  <rect x="30" y="92" width="62" height="46" rx="8" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.4"/>
+  <text x="61" y="120" text-anchor="middle" font-size="11.5" fill="var(--fig-teal, #0e7490)">x</text>
+  <path d="M 96 115 L 126 115" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#vt-t)"/>
 
-  <rect x="130" y="88" width="104" height="54" rx="9" fill="rgba(14,116,144,0.12)" stroke="#0e7490" stroke-width="1.8"/>
-  <text x="182" y="110" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7490">encoder q_φ</text>
-  <text x="182" y="128" text-anchor="middle" font-size="9.6" fill="#555">→ μ, σ</text>
+  <rect x="130" y="88" width="104" height="54" rx="9" fill="rgba(14,116,144,0.12)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.8"/>
+  <text x="182" y="110" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fig-teal, #0e7490)">encoder q_φ</text>
+  <text x="182" y="128" text-anchor="middle" font-size="10.5" fill="var(--fig-ink-2, #555)">→ μ, σ</text>
 
-  <path d="M 238 115 L 268 115" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#vt-t)"/>
-  <rect x="272" y="94" width="84" height="42" rx="8" fill="rgba(14,116,144,0.06)" stroke="#0e7490" stroke-width="1.6"/>
-  <text x="314" y="112" text-anchor="middle" font-size="10.4" font-weight="700" fill="#0e7490">z = μ + σ⊙ε</text>
-  <text x="314" y="128" text-anchor="middle" font-size="8.8" fill="#0e7490">differentiable</text>
-  <rect x="258" y="40" width="112" height="30" rx="8" fill="#f4f4f4" stroke="#888" stroke-width="1.3" stroke-dasharray="5 3"/>
-  <text x="314" y="59" text-anchor="middle" font-size="10" fill="#555">ε ~ 𝒩(0, I)</text>
-  <path d="M 314 72 L 314 90" stroke="#888" stroke-width="1.4" fill="none" marker-end="url(#vt-t)"/>
+  <path d="M 238 115 L 268 115" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#vt-t)"/>
+  <rect x="272" y="94" width="84" height="42" rx="8" fill="rgba(14,116,144,0.06)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6"/>
+  <text x="314" y="112" text-anchor="middle" font-size="10.4" font-weight="700" fill="var(--fig-teal, #0e7490)">z = μ + σ⊙ε</text>
+  <text x="314" y="128" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">differentiable</text>
+  <rect x="258" y="40" width="112" height="30" rx="8" fill="var(--fig-wash, #f4f4f4)" stroke="var(--fig-muted-2, #888)" stroke-width="1.3" stroke-dasharray="5 3"/>
+  <text x="314" y="59" text-anchor="middle" font-size="10" fill="var(--fig-ink-2, #555)">ε ~ 𝒩(0, I)</text>
+  <path d="M 314 72 L 314 90" stroke="var(--fig-muted-2, #888)" stroke-width="1.4" fill="none" marker-end="url(#vt-t)"/>
 
-  <path d="M 360 115 L 390 115" stroke="#d97706" stroke-width="1.6" fill="none" marker-end="url(#vt-o)"/>
-  <rect x="394" y="88" width="104" height="54" rx="9" fill="rgba(217,119,6,0.12)" stroke="#d97706" stroke-width="1.8"/>
-  <text x="446" y="110" text-anchor="middle" font-size="11" font-weight="700" fill="#d97706">decoder p_θ</text>
-  <text x="446" y="128" text-anchor="middle" font-size="9.6" fill="#555">→ 𝒟_θ(z)</text>
+  <path d="M 360 115 L 390 115" stroke="var(--fig-amber, #d97706)" stroke-width="1.6" fill="none" marker-end="url(#vt-o)"/>
+  <rect x="394" y="88" width="104" height="54" rx="9" fill="rgba(217,119,6,0.12)" stroke="var(--fig-amber, #d97706)" stroke-width="1.8"/>
+  <text x="446" y="110" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fig-amber, #d97706)">decoder p_θ</text>
+  <text x="446" y="128" text-anchor="middle" font-size="10.5" fill="var(--fig-ink-2, #555)">→ 𝒟_θ(z)</text>
 
-  <path d="M 502 115 L 532 115" stroke="#d97706" stroke-width="1.6" fill="none" marker-end="url(#vt-o)"/>
-  <rect x="536" y="90" width="118" height="50" rx="9" fill="#fff" stroke="#888" stroke-width="1.5"/>
-  <text x="595" y="110" text-anchor="middle" font-size="10.6" font-weight="600" fill="#444">‖x − 𝒟_θ(z)‖²</text>
-  <text x="595" y="127" text-anchor="middle" font-size="9.2" fill="#888">reconstruction</text>
+  <path d="M 502 115 L 532 115" stroke="var(--fig-amber, #d97706)" stroke-width="1.6" fill="none" marker-end="url(#vt-o)"/>
+  <rect x="536" y="90" width="118" height="50" rx="9" fill="var(--fig-paper, #fff)" stroke="var(--fig-muted-2, #888)" stroke-width="1.5"/>
+  <text x="595" y="110" text-anchor="middle" font-size="10.6" font-weight="600" fill="var(--fig-ink-2, #444)">‖x − 𝒟_θ(z)‖²</text>
+  <text x="595" y="127" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #888)">reconstruction</text>
 
   <!-- reconstruction gradient: all the way back -->
   <path d="M 590 148 C 560 200, 420 208, 314 208 C 240 208, 200 176, 184 148"
-        stroke="#7c3aed" stroke-width="2" fill="none" stroke-dasharray="7 4" marker-end="url(#vt-p)"/>
-  <text x="392" y="226" text-anchor="middle" font-size="10.4" font-weight="600" fill="#7c3aed">gradient 1 — back through the decoder, across z, into μ and σ</text>
-  <text x="392" y="241" text-anchor="middle" font-size="9.6" fill="#7c3aed">this is the path that needed reparameterising; it updates θ on the way past</text>
+        stroke="var(--fig-purple, #7c3aed)" stroke-width="2" fill="none" stroke-dasharray="7 4" marker-end="url(#vt-p)"/>
+  <text x="392" y="226" text-anchor="middle" font-size="10.4" font-weight="600" fill="var(--fig-purple, #7c3aed)">gradient 1: back through the decoder, across z, into μ and σ</text>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="392" y="241" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">this is the path that needed reparameterising; it updates θ on the way past</text>
 
   <!-- KL branch, analytic -->
-  <path d="M 182 146 C 182 268, 300 276, 356 276" stroke="#7c3aed" stroke-width="1.6" fill="none" stroke-dasharray="5 3"/>
-  <rect x="360" y="258" width="200" height="36" rx="8" fill="rgba(124,58,237,0.07)" stroke="#7c3aed" stroke-width="1.3"/>
-  <text x="460" y="281" text-anchor="middle" font-size="10.4" font-weight="600" fill="#7c3aed">D_KL(q_φ ‖ 𝒩(0,I)) — closed form</text>
-  <path d="M 356 276 L 340 276" stroke="#7c3aed" stroke-width="1.6" fill="none" marker-end="url(#vt-p)"/>
-  <text x="568" y="276" font-size="10.4" font-weight="600" fill="#7c3aed">gradient 2 — analytic</text>
-  <text x="568" y="290" font-size="9.6" fill="#7c3aed">no sampling anywhere in it</text>
+  <path d="M 182 146 C 182 268, 300 276, 356 276" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.6" fill="none" stroke-dasharray="5 3"/>
+  <rect x="360" y="258" width="200" height="36" rx="8" fill="rgba(124,58,237,0.07)" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.3"/>
+  <text x="460" y="281" text-anchor="middle" font-size="10.4" font-weight="600" fill="var(--fig-purple, #7c3aed)">D_KL(q_φ ‖ 𝒩(0,I)), closed form</text>
+  <path d="M 356 276 L 340 276" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.6" fill="none" marker-end="url(#vt-p)"/>
+  <text x="568" y="276" font-size="10.4" font-weight="600" fill="var(--fig-purple, #7c3aed)">gradient 2: analytic</text>
+  <text x="568" y="290" font-size="10.5" fill="var(--fig-purple, #7c3aed)">no sampling anywhere in it</text>
 
-  <text x="380" y="322" text-anchor="middle" font-size="10.6" fill="#555">The decoder sees only the reconstruction term. The encoder is pushed by both — which is exactly the tug-of-war of Figure 7.1.</text>
+  <text x="380" y="322" text-anchor="middle" font-size="10.6" fill="var(--fig-ink-2, #555)">The decoder sees only the reconstruction term. The encoder is pushed by both, which is exactly the tug-of-war of Figure 7.1.</text>
 </svg>

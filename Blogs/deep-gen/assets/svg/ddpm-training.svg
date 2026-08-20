@@ -1,51 +1,51 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="Inter, -apple-system, sans-serif">
   <defs>
-    <marker id="dt-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker>
-    <marker id="dt-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker>
+    <marker id="dt-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-teal, #0e7490)"/></marker>
+    <marker id="dt-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-purple, #7c3aed)"/></marker>
   </defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">the entire training step — no chain, no sequence, one formula and one forward pass</text>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">the entire training step, no chain, no sequence, one formula and one forward pass</text>
 
-  <rect x="24" y="46" width="96" height="42" rx="8" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.4"/>
-  <text x="72" y="64" text-anchor="middle" font-size="10" font-weight="600" fill="#0e7490">x₀ ~ data</text>
-  <text x="72" y="79" text-anchor="middle" font-size="8.8" fill="#777">one clean image</text>
+  <rect x="24" y="46" width="96" height="42" rx="8" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.4"/>
+  <text x="72" y="64" text-anchor="middle" font-size="10" font-weight="600" fill="var(--fig-teal, #0e7490)">x₀ ~ data</text>
+  <text x="72" y="79" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #777)">one clean image</text>
 
-  <rect x="24" y="102" width="96" height="42" rx="8" fill="#f4f4f4" stroke="#888" stroke-width="1.3" stroke-dasharray="4 3"/>
-  <text x="72" y="120" text-anchor="middle" font-size="10" fill="#555">t ~ U{1..T}</text>
-  <text x="72" y="135" text-anchor="middle" font-size="8.8" fill="#777">a random step</text>
+  <rect x="24" y="102" width="96" height="42" rx="8" fill="var(--fig-wash, #f4f4f4)" stroke="var(--fig-muted-2, #888)" stroke-width="1.3" stroke-dasharray="4 3"/>
+  <text x="72" y="120" text-anchor="middle" font-size="10" fill="var(--fig-ink-2, #555)">t ~ U{1..T}</text>
+  <text x="72" y="135" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #777)">a random step</text>
 
-  <rect x="24" y="158" width="96" height="42" rx="8" fill="#f4f4f4" stroke="#888" stroke-width="1.3" stroke-dasharray="4 3"/>
-  <text x="72" y="176" text-anchor="middle" font-size="10" fill="#555">ε ~ 𝒩(0, I)</text>
-  <text x="72" y="191" text-anchor="middle" font-size="8.8" fill="#777">the target</text>
+  <rect x="24" y="158" width="96" height="42" rx="8" fill="var(--fig-wash, #f4f4f4)" stroke="var(--fig-muted-2, #888)" stroke-width="1.3" stroke-dasharray="4 3"/>
+  <text x="72" y="176" text-anchor="middle" font-size="10" fill="var(--fig-ink-2, #555)">ε ~ 𝒩(0, I)</text>
+  <text x="72" y="191" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #777)">the target</text>
 
-  <path d="M 124 67 L 158 106" stroke="#0e7490" stroke-width="1.4" fill="none" marker-end="url(#dt-t)"/>
-  <path d="M 124 123 L 158 123" stroke="#888" stroke-width="1.4" fill="none" marker-end="url(#dt-t)"/>
-  <path d="M 124 179 L 158 140" stroke="#888" stroke-width="1.4" fill="none" marker-end="url(#dt-t)"/>
+  <path d="M 124 67 L 158 106" stroke="var(--fig-teal, #0e7490)" stroke-width="1.4" fill="none" marker-end="url(#dt-t)"/>
+  <path d="M 124 123 L 158 123" stroke="var(--fig-muted-2, #888)" stroke-width="1.4" fill="none" marker-end="url(#dt-t)"/>
+  <path d="M 124 179 L 158 140" stroke="var(--fig-muted-2, #888)" stroke-width="1.4" fill="none" marker-end="url(#dt-t)"/>
 
-  <rect x="162" y="100" width="164" height="46" rx="8" fill="rgba(14,116,144,0.06)" stroke="#0e7490" stroke-width="1.6"/>
-  <text x="244" y="119" text-anchor="middle" font-size="10" font-weight="700" fill="#0e7490">x_t = √ᾱ_t x₀ + √(1−ᾱ_t) ε</text>
-  <text x="244" y="136" text-anchor="middle" font-size="8.8" fill="#0e7490">one line — the chain is never walked</text>
+  <rect x="162" y="100" width="164" height="46" rx="8" fill="rgba(14,116,144,0.06)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6"/>
+  <text x="244" y="119" text-anchor="middle" font-size="10" font-weight="700" fill="var(--fig-teal, #0e7490)">x_t = √ᾱ_t x₀ + √(1−ᾱ_t) ε</text>
+  <text x="244" y="136" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">one line: the chain is never walked</text>
 
-  <path d="M 330 123 L 366 123" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#dt-t)"/>
-  <rect x="370" y="94" width="122" height="58" rx="9" fill="rgba(217,119,6,0.10)" stroke="#d97706" stroke-width="1.8"/>
-  <text x="431" y="114" text-anchor="middle" font-size="10.6" font-weight="700" fill="#d97706">U-Net  ε_θ(x_t, t)</text>
-  <text x="431" y="130" text-anchor="middle" font-size="8.8" fill="#8a5104">same weights for every t</text>
-  <text x="431" y="144" text-anchor="middle" font-size="8.8" fill="#8a5104">t enters as an embedding</text>
-  <path d="M 244 168 C 244 194, 400 194, 431 158" stroke="#888" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
-  <text x="330" y="204" text-anchor="middle" font-size="8.8" fill="#999">t is projected like a positional encoding and injected into the residual blocks</text>
+  <path d="M 330 123 L 366 123" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#dt-t)"/>
+  <rect x="370" y="94" width="122" height="58" rx="9" fill="rgba(217,119,6,0.10)" stroke="var(--fig-amber, #d97706)" stroke-width="1.8"/>
+  <text x="431" y="114" text-anchor="middle" font-size="10.6" font-weight="700" fill="var(--fig-amber, #d97706)">U-Net  ε_θ(x_t, t)</text>
+  <text x="431" y="130" text-anchor="middle" font-size="10.5" fill="var(--fig-amber-2, #8a5104)">same weights for every t</text>
+  <text x="431" y="144" text-anchor="middle" font-size="10.5" fill="var(--fig-amber-2, #8a5104)">t enters as an embedding</text>
+  <path d="M 244 168 C 244 194, 400 194, 431 158" stroke="var(--fig-muted-2, #888)" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="330" y="204" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #999)">t is projected like a positional encoding and injected into the residual blocks</text>
 
-  <path d="M 496 123 L 532 123" stroke="#d97706" stroke-width="1.6" fill="none" marker-end="url(#dt-t)"/>
-  <rect x="536" y="98" width="140" height="50" rx="9" fill="#fff" stroke="#7c3aed" stroke-width="1.6"/>
-  <text x="606" y="118" text-anchor="middle" font-size="10.6" font-weight="700" fill="#7c3aed">‖ ε − ε_θ(x_t, t) ‖²</text>
-  <text x="606" y="134" text-anchor="middle" font-size="8.8" fill="#7c3aed">plain mean squared error</text>
+  <path d="M 496 123 L 532 123" stroke="var(--fig-amber, #d97706)" stroke-width="1.6" fill="none" marker-end="url(#dt-t)"/>
+  <rect x="536" y="98" width="140" height="50" rx="9" fill="var(--fig-paper, #fff)" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.6"/>
+  <text x="606" y="118" text-anchor="middle" font-size="10.6" font-weight="700" fill="var(--fig-purple, #7c3aed)">‖ ε − ε_θ(x_t, t) ‖²</text>
+  <text x="606" y="134" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">plain mean squared error</text>
 
-  <path d="M 606 154 C 606 226, 460 234, 431 160" stroke="#7c3aed" stroke-width="1.8" fill="none" stroke-dasharray="6 4" marker-end="url(#dt-p)"/>
-  <text x="540" y="248" text-anchor="middle" font-size="9.6" fill="#7c3aed">backprop, update θ</text>
+  <path d="M 606 154 C 606 226, 460 234, 431 160" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.8" fill="none" stroke-dasharray="6 4" marker-end="url(#dt-p)"/>
+  <text x="540" y="248" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">backprop, update θ</text>
 
-  <rect x="24" y="228" width="380" height="62" rx="9" fill="rgba(14,116,144,0.04)" stroke="#0e7490" stroke-width="1.2"/>
-  <text x="38" y="247" font-size="9.8" fill="#555">Notice what is absent: no sequence, no recurrence, no sampling</text>
-  <text x="38" y="262" font-size="9.8" fill="#555">of intermediate states, and no adversary. Every training step is</text>
-  <text x="38" y="277" font-size="9.8" fill="#555">independent, which is why this parallelises so well on a GPU.</text>
+  <rect x="24" y="228" width="380" height="62" rx="9" fill="rgba(14,116,144,0.04)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.2"/>
+  <text x="38" y="247" font-size="10.5" fill="var(--fig-ink-2, #555)">Notice what is absent: no sequence, no recurrence, no sampling</text>
+  <text x="38" y="262" font-size="10.5" fill="var(--fig-ink-2, #555)">of intermediate states, and no adversary. Every training step is</text>
+  <text x="38" y="277" font-size="10.5" fill="var(--fig-ink-2, #555)">independent, which is why this parallelises so well on a GPU.</text>
 
-  <text x="606" y="272" text-anchor="middle" font-size="9.6" font-style="italic" fill="#999">Sampling, by contrast, is strictly sequential —</text>
-  <text x="606" y="286" text-anchor="middle" font-size="9.6" font-style="italic" fill="#999">all T steps, one after another.</text>
+  <text x="606" y="272" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--fig-muted-2, #999)">Sampling, by contrast, is strictly sequential,</text>
+  <text x="606" y="286" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--fig-muted-2, #999)">all T steps, one after another.</text>
 </svg>

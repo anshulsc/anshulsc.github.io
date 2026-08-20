@@ -20,9 +20,27 @@
   </url>
   <url>
     <loc>https://anshulsc.github.io/Blogs/blog-index.html</loc>
-    <lastmod>2026-01-13</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://anshulsc.github.io/Blogs/reading/index.html</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://anshulsc.github.io/Blogs/reading/ai-safety.html</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://anshulsc.github.io/Blogs/reading/model-organisms-em.html</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
       <loc>https://anshulsc.github.io/Blogs/cs294-158/index.html</loc>
@@ -110,25 +128,25 @@
   </url>
   <url>
     <loc>https://anshulsc.github.io/Blogs/ddp.html</loc>
-    <lastmod>2026-01-13</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://anshulsc.github.io/Blogs/dic-research.html</loc>
-    <lastmod>2026-01-13</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://anshulsc.github.io/Blogs/fl.html</loc>
-    <lastmod>2026-01-13</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://anshulsc.github.io/Blogs/iit-research.html</loc>
-    <lastmod>2026-01-13</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

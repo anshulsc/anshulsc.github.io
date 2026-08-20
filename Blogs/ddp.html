@@ -4,117 +4,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Distributed Data Parallelism - Training Across Multiple GPUs">
+    <meta name="description" content="Notes on Distributed Data Parallel (DDP): why it's needed, how gradient sync works, and what changes going from single-GPU to multi-GPU training in PyTorch.">
     <meta name="keywords" content="Distributed Systems, PyTorch, DDP, Machine Learning, GPU Training">
     <meta name="author" content="Anshul Singh">
-    <title>Distributed Data Parallelism - Training Across Multiple GPUs</title>
+    <title>Distributed Data Parallelism — Training Across Multiple GPUs</title>
 
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
 
-    <!-- Google Fonts -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Highlight.js Theme -->
+    <!-- Highlight.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
 
-    <link rel="stylesheet" href="research-style.css">
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <style>
-        /* Specific overrides for markdown content */
-        .markdown-body img {
-            max-width: 100%;
-            display: block;
-            margin: 20px auto;
-            border-radius: 4px;
-        }
+    <!-- Styles -->
+    <link rel="stylesheet" href="notes/plain.css">
 
-        .markdown-body pre {
-            background-color: #f6f8fa;
-            border-radius: 6px;
-            padding: 16px;
-            overflow: auto;
-        }
-
-        .markdown-body code {
-            font-family: var(--font-mono);
-            font-size: 0.85em;
-        }
-
-        .imgcap {
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .imgcap img {
-            margin-bottom: 10px;
-        }
-
-        .imgcap figcaption {
-            font-size: 0.9em;
-            color: var(--text-muted);
-            font-style: italic;
-        }
-    </style>
-
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../css/theme.css">
-  <script src="../js/theme.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../css/theme.css">
+    <script src="../js/theme.js"></script>
 </head>
 
-<body>
-
+<body class="plain">
     <div class="container">
-        <!-- Background Scribbles (Similar to Index) -->
-        <img src="assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
 
-        <img src="assets/scribbles/llm_arch.svg" class="scribble-svg"
-            style="top:150px; right:-240px; width:180px; opacity:0.1;">
-
-        <img src="assets/scribbles/math_misc.svg" class="scribble-svg" style="top:500px; left:-220px; width:160px;">
         <header class="site-header">
-            <a href="https://anshulsc.github.io/" class="site-logo">Anshul Singh</a>
-            <nav class="nav-links">
-                <a href="blog-index.html" style="margin-right: 20px;">All Posts</a>
-            </nav>
+            [<a href="../index.html">Home</a> /
+            <a href="blog-index.html">Writing</a> /
+            <span class="here">Distributed Data Parallelism</span>]
         </header>
 
         <main>
-            <div class="article-header-single">
-                <div class="breadcrumb">
-                    <a href="blog-index.html">Writing</a> / Research
-                </div>
-                <h1>Distributed Data Parallelism - Training Across Multiple GPUs</h1>
+            <h1>Distributed Data Parallelism — Training Across Multiple GPUs</h1>
 
-                <div class="article-meta-bar">
-                    <span>May 2024</span>
-                    <span>•</span>
-                    <span>10 min read</span>
-                    <span>•</span>
-                    <span>Distributed Systems</span>
-                </div>
-            </div>
-
-            <article class="article-content markdown-body" id="content-target">
-                <!-- Content will be injected here -->
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
             </article>
-
-            <div
-                style="margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between;">
-                <a href="blog-index.html" style="color: var(--text-muted);">&larr; Back to writings</a>
-                <a href="#" onclick="window.scrollTo(0,0); return false;" style="color: var(--text-muted);">Top
-                    &uarr;</a>
-            </div>
         </main>
+
+        <footer class="site-footer">
+            &copy; 2024 Anshul Singh
+        </footer>
     </div>
 
-    <!-- Hidden Markdown Content -->
     <script id="raw-markdown" type="text/template">
+*May 2024 · Distributed Systems · 10 min read*
+
+---
+
 These notes are mostly for myself to come back and revise these topics, but if they help you I'll be really happy.
 
 Training large models used to test my patience. I'd watch my machine for hours, making sure it didn't idle out, wishing I could just throw more GPUs at the problem. Eventually, I decided to figure out distributed training.
@@ -133,10 +78,10 @@ In regular single-GPU training, the process is straightforward. Your model sits 
 
 DDP extends this across multiple GPUs by launching one process per GPU. Each process gets its own copy of the model and optimizer. The trick is keeping all these copies synchronized.
 
-<div class="imgcap">
-<img src="/assets/ddp/ddp.jpeg" width="500" style="border: none;">
-<figcaption>Figure 1: Process : DDP </figcaption>
-</div>
+<figure>
+<img src="ddp/ddp.jpeg" width="500">
+<figcaption>Figure 1: The DDP process — one model replica per GPU, gradients synchronized before each step.</figcaption>
+</figure>
 
 Here's what happens during training:
 
@@ -157,7 +102,7 @@ Let me show you what changes when you go from single GPU to DDP. The core struct
 Here's a basic single-GPU training setup:
 
 ```python
-import torch 
+import torch
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 
@@ -168,10 +113,10 @@ class CustomDataset(Dataset):
 
     def __len__(self):
         return self.size
-    
+
     def __getitem__(self, index):
         return self.data[index]
-    
+
 class Trainer:
     def __init__(self, model, train_data, optimizer, gpu_id, save_every):
         self.gpu_id = gpu_id
@@ -229,7 +174,7 @@ if __name__ == "__main__":
     parser.add_argument('save_every', type=int, help='How often to save a snapshot')
     parser.add_argument('--batch_size', default=32, type=int, help='Input batch size on each device (default: 32)')
     args = parser.parse_args()
-    
+
     device = 0  # shorthand for cuda:0
     main(device, args.total_epochs, args.save_every, args.batch_size)
 ```
@@ -313,7 +258,7 @@ if __name__ == "__main__":
     parser.add_argument('save_every', type=int, help='How often to save a snapshot')
     parser.add_argument('--batch_size', default=32, type=int, help='Input batch size on each device (default: 32)')
     args = parser.parse_args()
-    
+
     world_size = torch.cuda.device_count()
     mp.spawn(main, args=(world_size, args.save_every, args.total_epochs, args.batch_size), nprocs=world_size)
 ```
@@ -327,24 +272,7 @@ The changes are minimal. Initialize a process group, wrap your model with DDP, u
 This same pattern scales from a single machine with multiple GPUs to multiple machines. You just change `MASTER_ADDR` to point to your actual master node and make sure your networking is set up properly.
     </script>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const rawMarkdown = document.getElementById('raw-markdown').innerHTML;
-
-            // Fix image paths: replace /assets/ddp/ with ddp/ (relative path)
-            const processedMarkdown = rawMarkdown.replace(/\/assets\/ddp\//g, 'ddp/');
-
-            // Render Markdown first
-            document.getElementById('content-target').innerHTML = marked.parse(processedMarkdown);
-
-            // Then apply syntax highlighting
-            hljs.highlightAll();
-        });
-    </script>
+    <script src="notes/notes-core.js"></script>
 </body>
 
 </html>

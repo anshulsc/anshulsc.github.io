@@ -1,34 +1,34 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 260" font-family="Inter, -apple-system, sans-serif">
   <defs>
-    <marker id="pf-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker>
-    <marker id="pf-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/></marker>
+    <marker id="pf-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-teal, #0e7490)"/></marker>
+    <marker id="pf-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-amber, #d97706)"/></marker>
   </defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">both align two domains — but in completely different spaces</text>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">both align two domains, but in completely different spaces</text>
 
-  <rect x="16" y="38" width="358" height="204" rx="10" fill="#fcfcfc" stroke="#e8e2d5"/>
-  <text x="34" y="58" font-size="11.5" font-weight="700" fill="#d97706">CycleGAN — pixel space</text>
-  <rect x="46" y="76" width="60" height="60" rx="5" fill="rgba(14,116,144,0.14)" stroke="#0e7490" stroke-width="1.4"/>
-  <text x="76" y="150" text-anchor="middle" font-size="9.4" fill="#777">source image</text>
-  <path d="M 112 106 L 156 106" stroke="#d97706" stroke-width="1.6" fill="none" marker-end="url(#pf-o)"/>
-  <text x="134" y="98" text-anchor="middle" font-size="9" fill="#d97706">G</text>
-  <rect x="160" y="76" width="60" height="60" rx="5" fill="rgba(217,119,6,0.16)" stroke="#d97706" stroke-width="1.4"/>
-  <text x="190" y="150" text-anchor="middle" font-size="9.4" fill="#777">a <tspan font-style="italic">new image</tspan></text>
-  <text x="190" y="164" text-anchor="middle" font-size="9.4" fill="#777">in the other domain</text>
-  <text x="46" y="192" font-size="10" fill="#555">The output is a picture you can look at.</text>
-  <text x="46" y="208" font-size="10" fill="#555">Goal: make it look like it belongs to domain B</text>
-  <text x="46" y="224" font-size="10" fill="#555">while keeping the structure of the input.</text>
+  <rect x="16" y="38" width="358" height="204" rx="10" fill="var(--fig-wash, #fcfcfc)" stroke="var(--fig-amber-bg, #e8e2d5)"/>
+  <text x="34" y="58" font-size="11.5" font-weight="700" fill="var(--fig-amber, #d97706)">CycleGAN: pixel space</text>
+  <rect x="46" y="76" width="60" height="60" rx="5" fill="rgba(14,116,144,0.14)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.4"/>
+  <text x="76" y="150" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #777)">source image</text>
+  <path d="M 112 106 L 156 106" stroke="var(--fig-amber, #d97706)" stroke-width="1.6" fill="none" marker-end="url(#pf-o)"/>
+  <text x="134" y="98" text-anchor="middle" font-size="10.5" fill="var(--fig-amber, #d97706)">G</text>
+  <rect x="160" y="76" width="60" height="60" rx="5" fill="rgba(217,119,6,0.16)" stroke="var(--fig-amber, #d97706)" stroke-width="1.4"/>
+  <text x="190" y="150" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #777)">a <tspan font-style="italic">new image</tspan></text>
+  <text x="190" y="164" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #777)">in the other domain</text>
+  <text x="46" y="192" font-size="10" fill="var(--fig-ink-2, #555)">The output is a picture you can look at.</text>
+  <text x="46" y="208" font-size="10" fill="var(--fig-ink-2, #555)">Goal: make it look like it belongs to domain B</text>
+  <text x="46" y="224" font-size="10" fill="var(--fig-ink-2, #555)">while keeping the structure of the input.</text>
 
-  <rect x="386" y="38" width="358" height="204" rx="10" fill="#fcfcfc" stroke="#dfe8ea"/>
-  <text x="404" y="58" font-size="11.5" font-weight="700" fill="#0e7490">DAN — latent feature space</text>
-  <rect x="416" y="76" width="46" height="46" rx="5" fill="rgba(14,116,144,0.14)" stroke="#0e7490" stroke-width="1.3"/>
-  <rect x="416" y="130" width="46" height="46" rx="5" fill="rgba(217,119,6,0.14)" stroke="#d97706" stroke-width="1.3"/>
-  <path d="M 468 99 L 502 118" stroke="#0e7490" stroke-width="1.5" fill="none" marker-end="url(#pf-t)"/>
-  <path d="M 468 153 L 502 134" stroke="#d97706" stroke-width="1.5" fill="none" marker-end="url(#pf-t)"/>
-  <text x="486" y="94" text-anchor="middle" font-size="9" fill="#0e7490">φ</text>
-  <ellipse cx="580" cy="126" rx="62" ry="40" fill="rgba(124,58,237,0.07)" stroke="#7c3aed" stroke-width="1.4" stroke-dasharray="5 4"/>
-  <g><circle cx="558" cy="112" r="3.6" fill="#0e7490"/><circle cx="592" cy="118" r="3.6" fill="#d97706"/><circle cx="570" cy="136" r="3.6" fill="#d97706"/><circle cx="600" cy="140" r="3.6" fill="#0e7490"/><circle cx="580" cy="122" r="3.6" fill="#0e7490"/><circle cx="546" cy="132" r="3.6" fill="#d97706"/></g>
-  <text x="580" y="180" text-anchor="middle" font-size="9.4" fill="#7c3aed">one shared latent cloud</text>
-  <text x="404" y="204" font-size="10" fill="#555">Nothing is generated and nothing is displayed. The</text>
-  <text x="404" y="220" font-size="10" fill="#555">two colours become <tspan font-style="italic">statistically indistinguishable</tspan>, so a</text>
-  <text x="404" y="236" font-size="10" fill="#555">classifier trained on one works on the other.</text>
+  <rect x="386" y="38" width="358" height="204" rx="10" fill="var(--fig-wash, #fcfcfc)" stroke="var(--fig-teal-bg, #dfe8ea)"/>
+  <text x="404" y="58" font-size="11.5" font-weight="700" fill="var(--fig-teal, #0e7490)">DAN: latent feature space</text>
+  <rect x="416" y="76" width="46" height="46" rx="5" fill="rgba(14,116,144,0.14)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.3"/>
+  <rect x="416" y="130" width="46" height="46" rx="5" fill="rgba(217,119,6,0.14)" stroke="var(--fig-amber, #d97706)" stroke-width="1.3"/>
+  <path d="M 468 99 L 502 118" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5" fill="none" marker-end="url(#pf-t)"/>
+  <path d="M 468 153 L 502 134" stroke="var(--fig-amber, #d97706)" stroke-width="1.5" fill="none" marker-end="url(#pf-t)"/>
+  <text x="486" y="94" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">φ</text>
+  <ellipse cx="580" cy="126" rx="62" ry="40" fill="rgba(124,58,237,0.07)" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <g><circle cx="558" cy="112" r="3.6" fill="var(--fig-teal, #0e7490)"/><circle cx="592" cy="118" r="3.6" fill="var(--fig-amber, #d97706)"/><circle cx="570" cy="136" r="3.6" fill="var(--fig-amber, #d97706)"/><circle cx="600" cy="140" r="3.6" fill="var(--fig-teal, #0e7490)"/><circle cx="580" cy="122" r="3.6" fill="var(--fig-teal, #0e7490)"/><circle cx="546" cy="132" r="3.6" fill="var(--fig-amber, #d97706)"/></g>
+  <text x="580" y="180" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">one shared latent cloud</text>
+  <text x="404" y="204" font-size="10" fill="var(--fig-ink-2, #555)">Nothing is generated and nothing is displayed. The</text>
+  <text x="404" y="220" font-size="10" fill="var(--fig-ink-2, #555)">two colours become <tspan font-style="italic">statistically indistinguishable</tspan>, so a</text>
+  <text x="404" y="236" font-size="10" fill="var(--fig-ink-2, #555)">classifier trained on one works on the other.</text>
 </svg>

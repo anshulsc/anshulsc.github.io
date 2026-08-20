@@ -4,10 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Lecture 11 notes: normalizing flows from first principles — why kernel density estimation dies in high dimensions, the change-of-variables formula derived from mass bookkeeping and from the CDF, increasing triangular maps and the Knothe–Rosenblatt theorem, MAF, Real-NVP affine coupling layers, NAF and SOS polynomial flows, multi-scale factorisation, Glow's invertible 1x1 convolutions and LU trick, latent-space arithmetic, conditional flows, and a comparison with StyleGAN and Pix2Pix.">
-    <meta name="keywords"
-        content="Normalizing Flows, Change of Variables, Jacobian Determinant, Triangular Maps, Knothe-Rosenblatt, MAF, Masked Autoregressive Flow, IAF, Real-NVP, Affine Coupling, NICE, NAF, SOS Polynomial Flows, Glow, Invertible 1x1 Convolution, LU Decomposition, Kernel Density Estimation, Curse of Dimensionality, StyleGAN, Disentanglement, Pix2Pix">
+    <meta name="description" content="Lecture 11 notes: normalizing flows from first principles — why kernel density estimation dies in high dimensions, the change-of-variables formula derived from mass bookkeeping and from the CDF, increasing triangular maps and the Knothe–Rosenblatt theorem, MAF, Real-NVP affine coupling layers, NAF and SOS polynomial flows, multi-scale factorisation, Glow's invertible 1x1 convolutions and LU trick, latent-space arithmetic, conditional flows, and a comparison with StyleGAN and Pix2Pix.">
     <meta name="author" content="Anshul Singh">
     <title>Lecture 11: Normalizing Flows — DGM Notes</title>
 
@@ -17,9 +14,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
@@ -36,77 +31,40 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../research-style.css">
-    <link rel="stylesheet" href="dgm-notes-style.css">
+    <link rel="stylesheet" href="../notes/plain.css">
 
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../../css/theme.css">
-  <script src="../../js/theme.js"></script>
-  <!-- Passphrase gate for this notes series -->
-  <script src="../../js/gate.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
+    <!-- Passphrase gate for this notes series -->
+    <script src="../../js/gate.js"></script>
 </head>
 
-<body>
-    <div class="reading-progress"></div>
-
+<body class="plain">
     <div class="container">
-        <!-- Background Scribbles -->
-        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
-        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
-            style="top:600px; left:-220px; width:160px;">
 
         <header class="site-header">
-            <p style="text-align:center">
-                [<a href="../../index.html">Home</a> /
-                <a href="../blog-index.html">Writing</a> /
-                <a href="index.html">DGM Notes</a>]
-            </p>
+            [<a href="../../index.html">Home</a> /
+            <a href="../blog-index.html">Writing</a> /
+            <a href="index.html">DGM notes</a> /
+            <span class="here">Normalizing Flows</span>]
         </header>
 
         <main>
-            <div class="chapter-header">
-                <div class="chapter-number">Lecture 11</div>
-                <h1>Normalizing Flows</h1>
-                <div class="chapter-meta">
-                    <span>August 2026</span>
-                    <span class="dot">●</span>
-                    <span id="reading-time">60 min read</span>
-                    <span class="dot">●</span>
-                    <span>Exact Likelihood</span>
-                </div>
-            </div>
+            <h1>Normalizing Flows</h1>
 
-            <div class="content-layout">
-                <article class="chapter-content" id="content-target">
-                    <!-- Rendered markdown goes here -->
-                </article>
-
-                <aside class="toc-sidebar">
-                    <div class="toc-inner">
-                        <div class="toc-title">On This Page</div>
-                        <ul class="toc-list"></ul>
-                    </div>
-                </aside>
-            </div>
-
-            <div class="chapter-nav">
-                <a href="ch-10.html" class="nav-prev">
-                    <div class="nav-label">← Previous Lecture</div>
-                    <div class="nav-title">Score Matching, Guidance &amp; DDIM</div>
-                </a>
-                <div class="nav-placeholder"></div>
-            </div>
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
         </main>
 
-        <footer
-            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+        <footer class="site-footer">
             &copy; 2026 Anshul Singh
         </footer>
     </div>
 
     <script id="raw-markdown" type="text/template">
-*Every model so far has given something up. GANs abandon the density entirely — they sample beautifully and cannot tell you the probability of anything. VAEs abandon exactness — they optimise a bound and never touch the likelihood itself. Diffusion models abandon speed. This lecture is about the one family that refuses all three trades at once: exact likelihood, one-shot sampling, ordinary maximum-likelihood training, no adversary. The bill still arrives, but it arrives somewhere unexpected — not in the objective, which is as plain as it gets, but in the shape of the network, which must be invertible and can never compress. And the entire construction rests on one line of first-year calculus, taken more seriously than it usually is.*
+*Every model so far has given something up: GANs the density, VAEs exactness, diffusion speed. This chapter is the one family that refuses all three trades — exact likelihood, one-shot sampling, ordinary maximum-likelihood training — and the bill still arrives, but in the shape of the network rather than in the objective.*
 
 <div class="part-marker"><span class="part-label">Part I</span><span class="part-name">What a flow is for</span><span class="part-sub">the two jobs, and why the obvious methods fail at them</span></div>
 
@@ -825,7 +783,7 @@ This is also the cleanest statement of why a conditional GAN beats an unconditio
 
 ## 25. Choosing between them
 
-The whole course, in one table.
+The whole series, in one table.
 
 | family | exact $p(x)$? | samples | training | latent | main drawback |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -862,13 +820,13 @@ Two ways of using this table are worth rehearsing, because they are the question
 
 ## 27. What I take away
 
-The mathematics of flows is the smallest of any model in this course. One conservation law, applied in $d$ dimensions, plus the chain rule. There is no bound to be careful about, no adversary to stabilise, no noise schedule to tune. Objective (6) is the log-likelihood, written out in full, differentiated directly.
+The mathematics of flows is the smallest of any model in these notes. One conservation law, applied in $d$ dimensions, plus the chain rule. There is no bound to be careful about, no adversary to stabilise, no noise schedule to tune. Objective (6) is the log-likelihood, written out in full, differentiated directly.
 
 Everything hard about flows got pushed into architecture. Because the objective demands nothing, the network must supply everything: invertibility, a computable determinant, and enough expressiveness to bend a Gaussian into the distribution of natural images. That is why this chapter is mostly a catalogue of clever layers — triangular maps, coupling layers, monotone networks, sum-of-squares polynomials, LU-parameterised mixing matrices. Each is an answer to "what can I make invertible and still differentiate cheaply".
 
 And the constraint that cannot be engineered around is the one that decided the field's direction. A flow cannot compress, because a determinant needs a square matrix. That single fact makes flows expensive on large images and left the door open for diffusion models, which gave up exactness and got sample quality in return.
 
-Which is the pattern the whole course has been circling. GANs gave up the density for sample quality. VAEs gave up exactness for a bottleneck. Diffusion gave up speed for stability. Flows gave up the bottleneck for exactness. There is no model here that got something for nothing, and knowing precisely what each one traded away is the actual content of knowing them.
+Which is the pattern these notes have been circling. GANs gave up the density for sample quality. VAEs gave up exactness for a bottleneck. Diffusion gave up speed for stability. Flows gave up the bottleneck for exactness. There is no model here that got something for nothing, and knowing precisely what each one traded away is the actual content of knowing them.
 
 ## References
 

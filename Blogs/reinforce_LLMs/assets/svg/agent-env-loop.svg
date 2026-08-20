@@ -2,20 +2,20 @@
   <!-- Definitions for arrows and filters -->
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#6e46be" />
+      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="var(--fig-purple, #6e46be)" />
     </marker>
     <filter id="drop-shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.06"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="var(--fig-ink, #000)" flood-opacity="0.06"/>
     </filter>
   </defs>
 
   <style>
-    .box { fill: #ffffff; stroke: #e0e0e0; stroke-width: 1.5; filter: url(#drop-shadow); rx: 12px; }
-    .accent-box { fill: #fcfaff; stroke: #6e46be; stroke-width: 2; filter: url(#drop-shadow); rx: 12px; }
-    .text-title { font-family: 'Inter', system-ui, sans-serif; font-size: 16px; font-weight: 600; fill: #111111; }
-    .text-body { font-family: 'Inter', system-ui, sans-serif; font-size: 13px; fill: #555555; }
-    .text-accent { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; font-weight: 600; fill: #6e46be; }
-    .arrow-line { fill: none; stroke: #6e46be; stroke-width: 2; marker-end: url(#arrow); }
+    .box { fill: var(--fig-paper, #ffffff); stroke: var(--fig-line, #e0e0e0); stroke-width: 1.5; filter: url(#drop-shadow); rx: 12px; }
+    .accent-box { fill: var(--fig-purple-bg, #fcfaff); stroke: var(--fig-purple, #6e46be); stroke-width: 2; filter: url(#drop-shadow); rx: 12px; }
+    .text-title { font-family: 'Inter', system-ui, sans-serif; font-size: 16px; font-weight: 600; fill: var(--fig-ink, #111111); }
+    .text-body { font-family: 'Inter', system-ui, sans-serif; font-size: 13px; fill: var(--fig-ink-2, #555555); }
+    .text-accent { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; font-weight: 600; fill: var(--fig-purple, #6e46be); }
+    .arrow-line { fill: none; stroke: var(--fig-purple, #6e46be); stroke-width: 2; marker-end: url(#arrow); }
   </style>
 
   <!-- Agent Box -->

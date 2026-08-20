@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Writings & Research - Anshul Singh</title>
+    <title>Writing &amp; Research · Anshul Singh</title>
 
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
@@ -12,261 +12,159 @@
     <!-- Social preview -->
     <meta name="description" content="Notes on my experiences, life, and sometimes machine learning.">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Writing & Research — Anshul Singh">
+    <meta property="og:title" content="Writing &amp; Research · Anshul Singh">
     <meta property="og:description" content="Notes on my experiences, life, and sometimes machine learning.">
     <meta property="og:url" content="https://anshulsc.github.io/Blogs/blog-index.html">
     <meta property="og:image" content="https://anshulsc.github.io/images/og-card.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@anshulsc">
-    <meta name="twitter:title" content="Writing & Research — Anshul Singh">
+    <meta name="twitter:title" content="Writing &amp; Research · Anshul Singh">
     <meta name="twitter:description" content="Notes on my experiences, life, and sometimes machine learning.">
     <meta name="twitter:image" content="https://anshulsc.github.io/images/og-card.png">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
+    <!-- Styles: the shared notes skin, then this page's three additions -->
+    <link rel="stylesheet" href="notes/plain.css">
     <link rel="stylesheet" href="research-style.css">
 
-
-
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../css/theme.css">
-  <script src="../js/theme.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../css/theme.css">
+    <script src="../js/theme.js"></script>
 </head>
 
-<body>
-
+<body class="plain">
     <div class="container">
-        <header class="site-header">
-            <a class="brand-mark" href="../index.html" aria-label="asca — home">
+
+        <header class="site-header index-header">
+            <a class="brand-mark" href="../index.html" aria-label="asca, home">
                 <img class="brand-avatar" src="../images/avatar.png" alt="">
                 <img class="brand-wordmark" src="../images/logo.png" alt="asca">
             </a>
-            <p style="text-align:center">
+            <p>
                 [<a href="../index.html">Home</a> /
-                <a href="blog-index.html" class="active"
-                    style="font-weight:bold; color:#111; text-decoration:none; cursor:default;">Writing</a> /
+                <span class="here">Writing</span> /
+                <a href="reading/index.html">Reading list</a> /
                 <a href="https://twitter.com/anshulsc">Twitter</a> /
                 <a href="https://github.com/anshulsc">Github</a>]
             </p>
         </header>
 
-        <!-- Background Scribbles -->
-        <!-- Gaussian - Top Left Extreme -->
-        <img src="assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
+        <main class="note-index">
+            <h1>Writing &amp; Research</h1>
 
-        <!-- LLM Architecture - Top Right Extreme -->
-        <img src="assets/scribbles/llm_arch.svg" class="scribble-svg"
-            style="top:150px; right:-240px; width:180px; opacity:0.1;">
+            <p class="lede">
+                Notes on my experiences, life, and sometimes machine learning.
+            </p>
 
-        <!-- Math Misc - Middle Left Extreme -->
-        <img src="assets/scribbles/math_misc.svg" class="scribble-svg" style="top:500px; left:-220px; width:160px;">
-
-
-
-        <main>
-            <section class="blog-intro">
-                <h1>
-                    Writing & Research
-                    <!-- Underline Scribble -->
-                    <img src="assets/scribbles/underline_wavy.svg" class="scribble-inline"
-                        style="bottom: -15px; left: 50%; transform: translateX(-50%); width: 180px;">
-                </h1>
-
-                <p>Notes on my experiences, life, and sometimes machine learning.</p>
-            </section>
-
-            <div class="search-container">
-                <input type="text" id="searchInput" class="search-input" placeholder="Search for ...">
+            <div class="index-search">
+                <input type="text" id="searchInput" class="search-input" placeholder="search">
             </div>
 
             <div class="filter-bar">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="experience">Experience</button>
-                <button class="filter-btn" data-filter="research">Research</button>
-                <button class="filter-btn" data-filter="engineering">Engineering</button>
+                <button class="filter-btn active" data-filter="all">all</button><button class="filter-btn"
+                    data-filter="experience">experience</button><button class="filter-btn"
+                    data-filter="research">research</button><button class="filter-btn"
+                    data-filter="engineering">engineering</button>
             </div>
 
             <section class="writing-section">
-                <h2 class="section-label">Writing</h2>
+                <h2>Writing</h2>
+                <ul>
+                    <li class="article-item" data-category="research machine-learning distributed-systems">
+                        <a href="fl.html" class="article-title">Training Models Across Multiple Machines</a>
+                        <span class="article-excerpt">Building a federated learning system from scratch with gRPC and
+                            Protocol Buffers.</span>
+                        <span class="entry-meta"><span>July 2024</span><span><span class="tag">Research</span><span
+                                    class="tag">Machine Learning</span><span
+                                    class="tag">Distributed Systems</span></span></span>
+                    </li>
 
-                <div class="article-list" id="articleList" style="max-width: 800px; margin: 0 auto;">
+                    <li class="article-item" data-category="research machine-learning distributed-systems">
+                        <a href="ddp.html" class="article-title">Distributed Data Parallelism</a>
+                        <span class="article-excerpt">Scaling training across multiple GPUs, and what actually changes
+                            in the code.</span>
+                        <span class="entry-meta"><span>May 2024</span><span><span class="tag">Research</span><span
+                                    class="tag">Distributed Systems</span><span class="tag">PyTorch</span></span></span>
+                    </li>
 
-                    <!-- Article 1: Federated Learning -->
-                    <div class="article-item"
-                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
-                        data-category="research machine-learning distributed-systems">
-                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">July 2024 • Distributed
-                            Systems</div>
-                        <a href="fl.html" class="article-title"
-                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">Training
-                            Models Across Multiple Machines - The Federated Learning Way</a>
-                        <p class="article-excerpt"
-                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
-                            Notes on Distributed Training: Building a federated learning system from scratch using gRPC
-                            and Protocol Buffers.
-                        </p>
-                        <div class="tags">
-                            <span class="tag">Research</span>
-                            <span class="tag">Machine Learning</span>
-                            <span class="tag">Distributed Systems</span>
-                        </div>
-                    </div>
+                    <li class="article-item" data-category="research experience machine-learning">
+                        <a href="iit-research.html" class="article-title">Fault Detection in Induction Motors</a>
+                        <span class="article-excerpt">A research internship at IIT Roorkee. Signal processing and ML
+                            to predict machinery failure.</span>
+                        <span class="entry-meta"><span>Summer 2023</span><span><span class="tag">Experience</span><span
+                                    class="tag">Machine Learning</span></span></span>
+                    </li>
 
-                    <!-- Article 2: Distributed Data Parallelism -->
-                    <div class="article-item"
-                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
-                        data-category="research machine-learning distributed-systems">
-                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">May 2024 • Distributed
-                            Systems</div>
-                        <a href="ddp.html" class="article-title"
-                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">Distributed
-                            Data Parallelism - Training Across Multiple GPUs</a>
-                        <p class="article-excerpt"
-                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
-                            My notes on distributed data parallelism (DDP) and how to scale training across multiple
-                            GPUs.
-                        </p>
-                        <div class="tags">
-                            <span class="tag">Research</span>
-                            <span class="tag">Distributed Systems</span>
-                            <span class="tag">PyTorch</span>
-                        </div>
-                    </div>
-
-                    <!-- Article 2 -->
-                    <div class="article-item"
-                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
-                        data-category="research experience machine-learning">
-                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">Summer 2023 • IIT Roorkee
-                        </div>
-                        <a href="iit-research.html" class="article-title"
-                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">Fault
-                            Detection in Induction Motors</a>
-                        <p class="article-excerpt"
-                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
-                            An overview of my machine learning research internship at IIT Roorkee, exploring how signal
-                            processing and ML can predict machinery failure.
-                        </p>
-                        <div class="tags">
-                            <span class="tag">Experience</span>
-                            <span class="tag">Machine Learning</span>
-                        </div>
-                    </div>
-
-                    <!-- Article 3 -->
-                    <div class="article-item"
-                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
-                        data-category="research experience engineering">
-                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">March 2022 • Panjab University
-                        </div>
-                        <a href="dic-research.html" class="article-title"
-                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">Improving
-                            Solar Cell Efficiency</a>
-                        <p class="article-excerpt"
-                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
-                            Building a water-based cooling mechanism for solar panels at the Design and Innovation
-                            Center.
-                        </p>
-                        <div class="tags">
-                            <span class="tag">Experience</span>
-                            <span class="tag">Embedded Systems</span>
-                        </div>
-                    </div>
-
-                </div>
+                    <li class="article-item" data-category="research experience engineering">
+                        <a href="dic-research.html" class="article-title">Improving Solar Cell Efficiency</a>
+                        <span class="article-excerpt">A water-based cooling mechanism for solar panels, at the Design
+                            and Innovation Center.</span>
+                        <span class="entry-meta"><span>March 2022</span><span><span class="tag">Experience</span><span
+                                    class="tag">Embedded Systems</span></span></span>
+                    </li>
+                </ul>
             </section>
 
-                <div id="noResults"
-                    style="display: none; text-align: center; color: var(--text-muted); margin-top: 40px;">
-                    No articles found matching your search.
-                </div>
+            <div id="noResults">
+                Nothing here matches that.
+            </div>
 
             <details class="notes-vault" id="notesVault">
-                <summary>· lecture notes ·</summary>
-                <p class="section-note">Notes, one chapter per lecture — rough, long, and
-                    mostly written for me. Series marked 🔒 open with a passphrase.</p>
+                <summary>Lecture notes</summary>
+                <p class="section-note">One chapter per lecture. Rough, long, and mostly written for me. Series
+                    marked 🔒 open with a passphrase.</p>
 
-                <div class="article-list" style="max-width: 800px; margin: 0 auto;">
-                    <!-- Article 0: RL for LLMs Notes Series -->
-                    <div class="article-item"
-                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
-                        data-category="research machine-learning engineering">
-                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">June 2026 • Notes Series</div>
-                        <a href="reinforce_LLMs/index.html" class="article-title"
-                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">RL Notes Series</a>
-                        <p class="article-excerpt"
-                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
-                            Personal study notes tracing RL from Bellman equations to PPO/GRPO alignment for LLMs.
-                        </p>
-                        <div class="tags">
-                            <span class="tag">Research</span>
-                            <span class="tag">Machine Learning</span>
-                            <span class="tag">LLMs</span>
-                        </div>
-                    </div>
+                <ul>
+                    <li class="article-item" data-category="research machine-learning engineering">
+                        <a href="reinforce_LLMs/index.html" class="article-title">RL Notes Series</a>
+                        <span class="article-excerpt">Reinforcement learning from Bellman equations through to
+                            PPO/GRPO alignment for LLMs.</span>
+                        <span class="entry-meta"><span>June 2026</span><span><span class="tag">Research</span><span
+                                    class="tag">Machine Learning</span><span class="tag">LLMs</span></span></span>
+                    </li>
 
-                    <!-- Article 00: Deep Generative Models Notes Series -->
-                    <div class="article-item"
-                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
-                        data-category="research machine-learning">
-                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">August 2026 • Notes Series</div>
-                        <a href="deep-gen/index.html" class="article-title"
-                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #6e46be;">Deep Generative Models Notes</a>
-                        <p class="article-excerpt"
-                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
-                            Lecture-by-lecture notes from IISc's DGM lectures — probability foundations, the divergence minimization recipe behind every generative model, the convex-duality derivation that turns it into a working GAN, the practical family that follows (DCGAN, conditional GANs, CycleGAN), the optimal-transport repair behind Wasserstein GANs, and the variational autoencoder — through to discrete latent codes with VQ-VAE and the denoising diffusion models behind modern image generation, score matching, classifier guidance and DDIM — and normalizing flows, the one family that keeps an exact likelihood.
-                        </p>
-                        <span class="lock-badge">🔒 Locked</span>
-                        <div class="tags">
-                            <span class="tag">Research</span>
-                            <span class="tag">Machine Learning</span>
-                            <span class="tag">Generative Models</span>
-                        </div>
-                    </div>
+                    <li class="article-item" data-category="research machine-learning">
+                        <a href="deep-gen/index.html" class="article-title">Deep Generative Models Notes</a>
+                        <span class="article-excerpt">IISc's DGM lectures. The divergence-minimisation recipe behind
+                            every generative model, worked through to GANs, VAEs, diffusion and flows.</span>
+                        <span class="entry-meta"><span>August 2026</span><span class="lock">🔒 locked</span><span><span
+                                    class="tag">Research</span><span class="tag">Machine Learning</span><span
+                                    class="tag">Generative Models</span></span></span>
+                    </li>
 
-                    <!-- Article 00: CS294-158 Deep Unsupervised Learning Notes -->
-                    <div class="article-item"
-                        style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee;"
-                        data-category="research machine-learning">
-                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">August 2026 • Notes Series</div>
-                        <a href="cs294-158/index.html" class="article-title"
-                            style="font-size: 1.4rem; font-weight: 700; display: block; margin-bottom: 8px; color: #1a4f7a;">Deep Unsupervised Learning — CS294-158 Notes</a>
-                        <p class="article-excerpt"
-                            style="font-size: 0.9rem; color: #333; line-height: 1.6; margin-bottom: 10px;">
-                            Lecture-by-lecture notes from UC Berkeley's CS294-158 (Abbeel, Yan, Frans, Wu). Starting with the argument for learning without labels at all — Hinton's parameter budget worked as arithmetic, LeCun's cake with the bits attached, and the case that compression, likelihood and understanding are one quantity — then the map of the generative families and why masked autoencoders have to hide 75% of the image.
-                        </p>
-                        <span class="lock-badge">🔒 Locked</span>
-                        <div class="tags">
-                            <span class="tag">Generative Models</span>
-                            <span class="tag">Self-Supervised Learning</span>
-                            <span class="tag">Information Theory</span>
-                        </div>
-                    </div>
-
-                </div>
+                    <li class="article-item" data-category="research machine-learning">
+                        <a href="cs294-158/index.html" class="article-title">Deep Unsupervised Learning (CS294-158)</a>
+                        <span class="article-excerpt">Berkeley's CS294-158. Why learn without labels at all,
+                            compression as the definition of understanding, and the map of the generative
+                            families.</span>
+                        <span class="entry-meta"><span>August 2026</span><span class="lock">🔒 locked</span><span><span
+                                    class="tag">Generative Models</span><span
+                                    class="tag">Self-Supervised Learning</span><span
+                                    class="tag">Information Theory</span></span></span>
+                    </li>
+                </ul>
             </details>
-
         </main>
 
-        <footer
-            style="margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 0.9rem;">
-            &copy; 2024 Anshul Singh.
+        <footer class="site-footer">
+            &copy; 2026 Anshul Singh
         </footer>
     </div>
 
     <script>
-        // Search, Filter, and Tag Logic
+        // Search, filter and tag logic. Entries are <li class="article-item">,
+        // so hidden ones go back to '' rather than 'block'. A list item that
+        // is display:block loses its marker and its indent.
         const searchInput = document.getElementById('searchInput');
         const filterBtns = document.querySelectorAll('.filter-btn');
         const articles = document.querySelectorAll('.article-item');
         const noResults = document.getElementById('noResults');
         const tags = document.querySelectorAll('.tag');
+        const vault = document.getElementById('notesVault');
 
         function filterArticles() {
             const searchTerm = searchInput.value.toLowerCase().trim();
@@ -276,38 +174,37 @@
 
             articles.forEach(article => {
                 const title = article.querySelector('.article-title').textContent.toLowerCase();
-                const excerpt = article.querySelector('.article-excerpt').textContent.toLowerCase();
-                const category = article.dataset.category;
+                const excerptEl = article.querySelector('.article-excerpt');
+                const excerpt = excerptEl ? excerptEl.textContent.toLowerCase() : '';
+                const category = article.dataset.category || '';
 
-                // Also check if tags match the search term
                 const articleTags = Array.from(article.querySelectorAll('.tag'))
                     .map(tag => tag.textContent.toLowerCase());
                 const tagsMatchSearch = articleTags.some(t => t.includes(searchTerm));
 
-                const matchesSearch = title.includes(searchTerm) || excerpt.includes(searchTerm) || tagsMatchSearch; // Added tags search
+                const matchesSearch = title.includes(searchTerm) || excerpt.includes(searchTerm) || tagsMatchSearch;
                 const matchesFilter = activeFilter === 'all' || category.includes(activeFilter);
 
                 if (matchesSearch && matchesFilter) {
-                    article.style.display = 'block';
+                    article.style.display = '';
                     visibleCount++;
                 } else {
                     article.style.display = 'none';
                 }
             });
 
-            // a section whose every entry is filtered out should take its heading with it
+            // a section whose every entry is filtered out takes its heading with it
             document.querySelectorAll('.writing-section').forEach(section => {
                 const anyVisible = Array.from(section.querySelectorAll('.article-item'))
                     .some(item => item.style.display !== 'none');
-                section.style.display = anyVisible ? 'block' : 'none';
+                section.style.display = anyVisible ? '' : 'none';
             });
 
-            // the notes vault stays shut until something you searched for is in it
-            const vault = document.getElementById('notesVault');
+            // the vault stays shut until something you searched for is inside it
             const vaultHit = Array.from(vault.querySelectorAll('.article-item'))
                 .some(item => item.style.display !== 'none');
             if (searchTerm && vaultHit) vault.open = true;
-            vault.style.display = (searchTerm && !vaultHit) ? 'none' : 'block';
+            vault.style.display = (searchTerm && !vaultHit) ? 'none' : '';
 
             noResults.style.display = visibleCount === 0 ? 'block' : 'none';
         }
@@ -322,16 +219,11 @@
             });
         });
 
-        // Tag Click Functionality
-        tags.forEach(tag => { // Add this block
-            tag.style.cursor = 'pointer'; // Make it look clickable
-            tag.addEventListener('click', (e) => {
-                e.preventDefault(); // Prevent bubbling if needed
-                const tagText = tag.textContent;
-                searchInput.value = tagText; // Set search input
-                filterArticles(); // Trigger filter
-
-                // Optional: Scroll to search input to show context
+        // Clicking a tag searches for it
+        tags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                searchInput.value = tag.textContent;
+                filterArticles();
                 searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 searchInput.focus();
             });

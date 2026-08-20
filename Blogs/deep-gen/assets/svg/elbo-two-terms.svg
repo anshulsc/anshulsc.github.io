@@ -1,31 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="Inter, -apple-system, sans-serif">
-  <defs><marker id="et-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/></marker>
-  <marker id="et-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker></defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">the ELBO is two demands pulling against each other</text>
+  <defs><marker id="et-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-amber, #d97706)"/></marker>
+  <marker id="et-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-purple, #7c3aed)"/></marker></defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">the ELBO is two demands pulling against each other</text>
 
-  <rect x="30" y="44" width="700" height="34" rx="8" fill="rgba(14,116,144,0.06)" stroke="#0e7490" stroke-width="1.3"/>
-  <text x="380" y="66" text-anchor="middle" font-size="11.5" fill="#333">maximise   𝔼_q[ log p_θ(x|z) ]   −   D_KL( q_φ(z|x) ‖ p(z) )</text>
+  <rect x="30" y="44" width="700" height="34" rx="8" fill="rgba(14,116,144,0.06)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.3"/>
+  <text x="380" y="66" text-anchor="middle" font-size="11.5" fill="var(--fig-ink, #333)">maximise   𝔼_q[ log p_θ(x|z) ]   −   D_KL( q_φ(z|x) ‖ p(z) )</text>
 
-  <rect x="30" y="98" width="336" height="150" rx="10" fill="#fcfcfc" stroke="#e8e2d5"/>
-  <text x="198" y="120" text-anchor="middle" font-size="11.5" font-weight="700" fill="#d97706">reconstruction — "be accurate"</text>
-  <path d="M 60 178 C 90 178, 94 146, 122 146 C 150 146, 154 178, 184 178" fill="rgba(217,119,6,0.14)" stroke="#d97706" stroke-width="1.8"/>
-  <path d="M 200 178 C 230 178, 234 146, 262 146 C 290 146, 294 178, 324 178" fill="rgba(217,119,6,0.14)" stroke="#d97706" stroke-width="1.8"/>
-  <path d="M 150 196 L 110 196" stroke="#d97706" stroke-width="1.6" fill="none" marker-end="url(#et-o)"/>
-  <path d="M 236 196 L 276 196" stroke="#d97706" stroke-width="1.6" fill="none" marker-end="url(#et-o)"/>
-  <text x="198" y="214" text-anchor="middle" font-size="9.8" fill="#d97706">pushes each x's posterior apart from the others,</text>
-  <text x="198" y="228" text-anchor="middle" font-size="9.8" fill="#d97706">narrow and far, so the decoder cannot confuse them</text>
-  <text x="198" y="242" text-anchor="middle" font-size="9.4" font-style="italic" fill="#999">alone: an ordinary autoencoder, latent space full of holes</text>
+  <rect x="30" y="98" width="336" height="150" rx="10" fill="var(--fig-wash, #fcfcfc)" stroke="var(--fig-amber-bg, #e8e2d5)"/>
+  <text x="198" y="120" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--fig-amber, #d97706)">reconstruction: "be accurate"</text>
+  <path d="M 60 178 C 90 178, 94 146, 122 146 C 150 146, 154 178, 184 178" fill="rgba(217,119,6,0.14)" stroke="var(--fig-amber, #d97706)" stroke-width="1.8"/>
+  <path d="M 200 178 C 230 178, 234 146, 262 146 C 290 146, 294 178, 324 178" fill="rgba(217,119,6,0.14)" stroke="var(--fig-amber, #d97706)" stroke-width="1.8"/>
+  <path d="M 150 196 L 110 196" stroke="var(--fig-amber, #d97706)" stroke-width="1.6" fill="none" marker-end="url(#et-o)"/>
+  <path d="M 236 196 L 276 196" stroke="var(--fig-amber, #d97706)" stroke-width="1.6" fill="none" marker-end="url(#et-o)"/>
+  <text x="198" y="214" text-anchor="middle" font-size="10.5" fill="var(--fig-amber, #d97706)">pushes each x's posterior apart from the others,</text>
+  <text x="198" y="228" text-anchor="middle" font-size="10.5" fill="var(--fig-amber, #d97706)">narrow and far, so the decoder cannot confuse them</text>
+  <text x="198" y="242" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--fig-muted-2, #999)">alone: an ordinary autoencoder, latent space full of holes</text>
 
-  <rect x="394" y="98" width="336" height="150" rx="10" fill="#fcfcfc" stroke="#dfe8ea"/>
-  <text x="562" y="120" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7c3aed">regularisation — "stay near the prior"</text>
-  <path d="M 424 178 C 474 178, 482 138, 562 138 C 642 138, 650 178, 700 178" fill="rgba(124,58,237,0.08)" stroke="#7c3aed" stroke-width="1.6" stroke-dasharray="5 4"/>
-  <text x="562" y="132" text-anchor="middle" font-size="9" fill="#7c3aed">p(z) = 𝒩(0, I)</text>
-  <path d="M 490 196 L 540 196" stroke="#7c3aed" stroke-width="1.6" fill="none" marker-end="url(#et-p)"/>
-  <path d="M 634 196 L 584 196" stroke="#7c3aed" stroke-width="1.6" fill="none" marker-end="url(#et-p)"/>
-  <text x="562" y="214" text-anchor="middle" font-size="9.8" fill="#7c3aed">pulls every posterior back onto the prior, so the</text>
-  <text x="562" y="228" text-anchor="middle" font-size="9.8" fill="#7c3aed">latent space is filled in and samplable</text>
-  <text x="562" y="242" text-anchor="middle" font-size="9.4" font-style="italic" fill="#999">alone: posterior collapse — every x maps to 𝒩(0,I), no information</text>
+  <rect x="394" y="98" width="336" height="150" rx="10" fill="var(--fig-wash, #fcfcfc)" stroke="var(--fig-teal-bg, #dfe8ea)"/>
+  <text x="562" y="120" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--fig-purple, #7c3aed)">regularisation: "stay near the prior"</text>
+  <path d="M 424 178 C 474 178, 482 138, 562 138 C 642 138, 650 178, 700 178" fill="rgba(124,58,237,0.08)" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <text x="562" y="132" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">p(z) = 𝒩(0, I)</text>
+  <path d="M 490 196 L 540 196" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.6" fill="none" marker-end="url(#et-p)"/>
+  <path d="M 634 196 L 584 196" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.6" fill="none" marker-end="url(#et-p)"/>
+  <text x="562" y="214" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">pulls every posterior back onto the prior, so the</text>
+  <text x="562" y="228" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">latent space is filled in and samplable</text>
+  <text x="562" y="242" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--fig-muted-2, #999)">alone: posterior collapse, every x maps to 𝒩(0,I), no information</text>
 
-  <text x="380" y="274" text-anchor="middle" font-size="10.6" fill="#555">Neither term is the objective. The balance is what makes the latent space both <tspan font-style="italic">informative</tspan> and <tspan font-style="italic">continuous</tspan> —</text>
-  <text x="380" y="290" text-anchor="middle" font-size="10.6" fill="#555">so you can decode a z you never encoded and still get something meaningful, which is exactly what generation requires.</text>
+  <text x="380" y="274" text-anchor="middle" font-size="10.6" fill="var(--fig-ink-2, #555)">Neither term is the objective. The balance is what makes the latent space both <tspan font-style="italic">informative</tspan> and <tspan font-style="italic">continuous</tspan>,</text>
+  <text x="380" y="290" text-anchor="middle" font-size="10.6" fill="var(--fig-ink-2, #555)">so you can decode a z you never encoded and still get something meaningful, which is exactly what generation requires.</text>
 </svg>

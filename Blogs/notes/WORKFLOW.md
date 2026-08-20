@@ -122,25 +122,56 @@ so `dist-train` is 30 notes rather than the 12 first proposed.
 ```
 Blogs/notes/            ← shared by every course
 ├─ WORKFLOW.md          this file
-├─ notes-core.css       layout, typography, TOC, progress bar
-├─ notes-core.js        TOC build, active section, copy buttons
+├─ plain.css            the house skin — see §6.1
+├─ notes-core.css       older card skin, still used by nothing
+├─ notes-core.js        markdown render, section anchors, copy buttons
 └─ series.json          slug → title, accent, OSCAR course node, chapters
 
 Blogs/<series>/         ← one folder per course
-├─ index.html           learning path, concept map, reading times
+├─ index.html           the link tree
 ├─ ch-01.html …
 ├─ raw/lec-01.md        the dumps, untouched
-├─ <series>-style.css   accent + widget skin only
 ├─ widgets.js           this course's demos
 └─ assets/svg/          figures
 ```
 
-**Outstanding housekeeping:** `deep-gen/dgm-notes-style.css` (1,116 lines) and
-`reinforce_LLMs/rl-notes-style.css` (805) are near-copies — normalising names
-and colours leaves only ~411 lines genuinely different. `notes-core.css` /
-`notes-core.js` should be extracted from deep-gen (the more evolved of the two)
-with the next new series, so a third course is an accent file rather than a
-third fork. The two live series can migrate later; they work as they are.
+### 6.1 The skin
+
+The notes are personal, so as of 19 August 2026 they are styled to read like a
+notebook rather than a publication — the model is
+<https://victorlecomte.com/notes/>. `plain.css` is the whole of it and every new
+series uses it: set `<body class="plain">`, load `../notes/plain.css`, and load
+nothing else of the old stylesheets. Fira Sans 300, plain `#2a7ae2` links, one
+780px column. No cards, no borders, no background shading, no topic tags, no
+hero, no reading times, no sidebar TOC, no prev/next.
+
+What survives survives because it teaches: figures, widgets, KaTeX, code, and
+the `§10` / `Ch.9, §10` cross-reference popovers. Widgets are the one element
+allowed a frame; name the mount `<div class="note-widget" id="widget-x">`
+(`.dgm-widget` is the older alias and is styled identically).
+
+**The index is a link tree, not a syllabus.** `<h2>` per theme, then a flat
+`<ul>` of chapter links with an optional `<span class="gloss">`. An entry with
+no link and `class="todo"` is a note not yet written — the gaps are deliberately
+part of the map, which is how you can see what the series is still missing.
+
+`deep-gen` and `cs294-158` are both on it. **`reinforce_LLMs` is deliberately
+not** — it keeps `rl-notes-style.css` and its original look.
+
+One trap worth knowing: the `#sec-N` anchors that every cross-reference targets
+are generated in JS, and used to be created inside `initTOC`, which returns
+early when there is no `.toc-list`. Dropping the sidebar therefore broke every
+`§N` link silently. Both `notes-core.js` and `dgm-notes.js` now build them in a
+separate `initSectionAnchors()`; keep it that way.
+
+**Outstanding housekeeping:** the move to `plain.css` left three stylesheets
+with no page pointing at them — `deep-gen/dgm-notes-style.css` (1,116 lines),
+`cs294-158/cs294-notes-style.css`, and `notes/notes-core.css`. They are kept for
+now only as the way back to the card design; delete them once the plain skin has
+proved itself. `css/theme.css` likewise still carries dark rules for `.chapter-card`,
+`.series-hero` and `.toc-*`, which nothing renders any more.
+`reinforce_LLMs/rl-notes-style.css` (805 lines) stays live and is deliberately
+excluded from all of this.
 
 ## 7. Done means
 

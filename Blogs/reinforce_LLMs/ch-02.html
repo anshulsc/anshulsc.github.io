@@ -4,12 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Chapter 2: The multi-arm bandit problem, exploration vs exploitation, ε-greedy algorithm, and the 10-armed testbed with Python implementation.">
-    <meta name="keywords"
-        content="Multi-Arm Bandit, Exploration Exploitation, Epsilon Greedy, Reinforcement Learning, Action-Value Methods">
+    <meta name="description" content="Chapter 2: The multi-arm bandit problem, exploration vs exploitation, ε-greedy algorithm, and the 10-armed testbed with Python implementation.">
     <meta name="author" content="Anshul Singh">
-    <title>Ch 2: Bandits & The Exploration Problem — RL Notes</title>
+    <title>Ch 2: Bandits & The Exploration Problem · RL Notes</title>
 
     <link rel="icon" type="image/png" href="../../images/favicon.png">
     <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
@@ -17,14 +14,13 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 
     <!-- Highlight.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
@@ -35,87 +31,54 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../research-style.css">
-    <link rel="stylesheet" href="rl-notes-style.css">
+    <link rel="stylesheet" href="../notes/plain.css">
 
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../../css/theme.css">
-  <script src="../../js/theme.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
 </head>
 
-<body>
-    <div class="reading-progress"></div>
-
+<body class="plain">
     <div class="container">
-        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
-        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
-            style="top:700px; left:-220px; width:160px;">
 
         <header class="site-header">
-            <p style="text-align:center">
-                [<a href="../../index.html">Home</a> /
-                <a href="../blog-index.html">Writing</a> /
-                <a href="index.html">RL Notes</a>]
-            </p>
+            [<a href="../../index.html">Home</a> /
+            <a href="../blog-index.html">Writing</a> /
+            <a href="index.html">RL notes</a> /
+            <span class="here">Bandits & The Exploration Problem</span>]
         </header>
 
         <main>
-            <div class="chapter-header">
-                <div class="chapter-number">Chapter 2 of 7</div>
-                <h1>Bandits & The Exploration Problem</h1>
-                <div class="chapter-meta">
-                    <span>June 2026</span>
-                    <span class="dot">●</span>
-                    <span id="reading-time">10 min read</span>
-                    <span class="dot">●</span>
-                    <span>Foundations</span>
-                </div>
-            </div>
+            <h1>Bandits & The Exploration Problem</h1>
 
-            <div class="content-layout">
-                <article class="chapter-content" id="content-target"></article>
-                <aside class="toc-sidebar">
-                    <div class="toc-inner">
-                        <div class="toc-title">On This Page</div>
-                        <ul class="toc-list"></ul>
-                    </div>
-                </aside>
-            </div>
-
-            <div class="chapter-nav">
-                <a href="ch-01.html" class="nav-prev">
-                    <div class="nav-label">← Previous Chapter</div>
-                    <div class="nav-title">The RL Problem</div>
-                </a>
-                <a href="ch-03.html" class="nav-next">
-                    <div class="nav-label">Next Chapter →</div>
-                    <div class="nav-title">MDPs, Value Functions & Bellman Equations</div>
-                </a>
-            </div>
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
         </main>
 
-        <footer style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
-            &copy; 2024 Anshul Singh
+        <footer class="site-footer">
+            &copy; 2026 Anshul Singh
         </footer>
     </div>
 
     <script id="raw-markdown" type="text/template">
-*In Chapter 1 we saw the tic-tac-toe agent choose between exploitation (greedy move) and exploration (random move). That tension deserves its own study. The multi-arm bandit strips away states, transitions, and long-term planning — leaving only the purest form of the exploration-exploitation dilemma. Understanding it here makes everything from ε-greedy SARSA (→ Ch.5, §3) to PPO's entropy bonus (→ Ch.6, §8) click.*
+*The tic-tac-toe agent in Chapter 1 had to choose between the greedy move and a random one, and that choice was buried under everything else the game was doing. The multi-arm bandit strips away states, transitions and planning until only that choice is left — the same one that reappears in ε-greedy SARSA (Ch.5, §3) and PPO's entropy bonus (Ch.6, §8).*
 
 ---
 
 ## 1. Defining the Bandit Problem
 
 ### The One-Armed Bandit
-The term "one-armed bandit" = a slot machine. Pull the lever, maybe get a payout, probably lose money. Called a "bandit" because the statistics are designed to rob you over time.
+A slot machine. Pull the lever, occasionally get a payout, lose money on average. The name is a joke about being robbed slowly.
 
 ### The Multi-Arm Bandit ($k$-Armed Bandit)
 Now imagine $k$ different levers, each with its own unknown reward distribution.
 
-* **The Setup**: You stand before $k$ levers. Each has a stationary probability distribution of rewards.
-* **The Core Problem**: You don't know the underlying distributions.
+* **The Setup**: $k$ levers, each with a stationary probability distribution of rewards.
+* **The Core Problem**: You do not know any of those underlying distributions.
 * **The Goal**: Maximize total expected reward over $T$ time steps.
+
+The word *stationary* is doing quiet work there. The distributions never drift, so anything you learn about a lever stays true, and the only difficulty is that you have not yet learned it.
 
 ---
 
@@ -124,28 +87,28 @@ Now imagine $k$ different levers, each with its own unknown reward distribution.
 ### Mathematical Definitions
 Let $a$ denote pulling a specific lever.
 
-* **True Value** ($q_*(a)$): The actual expected reward — an objective, hidden property:
+* **True value** ($q_*(a)$): the actual expected reward. Objective, fixed, and hidden from you:
   $$q_*(a) = \mathbb{E}[R_t \mid A_t = a]$$
 
-* **Estimated Value** ($Q_t(a)$): Our estimate at time step $t$. We want $Q_t(a) \approx q_*(a)$.
+* **Estimated value** ($Q_t(a)$): your estimate at time $t$. The aim is $Q_t(a) \approx q_*(a)$.
 
 ### The Sample-Average Method
-Average the rewards actually received when action $a$ was selected:
+Average the rewards actually received whenever $a$ was chosen:
 
 $$Q_t(a) = \frac{\sum_{i=1}^{t-1} R_i \cdot \mathbb{I}(A_i = a)}{\sum_{i=1}^{t-1} \mathbb{I}(A_i = a)}$$
 
-Where $\mathbb{I}(\text{predicate})$ = 1 if true, 0 otherwise. The denominator = $N_t(a)$ (times action $a$ was chosen before time $t$).
+Where $\mathbb{I}(\text{predicate})$ is 1 if true and 0 otherwise, so the denominator is $N_t(a)$, the number of times $a$ was chosen before $t$. If $N_t(a) = 0$ the estimate is undefined and gets a default, usually $0$.
 
-If $N_t(a) = 0$, define $Q_t(a)$ = some default (e.g., $0$).
-
-By the **Law of Large Numbers**: as $N_t(a) \to \infty$, the estimate converges to truth:
+By the **law of large numbers**, the estimate converges as the count grows:
 $$\lim_{N_t(a) \to \infty} Q_t(a) = q_*(a)$$
+
+That guarantee is the reason exploration is not optional. It only applies to arms you actually pull, so an arm you stop sampling keeps whatever wrong estimate it happened to get.
 
 ---
 
 ## 3. The Exploration vs. Exploitation Dilemma
 
-Imagine a 4-armed bandit where your current estimates are:
+A 4-armed bandit, with current estimates:
 
 | Action ($a$) | Estimated Value ($Q_t(a)$) |
 |---|---|
@@ -155,33 +118,27 @@ Imagine a 4-armed bandit where your current estimates are:
 | Action 4 | $Q_t(4) = 2.0$ |
 
 ### Exploitation (Greedy Choice)
-* Pick **Action 2** ($Q_t(2) = 3.0$).
-* Maximizes immediate reward using current knowledge.
-* Risk: what if Action 3 actually has true value $q_*(3) = 5.0$, but a poor initial sample made its estimate $2.5$?
+* Pick **Action 2** ($Q_t(2) = 3.0$), the best thing the current estimates know about.
+* Maximizes immediate reward, and it is exactly right given the information available.
 
 ### Exploration (Non-Greedy Choice)
 * Pick Action 1, 3, or 4.
-* Sacrifices immediate reward to gather information.
-* Enables discovery of better options → potentially higher long-term cumulative rewards.
+* Gives up expected reward now in exchange for a better estimate.
 
-This is the same tension from tic-tac-toe (→ Ch.1, §6), but isolated to its purest form.
+The case for exploring is the one the table cannot show you. Suppose Action 3 truly has $q_*(3) = 5.0$ and simply drew badly on its first few pulls. Nothing in the estimates flags this, the greedy policy will never pull it again, and the error is permanent. This is the tic-tac-toe tension from Ch.1, §6 with everything else removed.
 
 ---
 
 ## 4. The ε-Greedy Algorithm
 
-The simplest strategy to balance exploration and exploitation:
+The simplest thing that works:
 
-### The Rule
-* With probability $\epsilon$ (small, e.g. $0.01$ or $0.1$): select an action **at random** from all $k$ actions with equal probability.
-* With probability $1 - \epsilon$: select the **greedy action** $A_t = \operatorname{argmax}_a Q_t(a)$.
+* With probability $\epsilon$ (small, say $0.01$ or $0.1$), pick uniformly at random among all $k$ actions.
+* Otherwise pick greedily, $A_t = \operatorname{argmax}_a Q_t(a)$.
 
-### Impact of ε
-* **$\epsilon = 0$ (Purely Greedy)**: Always exploits. Susceptible to local optima.
-* **$\epsilon = 0.1$**: ~90 greedy steps per 100. Learns quickly but wastes 10% of steps exploring even after values are well-estimated.
-* **$\epsilon = 0.01$**: Slower to find the best action, but once found, exploits it 99% of the time → higher long-run performance.
+Because the random branch can select any arm, every arm gets pulled infinitely often in the limit, which is precisely the condition §2 needed for convergence. That is the entire justification for the algorithm, and $\epsilon$ just sets the price paid for it: a fraction $\epsilon$ of steps spent on actions believed to be worse.
 
-This exact same ε-greedy strategy reappears in Monte Carlo control (→ Ch.5, §1), SARSA (→ Ch.5, §3), and semi-gradient SARSA (→ Ch.5, §4).
+The same rule comes back in Monte Carlo control (Ch.5, §1), SARSA (Ch.5, §3) and semi-gradient SARSA (Ch.5, §4).
 
 <div id="bandit-simulator"></div>
 
@@ -191,10 +148,10 @@ This exact same ε-greedy strategy reappears in Monte Carlo control (→ Ch.5, �
 
 ### Simulation Design
 * **Arms ($k$)**: $10$
-* **True Values**: $q_*(a) \sim \mathcal{N}(0, 1)$ for each arm
-* **Reward Generation**: $R_t \sim \mathcal{N}(q_*(A_t), 1)$ — true value plus noise
+* **True Values**: $q_*(a) \sim \mathcal{N}(0, 1)$, drawn once per run
+* **Reward Generation**: $R_t \sim \mathcal{N}(q_*(A_t), 1)$, the true value plus noise
 
-Because of noise, the agent can't identify the best arm from a single pull — it must observe multiple samples.
+The noise is the point of the design. A single pull says almost nothing about an arm, so the agent is forced to sample repeatedly, and results are averaged over 2000 independent runs to stop one lucky draw from deciding the answer.
 
 ### Python Implementation
 
@@ -253,11 +210,15 @@ plt.title("ε-Greedy Performance on 10-Armed Bandit")
 plt.legend(); plt.grid(True); plt.show()
 ```
 
+The update on line 5 is worth reading twice. Writing the sample average incrementally as $Q \leftarrow Q + \frac{1}{N}(R - Q)$ means no stored history of rewards, just a running estimate and a count. That incremental form is the shape every update rule takes from here on.
+
 ### Performance Analysis
 
-* **Greedy ($\epsilon = 0$)**: Plateaus early — gets stuck choosing suboptimal arms, never discovers the best one.
-* **$\epsilon = 0.1$**: Rapid improvement. High exploration rate finds optimal arm quickly, but 10% exploration penalty limits asymptotic performance.
-* **$\epsilon = 0.01$**: Slow start but steady climb. Once it finds the best arm, it exploits 99% of the time → eventually outperforms $\epsilon = 0.1$ in long trials.
+* **$\epsilon = 0$**: climbs fast, then flattens well below the others. It locks onto whichever arm looked best early and never revisits the decision.
+* **$\epsilon = 0.1$**: finds the best arm quickly, then gives back 10% of its steps forever, so it plateaus below its own potential.
+* **$\epsilon = 0.01$**: slowest to find the best arm and the highest at the end, because once it has found it, it plays it 99% of the time.
+
+The ordering flips partway through the run, which is the useful part. Which $\epsilon$ is best depends on how long you intend to play, and no fixed value is right for every horizon.
 
 ---
 
@@ -269,21 +230,14 @@ plt.legend(); plt.grid(True); plt.show()
 | **Planning** | **No Planning**: actions only affect immediate rewards. | **Planning Required**: actions have long-term consequences (e.g., chess moves). |
 | **Action Dependency** | **Independent**: feedback for an action is independent of previous choices. | **Sequential**: reward and next state depend on prior choices $a_{t-1}, a_{t-2}, \dots$ |
 
----
-
-## 7. Key Takeaways
-
-1. **Value Estimation**: We estimate action values using averages of observed rewards. Over time, $Q_t(a) \to q_*(a)$.
-2. **Exploitation vs. Exploration**: Exploitation maximizes immediate reward but risks missing better options. Exploration sacrifices short-term gains to discover higher long-term returns.
-3. **ε-Greedy Strategy**: Simple and effective — greedy most of the time ($1-\epsilon$), random with probability $\epsilon$.
+Every row comes from the same missing piece. A bandit has no state, so an action cannot change the situation you face next, which is what makes each pull independent and makes planning meaningless.
 
 ---
 
-*Bandits have one state — the agent sits in the same situation forever. Real problems have many states, and actions affect what state you land in next. To handle that, we need a formal mathematical framework: Markov Decision Processes → Chapter 3.*
+*Restoring that missing piece is Chapter 3. Once actions decide which situation comes next, an action is good or bad partly because of where it leaves you, and the machinery for saying that precisely is the Markov Decision Process.*
     </script>
 
     <script src="rl-notes.js"></script>
-    <script src="assets/interactive/bandit-simulator.js"></script>
 </body>
 
 </html>

@@ -1,158 +1,158 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 1524" font-family="Inter, -apple-system, sans-serif">
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/>
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-teal, #0e7490)"/>
     </marker>
     <marker id="arrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 1 L 9 5 L 0 9 z" fill="#bbb"/>
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-faint, #bbb)"/>
     </marker>
   </defs>
 
   <!-- Lecture 1 -->
-  <rect x="20" y="24" width="330" height="170" rx="12" fill="rgba(14,116,144,0.06)" stroke="#0e7490" stroke-width="1.5"/>
-  <text x="185" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">LECTURE 1 · WHY PROBABILITY</text>
+  <rect x="20" y="24" width="330" height="170" rx="12" fill="rgba(14,116,144,0.06)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5"/>
+  <text x="185" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fig-teal, #0e7490)">LECTURE 1 · WHY PROBABILITY</text>
   <line x1="38" y1="63" x2="332" y2="63" stroke="rgba(14,116,144,0.25)"/>
-  <text x="38" y="87" font-size="11" fill="#444">• Function approximation, and when it breaks</text>
-  <text x="38" y="110" font-size="11" fill="#444">• F = ma works, pixels → gender does not</text>
-  <text x="38" y="133" font-size="11" fill="#444">• Measures → the triplet (Ω, 𝓕, ℙ)</text>
-  <text x="38" y="156" font-size="11" fill="#444">• Random variables X : Ω → ℝᵈ</text>
-  <text x="38" y="179" font-size="11" fill="#444">• A dataset = instantiations of X</text>
+  <text x="38" y="87" font-size="11" fill="var(--fig-ink-2, #444)">• Function approximation, and when it breaks</text>
+  <text x="38" y="110" font-size="11" fill="var(--fig-ink-2, #444)">• F = ma works, pixels → gender does not</text>
+  <text x="38" y="133" font-size="11" fill="var(--fig-ink-2, #444)">• Measures → the triplet (Ω, 𝓕, ℙ)</text>
+  <text x="38" y="156" font-size="11" fill="var(--fig-ink-2, #444)">• Random variables X : Ω → ℝᵈ</text>
+  <text x="38" y="179" font-size="11" fill="var(--fig-ink-2, #444)">• A dataset = instantiations of X</text>
 
-  <path d="M 350 109 L 396 109" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
+  <path d="M 350 109 L 396 109" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
 
   <!-- Lecture 2 -->
-  <rect x="410" y="24" width="330" height="170" rx="12" fill="rgba(14,116,144,0.06)" stroke="#0e7490" stroke-width="1.5"/>
-  <text x="575" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">LECTURE 2 · THE RECIPE</text>
+  <rect x="410" y="24" width="330" height="170" rx="12" fill="rgba(14,116,144,0.06)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5"/>
+  <text x="575" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fig-teal, #0e7490)">LECTURE 2 · THE RECIPE</text>
   <line x1="428" y1="63" x2="722" y2="63" stroke="rgba(14,116,144,0.25)"/>
-  <text x="428" y="87" font-size="11" fill="#444">• σ-algebras &amp; Borel sets, properly</text>
-  <text x="428" y="110" font-size="11" fill="#444">• Prediction p(y|x) vs. sampling p(x)</text>
-  <text x="428" y="133" font-size="11" fill="#444">• Model family · divergence · argmin</text>
-  <text x="428" y="156" font-size="11" fill="#444">• Surprisal → entropy → cross-entropy</text>
-  <text x="428" y="179" font-size="11" fill="#444">• KL = cross-entropy − entropy</text>
+  <text x="428" y="87" font-size="11" fill="var(--fig-ink-2, #444)">• σ-algebras &amp; Borel sets, properly</text>
+  <text x="428" y="110" font-size="11" fill="var(--fig-ink-2, #444)">• Prediction p(y|x) vs. sampling p(x)</text>
+  <text x="428" y="133" font-size="11" fill="var(--fig-ink-2, #444)">• Model family · divergence · argmin</text>
+  <text x="428" y="156" font-size="11" fill="var(--fig-ink-2, #444)">• Surprisal → entropy → cross-entropy</text>
+  <text x="428" y="179" font-size="11" fill="var(--fig-ink-2, #444)">• KL = cross-entropy − entropy</text>
 
   <!-- wrap-around connector -->
   <path d="M 740 109 L 752 109 L 752 216 L 8 216 L 8 300 L 18 300"
-        stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
+        stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
 
   <!-- Lecture 3 -->
-  <rect x="20" y="230" width="330" height="170" rx="12" fill="rgba(14,116,144,0.06)" stroke="#0e7490" stroke-width="1.5"/>
-  <text x="185" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">LECTURE 3 · f-DIVERGENCES</text>
+  <rect x="20" y="230" width="330" height="170" rx="12" fill="rgba(14,116,144,0.06)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5"/>
+  <text x="185" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fig-teal, #0e7490)">LECTURE 3 · f-DIVERGENCES</text>
   <line x1="38" y1="269" x2="332" y2="269" stroke="rgba(14,116,144,0.25)"/>
-  <text x="38" y="293" font-size="11" fill="#444">• Generator g_θ(z): noise warped into data</text>
-  <text x="38" y="316" font-size="11" fill="#444">• One integral, many distances: KL, JS, TV</text>
-  <text x="38" y="339" font-size="11" fill="#444">• Why sample averages fail on the ratio</text>
-  <text x="38" y="362" font-size="11" fill="#444">• Convex conjugate f*(t) = sup {ut − f(u)}</text>
-  <text x="38" y="385" font-size="11" fill="#444">• A variational bound you can compute</text>
+  <text x="38" y="293" font-size="11" fill="var(--fig-ink-2, #444)">• Generator g_θ(z): noise warped into data</text>
+  <text x="38" y="316" font-size="11" fill="var(--fig-ink-2, #444)">• One integral, many distances: KL, JS, TV</text>
+  <text x="38" y="339" font-size="11" fill="var(--fig-ink-2, #444)">• Why sample averages fail on the ratio</text>
+  <text x="38" y="362" font-size="11" fill="var(--fig-ink-2, #444)">• Convex conjugate f*(t) = sup {ut − f(u)}</text>
+  <text x="38" y="385" font-size="11" fill="var(--fig-ink-2, #444)">• A variational bound you can compute</text>
 
-  <path d="M 350 315 L 396 315" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
+  <path d="M 350 315 L 396 315" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
 
   <!-- Lecture 4 -->
-  <rect x="410" y="230" width="330" height="170" rx="12" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="2.2"/>
-  <text x="575" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">LECTURE 4 · THE GAN, DERIVED</text>
+  <rect x="410" y="230" width="330" height="170" rx="12" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)" stroke-width="2.2"/>
+  <text x="575" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fig-teal, #0e7490)">LECTURE 4 · THE GAN, DERIVED</text>
   <line x1="428" y1="269" x2="722" y2="269" stroke="rgba(14,116,144,0.25)"/>
-  <text x="428" y="293" font-size="11" fill="#444">• Proofs: D_f ≥ 0, Fenchel–Young, duality</text>
-  <text x="428" y="316" font-size="11" fill="#444">• Pick one f → the vanilla GAN loss falls out</text>
-  <text x="428" y="339" font-size="11" fill="#444">• dom f* forces the sigmoid</text>
-  <text x="428" y="362" font-size="11" fill="#444">• Optimal D* = p/(p+q); value = 2·JS − log 4</text>
-  <text x="428" y="385" font-size="11" fill="#444">• Two-phase training, saddle points, minibatches</text>
+  <text x="428" y="293" font-size="11" fill="var(--fig-ink-2, #444)">• Proofs: D_f ≥ 0, Fenchel–Young, duality</text>
+  <text x="428" y="316" font-size="11" fill="var(--fig-ink-2, #444)">• Pick one f → the vanilla GAN loss falls out</text>
+  <text x="428" y="339" font-size="11" fill="var(--fig-ink-2, #444)">• dom f* forces the sigmoid</text>
+  <text x="428" y="362" font-size="11" fill="var(--fig-ink-2, #444)">• Optimal D* = p/(p+q); value = 2·JS − log 4</text>
+  <text x="428" y="385" font-size="11" fill="var(--fig-ink-2, #444)">• Two-phase training, saddle points, minibatches</text>
 
   <!-- connector down to lecture 5 -->
-  <path d="M 575 400 L 575 420 L 380 420 L 380 436" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
+  <path d="M 575 400 L 575 420 L 380 420 L 380 436" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
 
   <!-- Lecture 5 -->
-  <rect x="20" y="440" width="720" height="118" rx="12" fill="rgba(14,116,144,0.06)" stroke="#0e7490" stroke-width="1.5"/>
-  <text x="380" y="466" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">LECTURE 5 · THE CLASSIFIER VIEW, CONDITIONING &amp; TRANSLATION</text>
+  <rect x="20" y="440" width="720" height="118" rx="12" fill="rgba(14,116,144,0.06)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5"/>
+  <text x="380" y="466" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fig-teal, #0e7490)">LECTURE 5 · THE CLASSIFIER VIEW, CONDITIONING &amp; TRANSLATION</text>
   <line x1="38" y1="479" x2="722" y2="479" stroke="rgba(14,116,144,0.25)"/>
-  <text x="38" y="503" font-size="11" fill="#444">• The GAN loss is literally binary cross-entropy</text>
-  <text x="392" y="503" font-size="11" fill="#444">• Fooling a frozen critic proves nothing</text>
-  <text x="38" y="526" font-size="11" fill="#444">• Mode collapse is a stationary point, not a bug</text>
-  <text x="392" y="526" font-size="11" fill="#444">• DCGAN &amp; transpose convolutions</text>
-  <text x="38" y="549" font-size="11" fill="#444">• C-GAN: y into both networks, as a control switch</text>
-  <text x="392" y="549" font-size="11" fill="#444">• CycleGAN: a round trip instead of paired data</text>
+  <text x="38" y="503" font-size="11" fill="var(--fig-ink-2, #444)">• The GAN loss is literally binary cross-entropy</text>
+  <text x="392" y="503" font-size="11" fill="var(--fig-ink-2, #444)">• Fooling a frozen critic proves nothing</text>
+  <text x="38" y="526" font-size="11" fill="var(--fig-ink-2, #444)">• Mode collapse is a stationary point, not a bug</text>
+  <text x="392" y="526" font-size="11" fill="var(--fig-ink-2, #444)">• DCGAN &amp; transpose convolutions</text>
+  <text x="38" y="549" font-size="11" fill="var(--fig-ink-2, #444)">• C-GAN: y into both networks, as a control switch</text>
+  <text x="392" y="549" font-size="11" fill="var(--fig-ink-2, #444)">• CycleGAN: a round trip instead of paired data</text>
 
   <!-- connector down to lecture 6 -->
-  <path d="M 380 558 L 380 578" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
+  <path d="M 380 558 L 380 578" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
 
   <!-- Lecture 6 -->
-  <rect x="20" y="582" width="720" height="140" rx="12" fill="rgba(14,116,144,0.06)" stroke="#0e7490" stroke-width="1.5"/>
-  <text x="380" y="608" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">LECTURE 6 · DOMAIN ADAPTATION, WASSERSTEIN GANs &amp; LATENT VARIABLE MODELS</text>
+  <rect x="20" y="582" width="720" height="140" rx="12" fill="rgba(14,116,144,0.06)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5"/>
+  <text x="380" y="608" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fig-teal, #0e7490)">LECTURE 6 · DOMAIN ADAPTATION, WASSERSTEIN GANs &amp; LATENT VARIABLE MODELS</text>
   <line x1="38" y1="621" x2="722" y2="621" stroke="rgba(14,116,144,0.25)"/>
-  <text x="38" y="645" font-size="11" fill="#444">• Adversarial alignment in feature space, not pixels</text>
-  <text x="392" y="645" font-size="11" fill="#444">• The manifold hypothesis: thin sheets never meet</text>
-  <text x="38" y="668" font-size="11" fill="#444">• Earth-mover distance: how far, not whether</text>
-  <text x="392" y="668" font-size="11" fill="#444">• Kantorovich–Rubinstein duality, 1-Lipschitz critics</text>
-  <text x="38" y="691" font-size="11" fill="#444">• Latent variables: clustering vs. representation</text>
-  <text x="392" y="691" font-size="11" fill="#444">• ELBO, the KL gap, and why EM is monotone</text>
-  <text x="38" y="712" font-size="11" fill="#444">• Where the E-step becomes impossible → VAEs</text>
+  <text x="38" y="645" font-size="11" fill="var(--fig-ink-2, #444)">• Adversarial alignment in feature space, not pixels</text>
+  <text x="392" y="645" font-size="11" fill="var(--fig-ink-2, #444)">• The manifold hypothesis: thin sheets never meet</text>
+  <text x="38" y="668" font-size="11" fill="var(--fig-ink-2, #444)">• Earth-mover distance: how far, not whether</text>
+  <text x="392" y="668" font-size="11" fill="var(--fig-ink-2, #444)">• Kantorovich–Rubinstein duality, 1-Lipschitz critics</text>
+  <text x="38" y="691" font-size="11" fill="var(--fig-ink-2, #444)">• Latent variables: clustering vs. representation</text>
+  <text x="392" y="691" font-size="11" fill="var(--fig-ink-2, #444)">• ELBO, the KL gap, and why EM is monotone</text>
+  <text x="38" y="712" font-size="11" fill="var(--fig-ink-2, #444)">• Where the E-step becomes impossible → VAEs</text>
 
-  <path d="M 380 722 L 380 742" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
+  <path d="M 380 722 L 380 742" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
 
   <!-- Lecture 7 -->
-  <rect x="20" y="746" width="720" height="118" rx="12" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="2.2"/>
-  <text x="380" y="772" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">LECTURE 7 · VARIATIONAL AUTOENCODERS</text>
+  <rect x="20" y="746" width="720" height="118" rx="12" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)" stroke-width="2.2"/>
+  <text x="380" y="772" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fig-teal, #0e7490)">LECTURE 7 · VARIATIONAL AUTOENCODERS</text>
   <line x1="38" y1="785" x2="722" y2="785" stroke="rgba(14,116,144,0.25)"/>
-  <text x="38" y="809" font-size="11" fill="#444">• Posterior intractable ⟹ learn an encoder q_φ(z|x)</text>
-  <text x="392" y="809" font-size="11" fill="#444">• ELBO = reconstruction − KL; both extremes fail</text>
-  <text x="38" y="832" font-size="11" fill="#444">• Sampling severs the gradient path to φ</text>
-  <text x="392" y="832" font-size="11" fill="#444">• Score function: unbiased, unusably high variance</text>
-  <text x="38" y="855" font-size="11" fill="#444">• z = μ + σ⊙ε moves the noise off that path</text>
-  <text x="392" y="855" font-size="11" fill="#444">• No adversary ⟹ stable training, blurrier samples</text>
+  <text x="38" y="809" font-size="11" fill="var(--fig-ink-2, #444)">• Posterior intractable ⟹ learn an encoder q_φ(z|x)</text>
+  <text x="392" y="809" font-size="11" fill="var(--fig-ink-2, #444)">• ELBO = reconstruction − KL; both extremes fail</text>
+  <text x="38" y="832" font-size="11" fill="var(--fig-ink-2, #444)">• Sampling severs the gradient path to φ</text>
+  <text x="392" y="832" font-size="11" fill="var(--fig-ink-2, #444)">• Score function: unbiased, unusably high variance</text>
+  <text x="38" y="855" font-size="11" fill="var(--fig-ink-2, #444)">• z = μ + σ⊙ε moves the noise off that path</text>
+  <text x="392" y="855" font-size="11" fill="var(--fig-ink-2, #444)">• No adversary ⟹ stable training, blurrier samples</text>
 
-  <path d="M 380 864 L 380 884" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
+  <path d="M 380 864 L 380 884" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
 
   <!-- Lecture 8 -->
-  <rect x="20" y="888" width="720" height="118" rx="12" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="2.2"/>
-  <text x="380" y="914" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">LECTURE 8 · USING A VAE · β-VAE · VQ-VAE</text>
+  <rect x="20" y="888" width="720" height="118" rx="12" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)" stroke-width="2.2"/>
+  <text x="380" y="914" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fig-teal, #0e7490)">LECTURE 8 · USING A VAE · β-VAE · VQ-VAE</text>
   <line x1="38" y1="927" x2="722" y2="927" stroke="rgba(14,116,144,0.25)"/>
-  <text x="38" y="951" font-size="11" fill="#444">• Embeddings: take μ; inference vs. generation</text>
-  <text x="392" y="951" font-size="11" fill="#444">• Why a prior sample is decodable at all</text>
-  <text x="38" y="974" font-size="11" fill="#444">• β: autoencoder at 0, posterior collapse when large</text>
-  <text x="392" y="974" font-size="11" fill="#444">• VQ-VAE: a codebook instead of a Gaussian</text>
-  <text x="38" y="997" font-size="11" fill="#444">• Capacity is M^(H×W), not M</text>
-  <text x="392" y="997" font-size="11" fill="#444">• Straight-through: biased, and what it costs</text>
+  <text x="38" y="951" font-size="11" fill="var(--fig-ink-2, #444)">• Embeddings: take μ; inference vs. generation</text>
+  <text x="392" y="951" font-size="11" fill="var(--fig-ink-2, #444)">• Why a prior sample is decodable at all</text>
+  <text x="38" y="974" font-size="11" fill="var(--fig-ink-2, #444)">• β: autoencoder at 0, posterior collapse when large</text>
+  <text x="392" y="974" font-size="11" fill="var(--fig-ink-2, #444)">• VQ-VAE: a codebook instead of a Gaussian</text>
+  <text x="38" y="997" font-size="11" fill="var(--fig-ink-2, #444)">• Capacity is M^(H×W), not M</text>
+  <text x="392" y="997" font-size="11" fill="var(--fig-ink-2, #444)">• Straight-through: biased, and what it costs</text>
 
-  <path d="M 380 1006 L 380 1026" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
+  <path d="M 380 1006 L 380 1026" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
 
   <!-- Lecture 9 -->
-  <rect x="20" y="1030" width="720" height="118" rx="12" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="2.2"/>
-  <text x="380" y="1056" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">LECTURE 9 · DENOISING DIFFUSION MODELS</text>
+  <rect x="20" y="1030" width="720" height="118" rx="12" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)" stroke-width="2.2"/>
+  <text x="380" y="1056" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fig-teal, #0e7490)">LECTURE 9 · DENOISING DIFFUSION MODELS</text>
   <line x1="38" y1="1069" x2="722" y2="1069" stroke="rgba(14,116,144,0.25)"/>
-  <text x="38" y="1093" font-size="11" fill="#444">• A hierarchical VAE with a fixed, unlearned encoder</text>
-  <text x="392" y="1093" font-size="11" fill="#444">• Variance-preserving forward chain → 𝒩(0, I)</text>
-  <text x="38" y="1116" font-size="11" fill="#444">• ELBO telescopes into three terms; one is free</text>
-  <text x="392" y="1116" font-size="11" fill="#444">• Closed-form jump: x_t = √ᾱ x₀ + √(1−ᾱ) ε</text>
-  <text x="38" y="1139" font-size="11" fill="#444">• Denoising posterior by completing the square</text>
-  <text x="392" y="1139" font-size="11" fill="#444">• It all collapses to ‖ε − ε_θ(x_t, t)‖²</text>
+  <text x="38" y="1093" font-size="11" fill="var(--fig-ink-2, #444)">• A hierarchical VAE with a fixed, unlearned encoder</text>
+  <text x="392" y="1093" font-size="11" fill="var(--fig-ink-2, #444)">• Variance-preserving forward chain → 𝒩(0, I)</text>
+  <text x="38" y="1116" font-size="11" fill="var(--fig-ink-2, #444)">• ELBO telescopes into three terms; one is free</text>
+  <text x="392" y="1116" font-size="11" fill="var(--fig-ink-2, #444)">• Closed-form jump: x_t = √ᾱ x₀ + √(1−ᾱ) ε</text>
+  <text x="38" y="1139" font-size="11" fill="var(--fig-ink-2, #444)">• Denoising posterior by completing the square</text>
+  <text x="392" y="1139" font-size="11" fill="var(--fig-ink-2, #444)">• It all collapses to ‖ε − ε_θ(x_t, t)‖²</text>
 
-  <path d="M 380 1148 L 380 1168" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
+  <path d="M 380 1148 L 380 1168" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
 
   <!-- Lecture 10 -->
-  <rect x="20" y="1172" width="720" height="118" rx="12" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="2.2"/>
-  <text x="380" y="1198" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">LECTURE 10 · SCORE MATCHING, GUIDANCE &amp; DDIM</text>
+  <rect x="20" y="1172" width="720" height="118" rx="12" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)" stroke-width="2.2"/>
+  <text x="380" y="1198" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fig-teal, #0e7490)">LECTURE 10 · SCORE MATCHING, GUIDANCE &amp; DDIM</text>
   <line x1="38" y1="1211" x2="722" y2="1211" stroke="rgba(14,116,144,0.25)"/>
-  <text x="38" y="1235" font-size="11" fill="#444">• One random t per image; never walk the chain</text>
-  <text x="392" y="1235" font-size="11" fill="#444">• Sinusoidal time embedding, injected everywhere</text>
-  <text x="38" y="1258" font-size="11" fill="#444">• Tweedie: ∇log p(x_t) = −ε / √(1−ᾱ_t)</text>
-  <text x="392" y="1258" font-size="11" fill="#444">• Guidance: conditional score = uncond. + classifier</text>
-  <text x="38" y="1281" font-size="11" fill="#444">• The loss only ever saw the marginals</text>
-  <text x="392" y="1281" font-size="11" fill="#444">• σ_t = 0 ⟹ deterministic, skippable, invertible</text>
+  <text x="38" y="1235" font-size="11" fill="var(--fig-ink-2, #444)">• One random t per image; never walk the chain</text>
+  <text x="392" y="1235" font-size="11" fill="var(--fig-ink-2, #444)">• Sinusoidal time embedding, injected everywhere</text>
+  <text x="38" y="1258" font-size="11" fill="var(--fig-ink-2, #444)">• Tweedie: ∇log p(x_t) = −ε / √(1−ᾱ_t)</text>
+  <text x="392" y="1258" font-size="11" fill="var(--fig-ink-2, #444)">• Guidance: conditional score = uncond. + classifier</text>
+  <text x="38" y="1281" font-size="11" fill="var(--fig-ink-2, #444)">• The loss only ever saw the marginals</text>
+  <text x="392" y="1281" font-size="11" fill="var(--fig-ink-2, #444)">• σ_t = 0 ⟹ deterministic, skippable, invertible</text>
 
-  <path d="M 380 1290 L 380 1310" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
+  <path d="M 380 1290 L 380 1310" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
 
   <!-- Lecture 11 -->
-  <rect x="20" y="1314" width="720" height="118" rx="12" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="2.2"/>
-  <text x="380" y="1340" text-anchor="middle" font-size="12" font-weight="700" fill="#0e7490">LECTURE 11 · NORMALIZING FLOWS</text>
+  <rect x="20" y="1314" width="720" height="118" rx="12" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)" stroke-width="2.2"/>
+  <text x="380" y="1340" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fig-teal, #0e7490)">LECTURE 11 · NORMALIZING FLOWS</text>
   <line x1="38" y1="1353" x2="722" y2="1353" stroke="rgba(14,116,144,0.25)"/>
-  <text x="38" y="1377" font-size="11" fill="#444">• KDE dies in high dimensions: no point has neighbours</text>
-  <text x="392" y="1377" font-size="11" fill="#444">• log p(x) = log p_z(f(x)) + log |det J_f(x)|</text>
-  <text x="38" y="1400" font-size="11" fill="#444">• Triangular Jacobian: O(d³) → O(d), and loses nothing</text>
-  <text x="392" y="1400" font-size="11" fill="#444">• Coupling: freeze half ⟹ log|det J| = Σ s_j</text>
-  <text x="38" y="1423" font-size="11" fill="#444">• Glow: learned 1×1 mixing, stored as P·L·(U+diag s)</text>
-  <text x="392" y="1423" font-size="11" fill="#444">• The bill: dim(z) = dim(x), always</text>
+  <text x="38" y="1377" font-size="11" fill="var(--fig-ink-2, #444)">• KDE dies in high dimensions: no point has neighbours</text>
+  <text x="392" y="1377" font-size="11" fill="var(--fig-ink-2, #444)">• log p(x) = log p_z(f(x)) + log |det J_f(x)|</text>
+  <text x="38" y="1400" font-size="11" fill="var(--fig-ink-2, #444)">• Triangular Jacobian: O(d³) → O(d), and loses nothing</text>
+  <text x="392" y="1400" font-size="11" fill="var(--fig-ink-2, #444)">• Coupling: freeze half ⟹ log|det J| = Σ s_j</text>
+  <text x="38" y="1423" font-size="11" fill="var(--fig-ink-2, #444)">• Glow: learned 1×1 mixing, stored as P·L·(U+diag s)</text>
+  <text x="392" y="1423" font-size="11" fill="var(--fig-ink-2, #444)">• The bill: dim(z) = dim(x), always</text>
 
   <!-- future -->
-  <path d="M 380 1432 L 380 1452" stroke="#bbb" stroke-width="1.3" fill="none" stroke-dasharray="5 4" marker-end="url(#arrg)"/>
-  <rect x="40" y="1456" width="680" height="48" rx="12" fill="#fafafa" stroke="#ccc" stroke-width="1.2" stroke-dasharray="6 4"/>
-  <text x="380" y="1476" text-anchor="middle" font-size="11.5" font-weight="600" fill="#999">UP NEXT · AS THE LECTURES HAPPEN</text>
-  <text x="380" y="1494" text-anchor="middle" font-size="11.5" fill="#999">Classifier-free guidance · Flow matching · Modern architectures (DiT) · Evaluation</text>
+  <path d="M 380 1432 L 380 1452" stroke="var(--fig-faint, #bbb)" stroke-width="1.3" fill="none" stroke-dasharray="5 4" marker-end="url(#arrg)"/>
+  <rect x="40" y="1456" width="680" height="48" rx="12" fill="var(--fig-wash, #fafafa)" stroke="var(--fig-line, #ccc)" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <text x="380" y="1476" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--fig-muted-2, #999)">UP NEXT · AS THE LECTURES HAPPEN</text>
+  <text x="380" y="1494" text-anchor="middle" font-size="11.5" fill="var(--fig-muted-2, #999)">Classifier-free guidance · Flow matching · Modern architectures (DiT) · Evaluation</text>
 </svg>

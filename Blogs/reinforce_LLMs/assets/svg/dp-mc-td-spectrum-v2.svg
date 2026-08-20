@@ -1,17 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-80 0 680 350" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-145 0 745 350" width="100%" height="100%">
   <defs>
     <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.08"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="var(--fig-ink, #000)" flood-opacity="0.08"/>
     </filter>
   </defs>
 
   <style>
-    .cell { fill: #ffffff; stroke: #e0e0e0; stroke-width: 1.5; rx: 8px; filter: url(#shadow); }
-    .cell-accent { fill: #fcfaff; stroke: #6e46be; stroke-width: 2.5; rx: 8px; filter: url(#shadow); }
-    .text-title { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: 600; fill: #111111; }
-    .text-body { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; fill: #555555; }
-    .text-header { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; font-weight: 600; fill: #666666; }
-    .axis-line { stroke: #cccccc; stroke-width: 1.5; }
+    .cell { fill: var(--fig-paper, #ffffff); stroke: var(--fig-line, #e0e0e0); stroke-width: 1.5; rx: 8px; filter: url(#shadow); }
+    .cell-accent { fill: var(--fig-purple-bg, #fcfaff); stroke: var(--fig-purple, #6e46be); stroke-width: 2.5; rx: 8px; filter: url(#shadow); }
+    .text-title { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: 600; fill: var(--fig-ink, #111111); }
+    .text-body { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; fill: var(--fig-ink-2, #555555); }
+    .text-header { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; font-weight: 600; fill: var(--fig-muted, #666666); }
+    .axis-line { stroke: var(--fig-line, #cccccc); stroke-width: 1.5; }
   </style>
 
   <!-- Headers (Top Axes) -->
@@ -20,10 +20,10 @@
   
   <!-- Left Axis Labels (Smaller & shifted to fit within viewBox margin) -->
   <text x="-10" y="125" text-anchor="end" class="text-header" style="font-size: 11px;">No Sampling</text>
-  <text x="-10" y="141" text-anchor="end" class="text-body" style="font-size: 9px; fill: #666;">(Exact Expectation)</text>
+  <text x="-10" y="141" text-anchor="end" class="text-body" style="font-size: 10.5px; fill: var(--fig-muted, #666);">(Exact Expectation)</text>
 
   <text x="-10" y="245" text-anchor="end" class="text-header" style="font-size: 11px;">Sampling</text>
-  <text x="-10" y="261" text-anchor="end" class="text-body" style="font-size: 9px; fill: #666;">(Model-Free/Experience)</text>
+  <text x="-10" y="261" text-anchor="end" class="text-body" style="font-size: 10.5px; fill: var(--fig-muted, #666);">(Model-Free/Experience)</text>
 
   <!-- Grid Lines -->
   <line x1="10" y1="60" x2="550" y2="60" class="axis-line" />
@@ -34,21 +34,24 @@
   <!-- Quadrants -->
   <!-- Top Left: empty -->
   <rect x="50" y="80" width="230" height="90" class="cell" />
-  <text x="165" y="125" text-anchor="middle" class="text-body" fill="#999">N/A (Analytic returns</text>
-  <text x="165" y="145" text-anchor="middle" class="text-body" fill="#999">without model - impossible)</text>
+  <text x="165" y="125" text-anchor="middle" class="text-body" fill="var(--fig-muted-2, #999)">N/A (Analytic returns</text>
+  <text x="165" y="145" text-anchor="middle" class="text-body" fill="var(--fig-muted-2, #999)">without model - impossible)</text>
 
   <!-- Top Right: DP -->
   <rect x="340" y="80" width="200" height="90" class="cell" />
   <text x="440" y="120" text-anchor="middle" class="text-title">Dynamic Programming</text>
-  <text x="440" y="145" text-anchor="middle" class="text-body">Uses exact model, updates via expectation</text>
+  <text x="440" y="140" text-anchor="middle" class="text-body">Uses exact model,</text>
+  <text x="440" y="155" text-anchor="middle" class="text-body">updates via expectation</text>
 
   <!-- Bottom Left: MC -->
   <rect x="50" y="200" width="230" height="90" class="cell" />
   <text x="165" y="240" text-anchor="middle" class="text-title">Monte Carlo</text>
-  <text x="165" y="265" text-anchor="middle" class="text-body">Learns from experience, waits for episode end</text>
+  <text x="165" y="260" text-anchor="middle" class="text-body">Learns from experience,</text>
+  <text x="165" y="275" text-anchor="middle" class="text-body">waits for episode end</text>
 
   <!-- Bottom Right: TD (Accent) -->
   <rect x="340" y="200" width="200" height="90" class="cell-accent" />
-  <text x="440" y="240" text-anchor="middle" class="text-title" fill="#6e46be">Temporal Difference</text>
-  <text x="440" y="265" text-anchor="middle" class="text-body" fill="#555">Model-free learning, updates step-by-step</text>
+  <text x="440" y="240" text-anchor="middle" class="text-title" fill="var(--fig-purple, #6e46be)">Temporal Difference</text>
+  <text x="440" y="260" text-anchor="middle" class="text-body" fill="var(--fig-ink-2, #555)">Model-free learning,</text>
+  <text x="440" y="275" text-anchor="middle" class="text-body" fill="var(--fig-ink-2, #555)">updates step-by-step</text>
 </svg>

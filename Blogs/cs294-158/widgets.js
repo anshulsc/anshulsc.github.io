@@ -6,7 +6,7 @@
  * absent — so this one file serves every chapter in the series.
  *
  * Helper functions are the generic ones from deep-gen/dgm-widgets.js. The
- * widgets themselves are written for this course: their labels use this
+ * widgets themselves are written for this series: their labels use this
  * chapter's notation table, not another series'.
  */
 

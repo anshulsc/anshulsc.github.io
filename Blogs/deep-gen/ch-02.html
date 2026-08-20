@@ -4,10 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Lecture 2 notes: the central problem of ML — prediction vs. sampling, σ-algebras in depth, the divergence minimization recipe, and KL divergence derived from Shannon information. With interactive demos.">
-    <meta name="keywords"
-        content="Generative Modeling, Discriminative Modeling, Sigma Algebra, Borel, Sampling, Divergence Minimization, KL Divergence, Entropy, Cross-Entropy, Shannon Information">
+    <meta name="description" content="Lecture 2 notes: the central problem of ML — prediction vs. sampling, σ-algebras in depth, the divergence minimization recipe, and KL divergence derived from Shannon information. With interactive demos.">
     <meta name="author" content="Anshul Singh">
     <title>Lecture 2: Prediction, Sampling &amp; Divergence Minimization — DGM Notes</title>
 
@@ -17,9 +14,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
@@ -36,80 +31,40 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../research-style.css">
-    <link rel="stylesheet" href="dgm-notes-style.css">
+    <link rel="stylesheet" href="../notes/plain.css">
 
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../../css/theme.css">
-  <script src="../../js/theme.js"></script>
-  <!-- Passphrase gate for this notes series -->
-  <script src="../../js/gate.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
+    <!-- Passphrase gate for this notes series -->
+    <script src="../../js/gate.js"></script>
 </head>
 
-<body>
-    <div class="reading-progress"></div>
-
+<body class="plain">
     <div class="container">
-        <!-- Background Scribbles -->
-        <img src="../assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
-        <img src="../assets/scribbles/math_misc.svg" class="scribble-svg"
-            style="top:600px; left:-220px; width:160px;">
 
         <header class="site-header">
-            <p style="text-align:center">
-                [<a href="../../index.html">Home</a> /
-                <a href="../blog-index.html">Writing</a> /
-                <a href="index.html">DGM Notes</a>]
-            </p>
+            [<a href="../../index.html">Home</a> /
+            <a href="../blog-index.html">Writing</a> /
+            <a href="index.html">DGM notes</a> /
+            <span class="here">Prediction, Sampling &amp; Divergence Minimization</span>]
         </header>
 
         <main>
-            <div class="chapter-header">
-                <div class="chapter-number">Lecture 2</div>
-                <h1>Prediction, Sampling &amp; Divergence Minimization</h1>
-                <div class="chapter-meta">
-                    <span>August 2026</span>
-                    <span class="dot">●</span>
-                    <span id="reading-time">20 min read</span>
-                    <span class="dot">●</span>
-                    <span>Core Framework</span>
-                </div>
-            </div>
+            <h1>Prediction, Sampling &amp; Divergence Minimization</h1>
 
-            <div class="content-layout">
-                <article class="chapter-content" id="content-target">
-                    <!-- Rendered markdown goes here -->
-                </article>
-
-                <aside class="toc-sidebar">
-                    <div class="toc-inner">
-                        <div class="toc-title">On This Page</div>
-                        <ul class="toc-list"></ul>
-                    </div>
-                </aside>
-            </div>
-
-            <div class="chapter-nav">
-                <a href="ch-01.html" class="nav-prev">
-                    <div class="nav-label">← Previous Lecture</div>
-                    <div class="nav-title">Why We Need Probability</div>
-                </a>
-                <a href="ch-03.html" class="nav-next">
-                    <div class="nav-label">Next Lecture →</div>
-                    <div class="nav-title">Adversarial Models &amp; f-Divergences</div>
-                </a>
-            </div>
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
         </main>
 
-        <footer
-            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 0.85rem;">
+        <footer class="site-footer">
             &copy; 2026 Anshul Singh
         </footer>
     </div>
 
     <script id="raw-markdown" type="text/template">
-*My notes from the second lecture — the longest and, so far, the most important one. It states the central problem of machine learning in a single line, splits it into discriminative and generative halves, gives the standard three-step recipe for training any generative model, and then derives KL divergence from scratch starting at Shannon's definition of information. Everything later in the course (VAEs, GANs, diffusion) is an instance of what's on this page. I've sprinkled in interactive demos — the ideas here are much easier to feel with sliders than with symbols.*
+*My notes from the second lecture — the longest and, so far, the most important one. It states the central problem of machine learning in a single line, splits it into discriminative and generative halves, gives the three-step recipe for training any generative model, and derives KL divergence from scratch. Everything later is an instance of what is on this page.*
 
 ---
 

@@ -1,57 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="Inter, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 322" font-family="Inter, -apple-system, sans-serif">
   <defs>
     <marker id="sd-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/>
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-teal, #0e7490)"/>
     </marker>
   </defs>
 
-  <text x="380" y="24" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">
-    why a sigmoid is not a design choice — it is a domain requirement
+  <text x="380" y="24" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">
+    why a sigmoid is not a design choice, it is a domain requirement
   </text>
 
   <!-- ── row 1: raw output v ── -->
-  <text x="24" y="72" font-size="11.5" font-weight="600" fill="#444">raw critic output</text>
-  <text x="24" y="88" font-size="10.5" fill="#888">v = net_ω(x)</text>
-  <line x1="180" y1="78" x2="700" y2="78" stroke="#555" stroke-width="1.4"/>
-  <path d="M 180 78 L 172 74 L 172 82 Z" fill="#555"/>
-  <path d="M 700 78 L 708 74 L 708 82 Z" fill="#555"/>
-  <line x1="440" y1="72" x2="440" y2="84" stroke="#555"/>
-  <text x="440" y="99" text-anchor="middle" font-size="10" fill="#777">0</text>
-  <text x="176" y="66" font-size="10" fill="#777">−∞</text>
-  <text x="704" y="66" text-anchor="end" font-size="10" fill="#777">+∞</text>
+  <text x="24" y="72" font-size="11.5" font-weight="600" fill="var(--fig-ink-2, #444)">raw critic output</text>
+  <text x="24" y="88" font-size="10.5" fill="var(--fig-muted-2, #888)">v = net_ω(x)</text>
+  <line x1="180" y1="78" x2="700" y2="78" stroke="var(--fig-ink-2, #555)" stroke-width="1.4"/>
+  <path d="M 180 78 L 172 74 L 172 82 Z" fill="var(--fig-ink-2, #555)"/>
+  <path d="M 700 78 L 708 74 L 708 82 Z" fill="var(--fig-ink-2, #555)"/>
+  <line x1="440" y1="72" x2="440" y2="84" stroke="var(--fig-ink-2, #555)"/>
+  <text x="440" y="99" text-anchor="middle" font-size="10" fill="var(--fig-muted, #777)">0</text>
+  <text x="176" y="66" font-size="10" fill="var(--fig-muted, #777)">−∞</text>
+  <text x="704" y="66" text-anchor="end" font-size="10" fill="var(--fig-muted, #777)">+∞</text>
   <rect x="180" y="70" width="520" height="16" fill="rgba(14,116,144,0.07)"/>
-  <text x="440" y="118" text-anchor="middle" font-size="10.5" fill="#0e7490">anything at all — a network cannot be stopped from outputting this</text>
+  <text x="440" y="118" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">anything at all, a network cannot be stopped from outputting this</text>
 
   <!-- arrow down -->
-  <path d="M 380 126 L 380 150" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#sd-a)"/>
-  <text x="392" y="144" font-size="10.5" fill="#0e7490">T = log σ(v)</text>
+  <path d="M 380 126 L 380 150" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#sd-a)"/>
+  <text x="392" y="144" font-size="10.5" fill="var(--fig-teal, #0e7490)">T = log σ(v)</text>
 
   <!-- ── row 2: T, with forbidden zone ── -->
-  <text x="24" y="178" font-size="11.5" font-weight="600" fill="#444">variational value</text>
-  <text x="24" y="194" font-size="10.5" fill="#888">T, needs t &lt; 0</text>
-  <line x1="180" y1="184" x2="700" y2="184" stroke="#555" stroke-width="1.4"/>
-  <path d="M 180 184 L 172 180 L 172 188 Z" fill="#555"/>
+  <text x="24" y="178" font-size="11.5" font-weight="600" fill="var(--fig-ink-2, #444)">variational value</text>
+  <text x="24" y="194" font-size="10.5" fill="var(--fig-muted-2, #888)">T, needs t &lt; 0</text>
+  <line x1="180" y1="184" x2="700" y2="184" stroke="var(--fig-ink-2, #555)" stroke-width="1.4"/>
+  <path d="M 180 184 L 172 180 L 172 188 Z" fill="var(--fig-ink-2, #555)"/>
   <rect x="180" y="176" width="260" height="16" fill="rgba(14,116,144,0.14)"/>
   <rect x="440" y="176" width="260" height="16" fill="rgba(200,60,60,0.10)"/>
-  <line x1="440" y1="170" x2="440" y2="198" stroke="#c0392b" stroke-width="1.6"/>
-  <text x="440" y="211" text-anchor="middle" font-size="10" fill="#c0392b">0</text>
-  <text x="308" y="167" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0e7490">dom f*  =  (−∞, 0)</text>
-  <text x="570" y="167" text-anchor="middle" font-size="10.5" font-weight="600" fill="#c0392b">f*(t) = −log(1 − eᵗ) undefined</text>
-  <text x="570" y="211" text-anchor="middle" font-size="9.8" fill="#c0392b">t ≥ 0 ⟹ 1 − eᵗ ≤ 0 ⟹ log of a non-positive number</text>
+  <line x1="440" y1="170" x2="440" y2="198" stroke="var(--fig-red, #c0392b)" stroke-width="1.6"/>
+  <text x="440" y="211" text-anchor="middle" font-size="10" fill="var(--fig-red, #c0392b)">0</text>
+  <text x="308" y="167" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--fig-teal, #0e7490)">dom f*  =  (−∞, 0)</text>
+  <text x="570" y="167" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--fig-red, #c0392b)">f*(t) = −log(1 − eᵗ) undefined</text>
+  <text x="570" y="211" text-anchor="middle" font-size="10.5" fill="var(--fig-red, #c0392b)">t ≥ 0 ⟹ 1 − eᵗ ≤ 0 ⟹ log of a non-positive number</text>
 
   <!-- arrow down -->
-  <path d="M 380 222 L 380 246" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#sd-a)"/>
-  <text x="392" y="240" font-size="10.5" fill="#0e7490">D = e^T = σ(v)</text>
+  <path d="M 380 222 L 380 246" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#sd-a)"/>
+  <text x="392" y="240" font-size="10.5" fill="var(--fig-teal, #0e7490)">D = e^T = σ(v)</text>
 
   <!-- ── row 3: D ── -->
-  <text x="24" y="274" font-size="11.5" font-weight="600" fill="#444">discriminator</text>
-  <text x="24" y="290" font-size="10.5" fill="#888">D_ω(x)</text>
-  <line x1="180" y1="280" x2="700" y2="280" stroke="#555" stroke-width="1.4"/>
+  <text x="24" y="274" font-size="11.5" font-weight="600" fill="var(--fig-ink-2, #444)">discriminator</text>
+  <text x="24" y="290" font-size="10.5" fill="var(--fig-muted-2, #888)">D_ω(x)</text>
+  <line x1="180" y1="280" x2="700" y2="280" stroke="var(--fig-ink-2, #555)" stroke-width="1.4"/>
   <rect x="180" y="272" width="290" height="16" fill="rgba(217,119,6,0.14)"/>
-  <line x1="180" y1="266" x2="180" y2="294" stroke="#d97706" stroke-width="1.4"/>
-  <line x1="470" y1="266" x2="470" y2="294" stroke="#d97706" stroke-width="1.4"/>
-  <text x="180" y="264" text-anchor="middle" font-size="10" fill="#d97706">0</text>
-  <text x="470" y="264" text-anchor="middle" font-size="10" fill="#d97706">1</text>
-  <text x="325" y="299" text-anchor="middle" font-size="10.5" fill="#a35f05">a probability — "how real does this look?"</text>
-  <text x="590" y="285" font-size="10.5" fill="#999">the classifier interpretation is a consequence, not an assumption</text>
+  <line x1="180" y1="266" x2="180" y2="294" stroke="var(--fig-amber, #d97706)" stroke-width="1.4"/>
+  <line x1="470" y1="266" x2="470" y2="294" stroke="var(--fig-amber, #d97706)" stroke-width="1.4"/>
+  <text x="180" y="264" text-anchor="middle" font-size="10" fill="var(--fig-amber, #d97706)">0</text>
+  <text x="470" y="264" text-anchor="middle" font-size="10" fill="var(--fig-amber, #d97706)">1</text>
+  <text x="325" y="299" text-anchor="middle" font-size="10.5" fill="var(--fig-amber-2, #a35f05)">a probability: "how real does this look?"</text>
+  <text x="380" y="316" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #999)">the classifier interpretation is a consequence, not an assumption</text>
 </svg>

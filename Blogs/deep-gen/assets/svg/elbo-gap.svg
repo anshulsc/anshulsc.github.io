@@ -1,40 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" font-family="Inter, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 0 800 320" font-family="Inter, -apple-system, sans-serif">
   <defs>
-    <marker id="eg-s" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker>
-    <marker id="eg-e" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker>
-    <marker id="eg-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker>
+    <marker id="eg-s" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-purple, #7c3aed)"/></marker>
+    <marker id="eg-e" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-purple, #7c3aed)"/></marker>
+    <marker id="eg-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-teal, #0e7490)"/></marker>
   </defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">the bound, the gap, and what each step of EM does to them</text>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">the bound, the gap, and what each step of EM does to them</text>
 
-  <line x1="70" y1="266" x2="700" y2="266" stroke="#999" stroke-width="1.2"/>
-  <line x1="70" y1="46" x2="70" y2="266" stroke="#999" stroke-width="1.2"/>
-  <text x="386" y="292" text-anchor="middle" font-size="10.4" fill="#777">model parameters θ  ⟶</text>
+  <line x1="70" y1="266" x2="700" y2="266" stroke="var(--fig-muted-2, #999)" stroke-width="1.2"/>
+  <line x1="70" y1="46" x2="70" y2="266" stroke="var(--fig-muted-2, #999)" stroke-width="1.2"/>
+  <text x="386" y="292" text-anchor="middle" font-size="10.4" fill="var(--fig-muted, #777)">model parameters θ  ⟶</text>
 
-  <path d="M 90 176 C 200 96, 320 84, 420 106 C 520 128, 620 92, 686 66" fill="none" stroke="#0e7490" stroke-width="2.8"/>
-  <text x="600" y="56" font-size="10.8" font-weight="700" fill="#0e7490">ℓ(θ) = log P_θ(x) — what we want, and cannot compute</text>
+  <path d="M 90 176 C 200 96, 320 84, 420 106 C 520 128, 620 92, 686 66" fill="none" stroke="var(--fig-teal, #0e7490)" stroke-width="2.8"/>
+  <text x="748" y="56" text-anchor="end" font-size="10.8" font-weight="700" fill="var(--fig-teal, #0e7490)">ℓ(θ) = log P_θ(x), what we want, and cannot compute</text>
 
-  <path d="M 90 232 C 200 176, 320 168, 420 190 C 520 212, 620 186, 686 168" fill="none" stroke="#d97706" stroke-width="2.4" stroke-dasharray="7 4"/>
-  <text x="120" y="252" font-size="10.8" font-weight="700" fill="#d97706">F_θ(q) — the ELBO, which we can</text>
+  <path d="M 90 232 C 200 176, 320 168, 420 190 C 520 212, 620 186, 686 168" fill="none" stroke="var(--fig-amber, #d97706)" stroke-width="2.4" stroke-dasharray="7 4"/>
+  <text x="120" y="252" font-size="10.8" font-weight="700" fill="var(--fig-amber, #d97706)">F_θ(q): the ELBO, which we can compute</text>
 
-  <line x1="240" y1="88" x2="240" y2="172" stroke="#7c3aed" stroke-width="1.8" marker-start="url(#eg-s)" marker-end="url(#eg-e)"/>
-  <text x="250" y="126" font-size="10.4" font-weight="700" fill="#7c3aed">gap</text>
-  <text x="250" y="141" font-size="9.6" fill="#7c3aed">= D_KL(q ‖ P_θ(z|x))</text>
+  <line x1="240" y1="88" x2="240" y2="172" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.8" marker-start="url(#eg-s)" marker-end="url(#eg-e)"/>
+  <text x="250" y="126" font-size="10.4" font-weight="700" fill="var(--fig-purple, #7c3aed)">gap</text>
+  <text x="250" y="141" font-size="10.5" fill="var(--fig-purple, #7c3aed)">= D_KL(q ‖ P_θ(z|x))</text>
 
-  <circle cx="420" cy="106" r="5" fill="#0e7490"/>
-  <circle cx="420" cy="190" r="5" fill="#d97706"/>
-  <path d="M 432 186 C 458 176, 452 130, 432 112" stroke="#7c3aed" stroke-width="1.8" fill="none" marker-end="url(#eg-t)"/>
-  <text x="466" y="152" font-size="10.4" font-weight="700" fill="#7c3aed">E-step</text>
-  <text x="466" y="167" font-size="9.6" fill="#7c3aed">set q = P_θ(z|x);</text>
-  <text x="466" y="181" font-size="9.6" fill="#7c3aed">the gap closes to zero</text>
-  <text x="466" y="195" font-size="9.6" fill="#7c3aed">and the bound touches</text>
+  <circle cx="420" cy="106" r="5" fill="var(--fig-teal, #0e7490)"/>
+  <circle cx="420" cy="190" r="5" fill="var(--fig-amber, #d97706)"/>
+  <path d="M 432 186 C 458 176, 452 130, 432 112" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.8" fill="none" marker-end="url(#eg-t)"/>
+  <text x="466" y="152" font-size="10.4" font-weight="700" fill="var(--fig-purple, #7c3aed)">E-step</text>
+  <text x="466" y="167" font-size="10.5" fill="var(--fig-purple, #7c3aed)">set q = P_θ(z|x);</text>
+  <text paint-order="stroke" stroke="var(--fig-paper, #fff)" stroke-width="3.2" stroke-linejoin="round" x="466" y="181" font-size="10.5" fill="var(--fig-purple, #7c3aed)">the gap closes to zero and the bound touches</text>
 
-  <path d="M 424 100 C 500 84, 560 88, 620 78" stroke="#0e7490" stroke-width="1.8" fill="none" stroke-dasharray="5 3" marker-end="url(#eg-t)"/>
-  <text x="530" y="72" font-size="10.4" font-weight="700" fill="#0e7490">M-step</text>
-  <text x="530" y="118" font-size="9.6" fill="#0e7490">now climb in θ with q held fixed</text>
+  <path d="M 424 100 C 500 84, 560 88, 620 78" stroke="var(--fig-teal, #0e7490)" stroke-width="1.8" fill="none" stroke-dasharray="5 3" marker-end="url(#eg-t)"/>
+  <text x="530" y="72" font-size="10.4" font-weight="700" fill="var(--fig-teal, #0e7490)">M-step</text>
+  <text x="530" y="118" font-size="10.5" fill="var(--fig-teal, #0e7490)">now climb in θ with q held fixed</text>
 
-  <rect x="70" y="42" width="230" height="46" rx="8" fill="rgba(14,116,144,0.05)" stroke="#0e7490" stroke-width="1.1"/>
-  <text x="82" y="60" font-size="9.8" fill="#555">ℓ(θ) = F_θ(q) + D_KL(q ‖ P_θ(z|x))</text>
-  <text x="82" y="76" font-size="9.8" fill="#555">KL ≥ 0, so the ELBO is always below ℓ.</text>
+  <rect x="70" y="42" width="230" height="46" rx="8" fill="rgba(14,116,144,0.05)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.1"/>
+  <text x="82" y="60" font-size="10.5" fill="var(--fig-ink-2, #555)">ℓ(θ) = F_θ(q) + D_KL(q ‖ P_θ(z|x))</text>
+  <text x="82" y="76" font-size="10.5" fill="var(--fig-ink-2, #555)">KL ≥ 0, so the ELBO is always below ℓ.</text>
 
-  <text x="380" y="312" text-anchor="middle" font-size="10.6" fill="#555">Each E-step makes the bound exact at the current θ; each M-step raises it. Since ℓ ≥ F always, ℓ can never go down — that is the whole convergence argument.</text>
+  <text x="380" y="312" text-anchor="middle" font-size="10.6" fill="var(--fig-ink-2, #555)">Each E-step makes the bound exact at the current θ; each M-step raises it. Since ℓ ≥ F always, ℓ can never go down, that is the whole convergence argument.</text>
 </svg>

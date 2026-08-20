@@ -1,43 +1,44 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="Inter, -apple-system, sans-serif">
   <defs>
-    <marker id="st-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker>
-    <marker id="st-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed"/></marker>
+    <marker id="st-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-teal, #0e7490)"/></marker>
+    <marker id="st-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-purple, #7c3aed)"/></marker>
   </defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">argmin has no derivative — so the gradient is simply carried across the gap</text>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">argmin has no derivative, so the gradient is simply carried across the gap</text>
 
   <!-- forward -->
-  <text x="34" y="60" font-size="10.6" font-weight="700" fill="#0e7490">forward</text>
-  <rect x="96" y="44" width="94" height="42" rx="8" fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.5"/>
-  <text x="143" y="62" text-anchor="middle" font-size="10.4" font-weight="600" fill="#0e7490">encoder</text>
-  <text x="143" y="77" text-anchor="middle" font-size="9.4" fill="#555">z_e(x)</text>
-  <path d="M 192 65 L 226 65" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#st-t)"/>
-  <rect x="230" y="44" width="120" height="42" rx="8" fill="rgba(200,60,60,0.08)" stroke="#c0392b" stroke-width="1.8"/>
-  <text x="290" y="62" text-anchor="middle" font-size="10.4" font-weight="700" fill="#c0392b">argmin lookup</text>
-  <text x="290" y="77" text-anchor="middle" font-size="9" fill="#c0392b">piecewise constant</text>
-  <path d="M 352 65 L 386 65" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#st-t)"/>
-  <rect x="390" y="44" width="94" height="42" rx="8" fill="rgba(124,58,237,0.10)" stroke="#7c3aed" stroke-width="1.5"/>
-  <text x="437" y="62" text-anchor="middle" font-size="10.4" font-weight="600" fill="#7c3aed">z_q(x)</text>
-  <text x="437" y="77" text-anchor="middle" font-size="9.4" fill="#555">a codebook entry</text>
-  <path d="M 486 65 L 520 65" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#st-t)"/>
-  <rect x="524" y="44" width="94" height="42" rx="8" fill="rgba(217,119,6,0.10)" stroke="#d97706" stroke-width="1.5"/>
-  <text x="571" y="70" text-anchor="middle" font-size="10.4" font-weight="600" fill="#d97706">decoder</text>
-  <path d="M 620 65 L 654 65" stroke="#d97706" stroke-width="1.6" fill="none" marker-end="url(#st-t)"/>
-  <text x="694" y="69" text-anchor="middle" font-size="10.4" fill="#444">loss</text>
+  <text x="34" y="60" font-size="10.6" font-weight="700" fill="var(--fig-teal, #0e7490)">forward</text>
+  <rect x="96" y="44" width="94" height="42" rx="8" fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.5"/>
+  <text x="143" y="62" text-anchor="middle" font-size="10.4" font-weight="600" fill="var(--fig-teal, #0e7490)">encoder</text>
+  <text x="143" y="77" text-anchor="middle" font-size="10.5" fill="var(--fig-ink-2, #555)">z_e(x)</text>
+  <path d="M 192 65 L 226 65" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#st-t)"/>
+  <rect x="230" y="44" width="120" height="42" rx="8" fill="rgba(200,60,60,0.08)" stroke="var(--fig-red, #c0392b)" stroke-width="1.8"/>
+  <text x="290" y="62" text-anchor="middle" font-size="10.4" font-weight="700" fill="var(--fig-red, #c0392b)">argmin lookup</text>
+  <text x="290" y="77" text-anchor="middle" font-size="10.5" fill="var(--fig-red, #c0392b)">piecewise constant</text>
+  <path d="M 352 65 L 386 65" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#st-t)"/>
+  <rect x="390" y="44" width="94" height="42" rx="8" fill="rgba(124,58,237,0.10)" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.5"/>
+  <text x="437" y="62" text-anchor="middle" font-size="10.4" font-weight="600" fill="var(--fig-purple, #7c3aed)">z_q(x)</text>
+  <text x="437" y="77" text-anchor="middle" font-size="10.5" fill="var(--fig-ink-2, #555)">a codebook entry</text>
+  <path d="M 486 65 L 520 65" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#st-t)"/>
+  <rect x="524" y="44" width="94" height="42" rx="8" fill="rgba(217,119,6,0.10)" stroke="var(--fig-amber, #d97706)" stroke-width="1.5"/>
+  <text x="571" y="70" text-anchor="middle" font-size="10.4" font-weight="600" fill="var(--fig-amber, #d97706)">decoder</text>
+  <path d="M 620 65 L 654 65" stroke="var(--fig-amber, #d97706)" stroke-width="1.6" fill="none" marker-end="url(#st-t)"/>
+  <text x="694" y="69" text-anchor="middle" font-size="10.4" fill="var(--fig-ink-2, #444)">loss</text>
 
   <!-- backward -->
-  <text x="34" y="150" font-size="10.6" font-weight="700" fill="#7c3aed">backward</text>
-  <path d="M 690 130 L 486 130" stroke="#7c3aed" stroke-width="2" fill="none" stroke-dasharray="6 4" marker-end="url(#st-p)"/>
-  <text x="588" y="122" text-anchor="middle" font-size="9.6" fill="#7c3aed">∂L/∂z_q arrives here normally</text>
+  <text x="34" y="150" font-size="10.6" font-weight="700" fill="var(--fig-purple, #7c3aed)">backward</text>
+  <path d="M 690 130 L 486 130" stroke="var(--fig-purple, #7c3aed)" stroke-width="2" fill="none" stroke-dasharray="6 4" marker-end="url(#st-p)"/>
+  <text x="588" y="122" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">∂L/∂z_q arrives here normally</text>
 
-  <rect x="230" y="110" width="120" height="42" rx="8" fill="rgba(200,60,60,0.06)" stroke="#c0392b" stroke-width="1.4" stroke-dasharray="5 3"/>
-  <text x="290" y="127" text-anchor="middle" font-size="9.6" fill="#c0392b">∂z_q/∂z_e = 0</text>
-  <text x="290" y="142" text-anchor="middle" font-size="9" fill="#c0392b">almost everywhere</text>
+  <rect x="230" y="110" width="120" height="42" rx="8" fill="rgba(200,60,60,0.06)" stroke="var(--fig-red, #c0392b)" stroke-width="1.4" stroke-dasharray="5 3"/>
+  <text x="290" y="127" text-anchor="middle" font-size="10.5" fill="var(--fig-red, #c0392b)">∂z_q/∂z_e = 0</text>
+  <text x="290" y="142" text-anchor="middle" font-size="10.5" fill="var(--fig-red, #c0392b)">almost everywhere</text>
 
-  <path d="M 470 168 C 400 196, 250 196, 176 168" stroke="#7c3aed" stroke-width="2.4" fill="none" marker-end="url(#st-p)"/>
-  <text x="322" y="212" text-anchor="middle" font-size="10.6" font-weight="700" fill="#7c3aed">straight-through: copy ∂L/∂z_q onto z_e unchanged</text>
-  <text x="322" y="228" text-anchor="middle" font-size="9.8" fill="#7c3aed">pretend, for the backward pass only, that the lookup was the identity</text>
+  <path d="M 470 168 C 400 196, 250 196, 176 168" stroke="var(--fig-purple, #7c3aed)" stroke-width="2.4" fill="none" marker-end="url(#st-p)"/>
+  <text x="322" y="212" text-anchor="middle" font-size="10.6" font-weight="700" fill="var(--fig-purple, #7c3aed)">straight-through: copy ∂L/∂z_q onto z_e unchanged</text>
+  <text x="322" y="228" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">pretend, for the backward pass only, that the lookup was the identity</text>
 
-  <rect x="30" y="244" width="700" height="46" rx="9" fill="rgba(14,116,144,0.04)" stroke="#0e7490" stroke-width="1.2"/>
-  <text x="44" y="262" font-size="9.8" fill="#555">This is a deliberate lie — the true Jacobian is zero, so the estimator is biased, unlike the reparameterisation trick of Ch.7, §10, which is exact.</text>
-  <text x="44" y="278" font-size="9.8" fill="#555">Two extra loss terms clean up after it: <tspan font-weight="600" fill="#0e7490">‖sg[z_e] − z_q‖²</tspan> pulls each codebook entry toward the vectors it wins, and <tspan font-weight="600" fill="#d97706">β‖z_e − sg[z_q]‖²</tspan> stops the encoder drifting away from the codebook.</text>
+  <rect x="30" y="244" width="700" height="46" rx="9" fill="rgba(14,116,144,0.04)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.2"/>
+  <text x="44" y="258" font-size="10.5" fill="var(--fig-ink-2, #555)">This is a deliberate lie, the true Jacobian is zero, so the estimator is biased, unlike the reparameterisation trick of Ch.7, §10, which is exact.</text>
+  <text x="44" y="274" font-size="10.5" fill="var(--fig-ink-2, #555)">Two extra loss terms clean up after it: <tspan font-weight="600" fill="var(--fig-teal, #0e7490)">‖sg[z_e] − z_q‖²</tspan> pulls each codebook entry toward the vectors it wins,</text>
+  <text x="44" y="290" font-size="10.5" fill="var(--fig-ink-2, #555)">and <tspan font-weight="600" fill="var(--fig-amber, #d97706)">β‖z_e − sg[z_q]‖²</tspan> stops the encoder drifting away from the codebook.</text>
 </svg>

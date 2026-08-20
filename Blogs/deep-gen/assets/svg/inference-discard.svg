@@ -1,39 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 250" font-family="Inter, -apple-system, sans-serif">
-  <defs><marker id="id-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#0e7490"/></marker></defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">at inference the discriminator is scaffolding — you take it down</text>
+  <defs><marker id="id-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-teal, #0e7490)"/></marker></defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">at inference the discriminator is scaffolding, you take it down</text>
 
-  <rect x="30" y="72" width="112" height="54" rx="10" fill="#f5f5f5" stroke="#aaa" stroke-width="1.4"/>
-  <text x="86" y="94" text-anchor="middle" font-size="11" fill="#555">z ~ N(0, I)</text>
-  <text x="86" y="112" text-anchor="middle" font-size="9.4" fill="#888">a fresh noise draw</text>
-  <path d="M 142 99 L 178 99" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#id-t)"/>
+  <rect x="30" y="72" width="112" height="54" rx="10" fill="var(--fig-wash, #f5f5f5)" stroke="var(--fig-faint, #aaa)" stroke-width="1.4"/>
+  <text x="86" y="94" text-anchor="middle" font-size="11" fill="var(--fig-ink-2, #555)">z ~ N(0, I)</text>
+  <text x="86" y="112" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #888)">a fresh noise draw</text>
+  <path d="M 142 99 L 178 99" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#id-t)"/>
 
-  <path d="M 182 74 L 262 56 L 262 142 L 182 124 Z" fill="rgba(14,116,144,0.12)" stroke="#0e7490" stroke-width="1.8"/>
-  <text x="222" y="95" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0e7490">g_θ*</text>
-  <text x="222" y="112" text-anchor="middle" font-size="9.4" fill="#0e7490">frozen weights</text>
-  <path d="M 262 99 L 298 99" stroke="#0e7490" stroke-width="1.6" fill="none" marker-end="url(#id-t)"/>
+  <path d="M 182 74 L 262 56 L 262 142 L 182 124 Z" fill="rgba(14,116,144,0.12)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.8"/>
+  <text x="222" y="95" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--fig-teal, #0e7490)">g_θ*</text>
+  <text x="222" y="112" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">frozen weights</text>
+  <path d="M 262 99 L 298 99" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#id-t)"/>
 
-  <g fill="rgba(14,116,144,0.10)" stroke="#0e7490" stroke-width="1.3">
+  <g fill="rgba(14,116,144,0.10)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.3">
     <rect x="302" y="62" width="52" height="52" rx="4"/><rect x="360" y="62" width="52" height="52" rx="4"/>
     <rect x="302" y="120" width="52" height="52" rx="4"/><rect x="360" y="120" width="52" height="52" rx="4"/>
   </g>
-  <text x="357" y="192" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0e7490">novel samples x̂ ~ P_θ ≈ P_x</text>
-  <text x="357" y="208" text-anchor="middle" font-size="9.6" fill="#888">not in the training set, not retrieved — genuinely new points</text>
+  <text x="357" y="192" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--fig-teal, #0e7490)">novel samples x̂ ~ P_θ ≈ P_x</text>
+  <text x="357" y="208" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #888)">not in the training set, not retrieved, genuinely new points</text>
 
   <!-- discarded discriminator -->
   <g opacity="0.4">
-    <rect x="470" y="70" width="150" height="58" rx="10" fill="#f2f2f2" stroke="#999" stroke-width="1.4" stroke-dasharray="6 4"/>
-    <text x="545" y="94" text-anchor="middle" font-size="11" font-weight="600" fill="#777">D_ω*</text>
-    <text x="545" y="112" text-anchor="middle" font-size="9.6" fill="#888">the critic</text>
+    <rect x="470" y="70" width="150" height="58" rx="10" fill="var(--fig-wash, #f2f2f2)" stroke="var(--fig-muted-2, #999)" stroke-width="1.4" stroke-dasharray="6 4"/>
+    <text x="545" y="94" text-anchor="middle" font-size="11" font-weight="600" fill="var(--fig-muted, #777)">D_ω*</text>
+    <text x="545" y="112" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #888)">the critic</text>
   </g>
-  <line x1="484" y1="78" x2="608" y2="122" stroke="#c0392b" stroke-width="2.4"/>
-  <line x1="608" y1="78" x2="484" y2="122" stroke="#c0392b" stroke-width="2.4"/>
-  <text x="545" y="152" text-anchor="middle" font-size="10.5" font-weight="700" fill="#c0392b">discarded entirely</text>
-  <text x="545" y="169" text-anchor="middle" font-size="9.6" fill="#999">never shipped, never run</text>
+  <line x1="484" y1="78" x2="608" y2="122" stroke="var(--fig-red, #c0392b)" stroke-width="2.4"/>
+  <line x1="608" y1="78" x2="484" y2="122" stroke="var(--fig-red, #c0392b)" stroke-width="2.4"/>
+  <text x="545" y="152" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--fig-red, #c0392b)">discarded entirely</text>
+  <text x="545" y="169" text-anchor="middle" font-size="10.5" fill="var(--fig-muted-2, #999)">never shipped, never run</text>
 
-  <rect x="640" y="70" width="106" height="86" rx="10" fill="rgba(14,116,144,0.05)" stroke="#0e7490" stroke-width="1.1"/>
-  <text x="693" y="92" text-anchor="middle" font-size="10" font-style="italic" fill="#0e7490">"once you have</text>
-  <text x="693" y="107" text-anchor="middle" font-size="10" font-style="italic" fill="#0e7490">learned from the</text>
-  <text x="693" y="122" text-anchor="middle" font-size="10" font-style="italic" fill="#0e7490">teacher, you can</text>
-  <text x="693" y="137" text-anchor="middle" font-size="10" font-style="italic" fill="#0e7490">graduate and</text>
-  <text x="693" y="152" text-anchor="middle" font-size="10" font-style="italic" fill="#0e7490">go your way"</text>
+  <rect x="640" y="70" width="106" height="86" rx="10" fill="rgba(14,116,144,0.05)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.1"/>
+  <text x="693" y="92" text-anchor="middle" font-size="10" font-style="italic" fill="var(--fig-teal, #0e7490)">"once you have</text>
+  <text x="693" y="107" text-anchor="middle" font-size="10" font-style="italic" fill="var(--fig-teal, #0e7490)">learned from the</text>
+  <text x="693" y="122" text-anchor="middle" font-size="10" font-style="italic" fill="var(--fig-teal, #0e7490)">teacher, you can</text>
+  <text x="693" y="137" text-anchor="middle" font-size="10" font-style="italic" fill="var(--fig-teal, #0e7490)">graduate and</text>
+  <text x="693" y="152" text-anchor="middle" font-size="10" font-style="italic" fill="var(--fig-teal, #0e7490)">go your way"</text>
 </svg>

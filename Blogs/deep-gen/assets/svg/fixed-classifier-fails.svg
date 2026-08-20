@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="Inter, -apple-system, sans-serif">
   <defs>
     <marker id="fc-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-      <path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706"/>
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-amber, #d97706)"/>
     </marker>
     <marker id="fc-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 1 L 9 5 L 0 9 z" fill="#c0392b"/>
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--fig-red, #c0392b)"/>
     </marker>
   </defs>
 
-  <text x="380" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#333">
+  <text x="380" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fig-ink, #333)">
     fooling a frozen classifier is not the same as matching the distribution
   </text>
 
@@ -17,18 +17,18 @@
   <path d="M 120 320 L 700 140 L 700 332 L 120 332 Z" fill="rgba(217,119,6,0.06)"/>
 
   <!-- plot frame -->
-  <rect x="120" y="36" width="580" height="296" fill="none" stroke="#e0e0e0"/>
-  <text x="132" y="52" font-size="10.5" font-weight="600" fill="#0e7490">classifier says REAL  (D = 1)</text>
-  <text x="688" y="322" text-anchor="end" font-size="10.5" font-weight="600" fill="#d97706">classifier says FAKE  (D = 0)</text>
-  <text x="112" y="196" text-anchor="end" font-size="10" fill="#aaa" transform="rotate(-90 112 196)">feature 2</text>
-  <text x="410" y="350" text-anchor="middle" font-size="10" fill="#aaa">feature 1</text>
+  <rect x="120" y="36" width="580" height="296" fill="none" stroke="var(--fig-line, #e0e0e0)"/>
+  <text x="132" y="36" font-size="10.5" font-weight="600" fill="var(--fig-teal, #0e7490)">classifier says REAL  (D = 1)</text>
+  <text x="688" y="322" text-anchor="end" font-size="10.5" font-weight="600" fill="var(--fig-amber, #d97706)">classifier says FAKE  (D = 0)</text>
+  <text x="112" y="196" text-anchor="end" font-size="10" fill="var(--fig-faint, #aaa)" transform="rotate(-90 112 196)">feature 2</text>
+  <text x="410" y="350" text-anchor="middle" font-size="10" fill="var(--fig-faint, #aaa)">feature 1</text>
 
   <!-- decision boundary -->
-  <line x1="120" y1="320" x2="700" y2="140" stroke="#555" stroke-width="2"/>
-  <text x="250" y="290" font-size="10.5" font-style="italic" fill="#555">frozen decision boundary D_ω</text>
+  <line x1="120" y1="320" x2="700" y2="140" stroke="var(--fig-ink-2, #555)" stroke-width="2"/>
+  <text x="250" y="290" font-size="10.5" font-style="italic" fill="var(--fig-ink-2, #555)">frozen decision boundary D_ω</text>
 
   <!-- TRUE cluster P_x (top-left, teal crosses) -->
-  <g stroke="#0e7490" stroke-width="2.1">
+  <g stroke="var(--fig-teal, #0e7490)" stroke-width="2.1">
     <path d="M 178 86 l 9 9 M 187 86 l -9 9"/>
     <path d="M 202 74 l 9 9 M 211 74 l -9 9"/>
     <path d="M 226 92 l 9 9 M 235 92 l -9 9"/>
@@ -37,41 +37,41 @@
     <path d="M 228 116 l 9 9 M 237 116 l -9 9"/>
     <path d="M 250 100 l 9 9 M 259 100 l -9 9"/>
   </g>
-  <ellipse cx="212" cy="102" rx="62" ry="42" fill="none" stroke="#0e7490" stroke-width="1.3" stroke-dasharray="5 4"/>
-  <text x="212" y="55" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0e7490">true data  P_x</text>
+  <ellipse cx="212" cy="102" rx="62" ry="42" fill="none" stroke="var(--fig-teal, #0e7490)" stroke-width="1.3" stroke-dasharray="5 4"/>
+  <text x="212" y="55" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--fig-teal, #0e7490)">true data  P_x</text>
 
   <!-- START cluster P_θ1 (bottom-right, orange circles) -->
-  <g fill="none" stroke="#d97706" stroke-width="1.9">
+  <g fill="none" stroke="var(--fig-amber, #d97706)" stroke-width="1.9">
     <circle cx="528" cy="262" r="5"/><circle cx="552" cy="250" r="5"/><circle cx="576" cy="264" r="5"/>
     <circle cx="536" cy="288" r="5"/><circle cx="562" cy="294" r="5"/><circle cx="590" cy="284" r="5"/>
     <circle cx="600" cy="258" r="5"/>
   </g>
-  <ellipse cx="562" cy="272" rx="60" ry="38" fill="none" stroke="#d97706" stroke-width="1.3" stroke-dasharray="5 4"/>
-  <text x="562" y="322" text-anchor="middle" font-size="11.5" font-weight="700" fill="#d97706">start:  P_θ₁  — correctly caught</text>
+  <ellipse cx="562" cy="272" rx="60" ry="38" fill="none" stroke="var(--fig-amber, #d97706)" stroke-width="1.3" stroke-dasharray="5 4"/>
+  <text x="562" y="342" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--fig-amber, #d97706)">start:  P_θ₁ : correctly caught</text>
 
   <!-- END cluster P_θ2 (top-right, orange circles) -->
-  <g fill="none" stroke="#d97706" stroke-width="1.9">
+  <g fill="none" stroke="var(--fig-amber, #d97706)" stroke-width="1.9">
     <circle cx="588" cy="94" r="5"/><circle cx="612" cy="82" r="5"/><circle cx="636" cy="96" r="5"/>
     <circle cx="596" cy="120" r="5"/><circle cx="622" cy="126" r="5"/><circle cx="650" cy="116" r="5"/>
     <circle cx="660" cy="90" r="5"/>
   </g>
-  <ellipse cx="622" cy="104" rx="60" ry="38" fill="none" stroke="#d97706" stroke-width="1.3" stroke-dasharray="5 4"/>
-  <text x="622" y="58" text-anchor="middle" font-size="11.5" font-weight="700" fill="#d97706">after:  P_θ₂</text>
+  <ellipse cx="622" cy="104" rx="60" ry="38" fill="none" stroke="var(--fig-amber, #d97706)" stroke-width="1.3" stroke-dasharray="5 4"/>
+  <text x="622" y="58" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--fig-amber, #d97706)">after:  P_θ₂</text>
 
   <!-- the move -->
-  <path d="M 588 234 C 610 200, 616 176, 620 146" stroke="#d97706" stroke-width="2.4" fill="none"
+  <path d="M 588 234 C 610 200, 616 176, 620 146" stroke="var(--fig-amber, #d97706)" stroke-width="2.4" fill="none"
         stroke-dasharray="7 4" marker-end="url(#fc-o)"/>
-  <text x="600" y="196" font-size="10.5" font-weight="600" fill="#a35f05">generator</text>
-  <text x="600" y="210" font-size="10.5" font-weight="600" fill="#a35f05">moves here</text>
+  <text x="600" y="196" font-size="10.5" font-weight="600" fill="var(--fig-amber-2, #a35f05)">generator</text>
+  <text x="600" y="210" font-size="10.5" font-weight="600" fill="var(--fig-amber-2, #a35f05)">moves here</text>
 
   <!-- verdicts -->
-  <rect x="124" y="356" width="292" height="38" rx="8" fill="rgba(14,116,144,0.07)" stroke="#0e7490" stroke-width="1.2"/>
-  <text x="270" y="371" text-anchor="middle" font-size="10.8" font-weight="600" fill="#0e7490">✓ every fake now lands on the REAL side</text>
-  <text x="270" y="386" text-anchor="middle" font-size="10.2" fill="#0e7490">the classifier has completely failed</text>
+  <rect x="124" y="356" width="292" height="38" rx="8" fill="rgba(14,116,144,0.07)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.2"/>
+  <text x="270" y="371" text-anchor="middle" font-size="10.8" font-weight="600" fill="var(--fig-teal, #0e7490)">✓ every fake now lands on the REAL side</text>
+  <text x="270" y="386" text-anchor="middle" font-size="10.2" fill="var(--fig-teal, #0e7490)">the classifier has completely failed</text>
 
-  <rect x="428" y="356" width="292" height="38" rx="8" fill="rgba(200,60,60,0.07)" stroke="#c0392b" stroke-width="1.2"/>
-  <text x="574" y="371" text-anchor="middle" font-size="10.8" font-weight="600" fill="#c0392b">✗ but P_θ₂ and P_x share no region at all</text>
-  <text x="574" y="386" text-anchor="middle" font-size="10.2" fill="#c0392b">"classifier fooled" ⇏ "distributions match"</text>
+  <rect x="428" y="356" width="292" height="38" rx="8" fill="rgba(200,60,60,0.07)" stroke="var(--fig-red, #c0392b)" stroke-width="1.2"/>
+  <text x="574" y="371" text-anchor="middle" font-size="10.8" font-weight="600" fill="var(--fig-red, #c0392b)">✗ but P_θ₂ and P_x share no region at all</text>
+  <text x="574" y="386" text-anchor="middle" font-size="10.2" fill="var(--fig-red, #c0392b)">"classifier fooled" ⇏ "distributions match"</text>
 
-  <path d="M 424 375 L 410 375" stroke="#c0392b" stroke-width="1.4" fill="none" marker-end="url(#fc-r)"/>
+  <path d="M 424 375 L 410 375" stroke="var(--fig-red, #c0392b)" stroke-width="1.4" fill="none" marker-end="url(#fc-r)"/>
 </svg>

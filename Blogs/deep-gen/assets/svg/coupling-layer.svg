@@ -1,90 +1,90 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" font-family="Inter, -apple-system, sans-serif">
-  <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#888"/></marker>
-        <marker id="a2t" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#0e7490"/></marker></defs>
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">the affine coupling layer: freeze half the vector, and everything becomes easy</text>
+  <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--fig-muted-2, #888)"/></marker>
+        <marker id="a2t" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--fig-teal, #0e7490)"/></marker></defs>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">the affine coupling layer: freeze half the vector, and everything becomes easy</text>
 
-  <line x1="374" y1="44" x2="374" y2="212" stroke="#eee"/>
+  <line x1="374" y1="44" x2="374" y2="212" stroke="var(--fig-wash, #eee)"/>
 
   <!-- ============ FORWARD ============ -->
-  <text x="196" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7490">forward — evaluating a density</text>
+  <text x="196" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fig-teal, #0e7490)">forward: evaluating a density</text>
 
-  <rect x="26" y="72" width="74" height="28" rx="5" fill="#f6f6f4" stroke="#bbb"/>
-  <text x="63" y="91" text-anchor="middle" font-size="10.6" font-style="italic" fill="#333">x₁…x_d</text>
-  <rect x="24" y="118" width="80" height="28" rx="5" fill="#f6f6f4" stroke="#bbb"/>
-  <text x="64" y="137" text-anchor="middle" font-size="9.6" font-style="italic" fill="#333">x_{d+1}…x_D</text>
+  <rect x="26" y="72" width="74" height="28" rx="5" fill="var(--fig-wash, #f6f6f4)" stroke="var(--fig-faint, #bbb)"/>
+  <text x="63" y="91" text-anchor="middle" font-size="10.6" font-style="italic" fill="var(--fig-ink, #333)">x₁…x_d</text>
+  <rect x="24" y="118" width="80" height="28" rx="5" fill="var(--fig-wash, #f6f6f4)" stroke="var(--fig-faint, #bbb)"/>
+  <text x="64" y="137" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--fig-ink, #333)">x_{d+1}…x_D</text>
 
-  <path d="M 100 86 H 274" stroke="#0e7490" stroke-width="2.2" marker-end="url(#a2t)"/>
-  <text x="188" y="79" text-anchor="middle" font-size="9.4" font-weight="600" fill="#0e7490">copied through, untouched</text>
+  <path d="M 100 86 H 274" stroke="var(--fig-teal, #0e7490)" stroke-width="2.2" marker-end="url(#a2t)"/>
+  <text x="188" y="79" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--fig-teal, #0e7490)">copied through, untouched</text>
 
-  <path d="M 124 88 V 116" stroke="#888" stroke-width="1.2" marker-end="url(#a2)"/>
-  <rect x="128" y="118" width="62" height="28" rx="5" fill="rgba(124,58,237,0.08)" stroke="#7c3aed"/>
-  <text x="159" y="137" text-anchor="middle" font-size="10" fill="#7c3aed">NN → s, t</text>
+  <path d="M 124 88 V 116" stroke="var(--fig-muted-2, #888)" stroke-width="1.2" marker-end="url(#a2)"/>
+  <rect x="128" y="118" width="62" height="28" rx="5" fill="rgba(124,58,237,0.08)" stroke="var(--fig-purple, #7c3aed)"/>
+  <text x="159" y="137" text-anchor="middle" font-size="10" fill="var(--fig-purple, #7c3aed)">NN → s, t</text>
 
-  <path d="M 190 132 H 210" stroke="#888" stroke-width="1.2" marker-end="url(#a2)"/>
-  <rect x="212" y="118" width="58" height="28" rx="5" fill="#fff" stroke="#ccc"/>
-  <text x="241" y="137" text-anchor="middle" font-size="10.2" fill="#333">⊙ eˢ + t</text>
+  <path d="M 190 132 H 210" stroke="var(--fig-muted-2, #888)" stroke-width="1.2" marker-end="url(#a2)"/>
+  <rect x="212" y="118" width="58" height="28" rx="5" fill="var(--fig-paper, #fff)" stroke="var(--fig-line, #ccc)"/>
+  <text x="241" y="137" text-anchor="middle" font-size="10.2" fill="var(--fig-ink, #333)">⊙ eˢ + t</text>
 
-  <path d="M 104 140 H 112 Q 120 140 120 148 V 166 H 241 V 148" stroke="#888" stroke-width="1.2" fill="none" marker-end="url(#a2)"/>
+  <path d="M 104 140 H 112 Q 120 140 120 148 V 166 H 241 V 148" stroke="var(--fig-muted-2, #888)" stroke-width="1.2" fill="none" marker-end="url(#a2)"/>
 
-  <path d="M 270 132 H 274" stroke="#888" stroke-width="1.2" marker-end="url(#a2)"/>
-  <rect x="276" y="72" width="80" height="28" rx="5" fill="rgba(14,116,144,0.1)" stroke="#0e7490"/>
-  <text x="316" y="91" text-anchor="middle" font-size="10.6" font-style="italic" fill="#0e7490">z₁…z_d</text>
-  <rect x="276" y="118" width="80" height="28" rx="5" fill="rgba(217,119,6,0.12)" stroke="#d97706"/>
-  <text x="316" y="137" text-anchor="middle" font-size="9.8" font-style="italic" fill="#d97706">z_{d+1}…z_D</text>
+  <path d="M 270 132 H 274" stroke="var(--fig-muted-2, #888)" stroke-width="1.2" marker-end="url(#a2)"/>
+  <rect x="276" y="72" width="80" height="28" rx="5" fill="rgba(14,116,144,0.1)" stroke="var(--fig-teal, #0e7490)"/>
+  <text x="316" y="91" text-anchor="middle" font-size="10.6" font-style="italic" fill="var(--fig-teal, #0e7490)">z₁…z_d</text>
+  <rect x="276" y="118" width="80" height="28" rx="5" fill="rgba(217,119,6,0.12)" stroke="var(--fig-amber, #d97706)"/>
+  <text x="316" y="137" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--fig-amber, #d97706)">z_{d+1}…z_D</text>
 
-  <text x="196" y="190" text-anchor="middle" font-size="9.4" fill="#7c3aed">The network may be arbitrarily deep and non-linear.</text>
-  <text x="196" y="203" text-anchor="middle" font-size="9.4" fill="#7c3aed">It is never itself inverted, so it needs no structure at all.</text>
+  <text x="196" y="190" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">The network may be arbitrarily deep and non-linear.</text>
+  <text x="196" y="203" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">It is never itself inverted, so it needs no structure at all.</text>
 
   <!-- ============ INVERSE ============ -->
-  <text x="566" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#d97706">inverse — drawing a sample</text>
+  <text x="566" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fig-amber, #d97706)">inverse: drawing a sample</text>
 
-  <rect x="396" y="72" width="74" height="28" rx="5" fill="#f6f6f4" stroke="#bbb"/>
-  <text x="433" y="91" text-anchor="middle" font-size="10.6" font-style="italic" fill="#333">z₁…z_d</text>
-  <rect x="394" y="118" width="80" height="28" rx="5" fill="#f6f6f4" stroke="#bbb"/>
-  <text x="434" y="137" text-anchor="middle" font-size="9.6" font-style="italic" fill="#333">z_{d+1}…z_D</text>
+  <rect x="396" y="72" width="74" height="28" rx="5" fill="var(--fig-wash, #f6f6f4)" stroke="var(--fig-faint, #bbb)"/>
+  <text x="433" y="91" text-anchor="middle" font-size="10.6" font-style="italic" fill="var(--fig-ink, #333)">z₁…z_d</text>
+  <rect x="394" y="118" width="80" height="28" rx="5" fill="var(--fig-wash, #f6f6f4)" stroke="var(--fig-faint, #bbb)"/>
+  <text x="434" y="137" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--fig-ink, #333)">z_{d+1}…z_D</text>
 
-  <path d="M 470 86 H 644" stroke="#0e7490" stroke-width="2.2" marker-end="url(#a2t)"/>
-  <text x="558" y="79" text-anchor="middle" font-size="9.4" font-weight="600" fill="#0e7490">read straight back off</text>
+  <path d="M 470 86 H 644" stroke="var(--fig-teal, #0e7490)" stroke-width="2.2" marker-end="url(#a2t)"/>
+  <text x="558" y="79" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--fig-teal, #0e7490)">read straight back off</text>
 
-  <path d="M 494 88 V 116" stroke="#888" stroke-width="1.2" marker-end="url(#a2)"/>
-  <rect x="498" y="118" width="62" height="28" rx="5" fill="rgba(124,58,237,0.08)" stroke="#7c3aed"/>
-  <text x="529" y="137" text-anchor="middle" font-size="10" fill="#7c3aed">same NN</text>
+  <path d="M 494 88 V 116" stroke="var(--fig-muted-2, #888)" stroke-width="1.2" marker-end="url(#a2)"/>
+  <rect x="498" y="118" width="62" height="28" rx="5" fill="rgba(124,58,237,0.08)" stroke="var(--fig-purple, #7c3aed)"/>
+  <text x="529" y="137" text-anchor="middle" font-size="10" fill="var(--fig-purple, #7c3aed)">same NN</text>
 
-  <path d="M 560 132 H 574" stroke="#888" stroke-width="1.2" marker-end="url(#a2)"/>
-  <rect x="576" y="118" width="64" height="28" rx="5" fill="#fff" stroke="#ccc"/>
-  <text x="608" y="137" text-anchor="middle" font-size="9" fill="#333">(· − t) ⊙ e⁻ˢ</text>
+  <path d="M 560 132 H 574" stroke="var(--fig-muted-2, #888)" stroke-width="1.2" marker-end="url(#a2)"/>
+  <rect x="576" y="118" width="64" height="28" rx="5" fill="var(--fig-paper, #fff)" stroke="var(--fig-line, #ccc)"/>
+  <text x="608" y="137" text-anchor="middle" font-size="10.5" fill="var(--fig-ink, #333)">(· − t) ⊙ e⁻ˢ</text>
 
-  <path d="M 474 140 H 482 Q 490 140 490 148 V 166 H 608 V 148" stroke="#888" stroke-width="1.2" fill="none" marker-end="url(#a2)"/>
+  <path d="M 474 140 H 482 Q 490 140 490 148 V 166 H 608 V 148" stroke="var(--fig-muted-2, #888)" stroke-width="1.2" fill="none" marker-end="url(#a2)"/>
 
-  <path d="M 640 132 H 644" stroke="#888" stroke-width="1.2" marker-end="url(#a2)"/>
-  <rect x="646" y="72" width="80" height="28" rx="5" fill="rgba(14,116,144,0.1)" stroke="#0e7490"/>
-  <text x="686" y="91" text-anchor="middle" font-size="10.6" font-style="italic" fill="#0e7490">x₁…x_d</text>
-  <rect x="646" y="118" width="80" height="28" rx="5" fill="rgba(217,119,6,0.12)" stroke="#d97706"/>
-  <text x="686" y="137" text-anchor="middle" font-size="9.8" font-style="italic" fill="#d97706">x_{d+1}…x_D</text>
+  <path d="M 640 132 H 644" stroke="var(--fig-muted-2, #888)" stroke-width="1.2" marker-end="url(#a2)"/>
+  <rect x="646" y="72" width="80" height="28" rx="5" fill="rgba(14,116,144,0.1)" stroke="var(--fig-teal, #0e7490)"/>
+  <text x="686" y="91" text-anchor="middle" font-size="10.6" font-style="italic" fill="var(--fig-teal, #0e7490)">x₁…x_d</text>
+  <rect x="646" y="118" width="80" height="28" rx="5" fill="rgba(217,119,6,0.12)" stroke="var(--fig-amber, #d97706)"/>
+  <text x="686" y="137" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--fig-amber, #d97706)">x_{d+1}…x_D</text>
 
-  <text x="566" y="190" text-anchor="middle" font-size="9.4" fill="#7c3aed">Because the first half came through unchanged, the same</text>
-  <text x="566" y="203" text-anchor="middle" font-size="9.4" fill="#7c3aed">network recomputes the very same s and t — so we can undo</text>
-  <text x="566" y="216" text-anchor="middle" font-size="9.4" fill="#7c3aed">the arithmetic exactly, in one pass, with no iteration.</text>
+  <text x="566" y="190" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">Because the first half came through unchanged, the same</text>
+  <text x="566" y="203" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">network recomputes the very same s and t, so we can undo</text>
+  <text x="566" y="216" text-anchor="middle" font-size="10.5" fill="var(--fig-purple, #7c3aed)">the arithmetic exactly, in one pass, with no iteration.</text>
 
-  <line x1="30" y1="240" x2="730" y2="240" stroke="#e8e2d5"/>
+  <line x1="30" y1="240" x2="730" y2="240" stroke="var(--fig-amber-bg, #e8e2d5)"/>
 
   <!-- ============ JACOBIAN ============ -->
-  <text x="380" y="264" text-anchor="middle" font-size="11" font-weight="700" fill="#333">and why the determinant then costs nothing</text>
+  <text x="380" y="264" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fig-ink, #333)">and why the determinant then costs nothing</text>
 
   <g transform="translate(46,280)">
-    <rect x="0" y="0" width="142" height="76" fill="rgba(14,116,144,0.05)" stroke="#0e7490" stroke-width="1.2"/>
-    <line x1="71" y1="0" x2="71" y2="76" stroke="#0e7490" stroke-dasharray="3 3" opacity="0.4"/>
-    <line x1="0" y1="38" x2="142" y2="38" stroke="#0e7490" stroke-dasharray="3 3" opacity="0.4"/>
-    <text x="35" y="24" text-anchor="middle" font-size="11" fill="#0e7490">I</text>
-    <text x="106" y="24" text-anchor="middle" font-size="11" font-weight="600" fill="#999">0</text>
-    <text x="35" y="62" text-anchor="middle" font-size="8.8" fill="#777">messy</text>
-    <text x="106" y="62" text-anchor="middle" font-size="9.6" fill="#d97706">diag(eˢ)</text>
-    <text x="71" y="92" text-anchor="middle" font-size="9.2" fill="#777">the Jacobian ∂z/∂x</text>
+    <rect x="0" y="0" width="142" height="76" fill="rgba(14,116,144,0.05)" stroke="var(--fig-teal, #0e7490)" stroke-width="1.2"/>
+    <line x1="71" y1="0" x2="71" y2="76" stroke="var(--fig-teal, #0e7490)" stroke-dasharray="3 3" opacity="0.4"/>
+    <line x1="0" y1="38" x2="142" y2="38" stroke="var(--fig-teal, #0e7490)" stroke-dasharray="3 3" opacity="0.4"/>
+    <text x="35" y="24" text-anchor="middle" font-size="11" fill="var(--fig-teal, #0e7490)">I</text>
+    <text x="106" y="24" text-anchor="middle" font-size="11" font-weight="600" fill="var(--fig-muted-2, #999)">0</text>
+    <text x="35" y="62" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #777)">messy</text>
+    <text x="106" y="62" text-anchor="middle" font-size="10.5" fill="var(--fig-amber, #d97706)">diag(eˢ)</text>
+    <text x="71" y="92" text-anchor="middle" font-size="10.5" fill="var(--fig-muted, #777)">the Jacobian ∂z/∂x</text>
   </g>
 
-  <text x="216" y="294" font-size="9.8" fill="#555">The top-right block is exactly zero: the first half of z never</text>
-  <text x="216" y="309" font-size="9.8" fill="#555">looked at the second half of x. A block-triangular determinant</text>
-  <text x="216" y="324" font-size="9.8" fill="#555">is the product of its diagonal blocks, so the messy block —</text>
-  <text x="216" y="339" font-size="9.8" fill="#555">full of network derivatives — never enters the answer at all.</text>
-  <text x="216" y="362" font-size="10.4" font-weight="600" fill="#0e7490">log |det J| = Σⱼ sⱼ.  One sum, no matrix operations.</text>
+  <text x="216" y="294" font-size="10.5" fill="var(--fig-ink-2, #555)">The top-right block is exactly zero: the first half of z never</text>
+  <text x="216" y="309" font-size="10.5" fill="var(--fig-ink-2, #555)">looked at the second half of x. A block-triangular determinant</text>
+  <text x="216" y="324" font-size="10.5" fill="var(--fig-ink-2, #555)">is the product of its diagonal blocks, so the messy block,</text>
+  <text x="216" y="339" font-size="10.5" fill="var(--fig-ink-2, #555)">full of network derivatives, never enters the answer at all.</text>
+  <text x="216" y="362" font-size="10.4" font-weight="600" fill="var(--fig-teal, #0e7490)">log |det J| = Σⱼ sⱼ.  One sum, no matrix operations.</text>
 </svg>

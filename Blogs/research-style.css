@@ -1,611 +1,236 @@
-:root {
-    --bg-color: #ffffff;
-    --text-color: #222;
-    --text-muted: #666;
-    --accent-color: #6e46be;
-    /* Purple from index.html */
-    --accent-hover: #b088f9;
-    /* Hover from index.html */
-    --border-color: #e0e0e0;
-    --font-main: Verdana, Geneva, sans-serif;
-    /* Consistent with index.html */
-    --font-heading: Verdana, Geneva, sans-serif;
-    /* Consistent with index.html */
-    --font-mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
-}
+/* ═══════════════════════════════════════════════════════════
+   research-style.css — the writing index (Blogs/blog-index.html).
 
-body {
-    font-family: var(--font-main);
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.5;
-    /* Consistent with index.html */
-    margin: 0;
-    padding: 0;
-    font-weight: 400;
-    font-size: 0.8rem;
-    /* Adjusted slightly for readability */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
+   Loaded *after* notes/plain.css, and deliberately thin: the page
+   is a plain.css page (body.plain, .note-index lists, the bracket
+   header, the same tokens), so this file only adds the three
+   things a notes index has no use for — a search field, the
+   filter row, and the per-entry date/tag line.
 
-a {
-    color: var(--accent-color);
-    text-decoration: none;
-}
+   Every colour here is a plain.css token, so dark mode needs no
+   rules of its own.
+   ═══════════════════════════════════════════════════════════ */
 
-a:hover {
-    color: var(--accent-hover);
-    text-decoration: underline;
-}
+/* ── Brand mark, above the bracket nav ──────────────────── */
 
-/* Headings - Simple and clean */
-h1,
-h2 {
-    font-family: var(--font-main);
-    font-weight: 700;
-    /* Match index.html bold headings */
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
-    line-height: 1.3;
-    color: #111;
-    letter-spacing: normal;
-}
-
-h3,
-h4,
-h5,
-h6 {
-    font-family: var(--font-main);
-    font-weight: 700;
-    /* Match index.html bold headings */
-    margin-top: 1.8em;
-    margin-bottom: 0.6em;
-    line-height: 1.3;
-    color: #111;
-    letter-spacing: -0.01em;
-}
-
-h1 {
-    font-size: 1.75rem;
-}
-
-h2 {
-    font-size: 1.35rem;
-    /* Technical subheadings */
-    border-bottom: 1px solid #eee;
-    /* Underscore for sections */
-    padding-bottom: 0.3em;
-}
-
-h3 {
-    font-size: 1.1rem;
-}
-
-/* Text justification */
-/* Text justification - Scoped to content only */
-p {
-    margin-bottom: 1.2em;
-}
-
-.article-content p {
-    text-align: justify;
-}
-
-/* Layout */
-/* Layout: Matching index.html's table structure width */
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 20px 40px 20px;
-    /* Slight horizontal padding adjustment */
-    position: relative;
-    min-height: 100vh;
-}
-
-/* Header: Simplified to match index.html plain aesthetics */
-.site-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    margin-bottom: 40px;
-    padding-top: 40px;
-    border-bottom: none;
-}
-
-/* --- section headings on the writing index (lecture notes vs. writing) --- */
-.section-label {
-    max-width: 800px;
-    margin: 0 auto 6px;
-    padding-bottom: 8px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    border-bottom: 1px solid var(--border-color);
-    text-align: left;
-}
-
-.section-note {
-    max-width: 800px;
-    margin: 0 auto 28px;
-    font-size: 0.82rem;
-    color: var(--text-muted);
-    text-align: left;
-}
-
-/* The lecture-note series live behind this — quiet on purpose, findable if
-   you actually read to the bottom of the page (or search for them). */
-.notes-vault {
-    max-width: 800px;
-    margin: 8px auto 0;
-    padding-top: 0;
-}
-
-.notes-vault>summary {
-    list-style: none;
-    cursor: pointer;
-    text-align: center;
-    font-size: 0.7rem;
-    letter-spacing: 0.28em;
-    text-transform: lowercase;
-    color: #cfcfcf;
-    padding: 4px 0;
-    transition: color 0.3s ease, letter-spacing 0.3s ease;
-    user-select: none;
-}
-
-.notes-vault>summary::-webkit-details-marker {
-    display: none;
-}
-
-.notes-vault>summary:hover,
-.notes-vault>summary:focus-visible {
-    color: var(--accent-color);
-    letter-spacing: 0.34em;
-    outline: none;
-}
-
-.notes-vault[open]>summary {
-    color: var(--text-muted);
-    margin-bottom: 22px;
-}
-
-.notes-vault .section-note {
-    text-align: center;
-    margin-bottom: 34px;
-}
-
-.writing-section .section-label {
-    margin-bottom: 28px;
-}
-
-.lock-badge {
-    display: inline-block;
-    margin-bottom: 10px;
-    padding: 2px 9px;
-    border-radius: 999px;
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: var(--accent-color);
-    background: rgba(110, 70, 190, 0.09);
-    border: 1px solid rgba(110, 70, 190, 0.22);
-}
-
-/* --- asca brand mark (avatar + wordmark) in the section header --- */
-.brand-mark {
+body.plain .brand-mark {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     text-decoration: none;
     opacity: 0.9;
     transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-.brand-mark:hover {
+body.plain .brand-mark:hover {
     opacity: 1;
     transform: translateY(-1px);
     text-decoration: none;
 }
 
-.brand-avatar {
-    width: 40px;
-    height: 40px;
+body.plain .brand-avatar {
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     display: block;
-    background: #f1eefb;
-    border: 1px solid rgba(110, 70, 190, 0.18);
+    background: var(--wash);
+    border: 1px solid var(--rule);
 }
 
-.brand-wordmark {
-    height: 26px;
+body.plain .brand-wordmark {
+    height: 22px;
     width: auto;
     display: block;
 }
 
-@media (max-width: 600px) {
-    .brand-avatar {
-        width: 34px;
-        height: 34px;
-    }
-
-    .brand-wordmark {
-        height: 22px;
-    }
-}
-
-.site-logo {
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: var(--text-color);
-    text-decoration: none;
-    letter-spacing: -0.02em;
-}
-
-.nav-links a {
-    margin-left: 20px;
-    text-decoration: none;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    transition: color 0.2s;
-}
-
-.nav-links a:hover,
-.nav-links a.active {
-    color: var(--accent-color);
-}
-
-/* Blog Index */
-/* Blog Intro */
-.blog-intro {
+/* The index header centres — chapter pages keep the left rail. */
+body.plain .site-header.index-header {
     text-align: center;
-    margin-bottom: 60px;
-    position: relative;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-bottom: 44px;
 }
 
-/* Blog Title matching <name> tag in index.html */
-.blog-intro h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    display: inline-block;
-    color: #000;
+/* ── Search and filters ─────────────────────────────────── */
+
+/* One quiet rule under the field. No box, no icon, no shadow —
+   the same "text and a hairline" vocabulary as the rest, and
+   flush left with the heading, lede and entry lists above it. */
+body.plain .index-search {
+    margin: 0 0 14px;
 }
 
-.blog-intro p {
-    font-size: 1rem;
-    color: #444;
-    max-width: 700px;
-    margin: 0 auto;
-}
-
-.scribble-svg {
-    position: absolute;
-    pointer-events: none;
-    z-index: -1;
-    opacity: 0.15;
-    /* Very subtle light shade */
-    color: var(--accent-color);
-    /* Match theme color */
-    filter: grayscale(20%);
-    /* Slightly muted */
-    max-width: 250px;
-}
-
-.scribble-svg {
-    position: absolute;
-    pointer-events: none;
-    z-index: -1;
-    opacity: 0.15;
-    /* Very subtle light shade */
-    color: var(--accent-color);
-    /* Match theme color */
-    filter: grayscale(20%);
-    /* Slightly muted */
-    max-width: 250px;
-}
-
-.scribble-inline {
-    position: absolute;
-    pointer-events: none;
-    opacity: 0.6;
-    /* Slightly more visible for functional scribbles */
-    color: var(--accent-color);
-    z-index: 0;
-}
-
-/* Centered Search */
-.search-container {
-    margin: 0 auto 40px auto;
-    max-width: 500px;
-    position: relative;
-}
-
-.search-input {
+body.plain .search-input {
     width: 100%;
-    padding: 10px 0;
-    /* Vertical padding only */
+    box-sizing: border-box;
+    padding: 6px 0;
     border: none;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--rule);
+    border-radius: 0;
     background: transparent;
     font-family: inherit;
-    font-size: 1.1rem;
-    box-sizing: border-box;
-    text-align: center;
-    transition: border-color 0.2s;
-    border-radius: 0;
-}
-
-.search-input:focus {
-    outline: none;
-    border-bottom-color: var(--accent-color);
-}
-
-.search-input::placeholder {
-    color: #999;
-    font-size: 1rem;
-    font-style: italic;
-}
-
-.filter-bar {
-    margin-bottom: 60px;
-    text-align: center;
-    /* Center filters */
-}
-
-.filter-btn {
-    background: none;
-    border: none;
-    margin-right: 15px;
-    cursor: pointer;
-    color: var(--text-muted);
-    font-family: inherit;
-    font-size: 0.9rem;
-    padding: 0;
-}
-
-.filter-btn.active {
-    color: var(--accent-color);
-    font-weight: 700;
-    text-decoration: underline;
-}
-
-/* Article List */
-.article-list {
-    display: grid;
-    gap: 40px;
-}
-
-.article-card {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    padding: 20px;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-.article-card:hover {
-    background: white;
-    border-color: var(--border-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-    transform: translateY(-2px);
-}
-
-.article-card h2 {
-    margin-top: 8px;
-    margin-bottom: 12px;
-    font-size: 1.4rem;
-    color: var(--accent-color);
-    font-weight: 700;
-}
-
-.article-card p.excerpt {
-    color: #444;
-    margin-bottom: 20px;
-    font-size: 0.95rem;
-    line-height: 1.6;
+    font-weight: 400;
+    font-size: 0.92rem;
+    color: var(--body);
     text-align: left;
+    transition: border-color 0.2s ease;
 }
 
-.meta {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+body.plain .search-input:focus {
+    outline: none;
+    border-bottom-color: var(--link);
+}
+
+body.plain .search-input::placeholder {
+    color: var(--faint);
+}
+
+/* Filters read as a row of words, separated the way the glosses
+   and tags are — a middot, not a button. */
+body.plain .filter-bar {
+    text-align: left;
+    font-size: 0.82rem;
+    color: var(--faint);
     margin-bottom: 8px;
 }
 
-.tags .tag {
-    display: inline-block;
-    font-size: 0.7rem;
-    /* Adjusted for smaller body font */
-    background: #f0f0f0;
-    /* Slightly darker than f7f7f7 for contrast */
-    padding: 3px 8px;
-    border-radius: 3px;
-    /* Rectangular with slight curve */
-    margin-right: 6px;
-    color: #333;
-    border: 1px solid #e0e0e0;
-    /* Adding validation border back for technical feel */
-    letter-spacing: 0.02em;
-    transition: background 0.15s;
+body.plain .filter-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-weight: 400;
+    font-size: 0.82rem;
+    color: var(--muted);
+    cursor: pointer;
 }
 
-.tags .tag:hover {
-    background: #e0e0e0;
-    color: #000;
+body.plain .filter-btn:hover {
+    color: var(--link);
 }
 
-/* Single Article */
-.article-header-single {
-    text-align: center;
-    margin-bottom: 50px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 40px;
+body.plain .filter-btn.active {
+    color: var(--ink);
+    font-weight: 600;
 }
 
-.breadcrumb {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-bottom: 15px;
+body.plain .filter-btn + .filter-btn::before {
+    content: '·';
+    color: var(--faint);
+    font-weight: 400;
+    margin: 0 8px;
 }
 
-.article-header-single h1 {
-    font-size: 1.8rem;
-    /* Slightly smaller than 2rem to match Index styles */
-    margin-bottom: 15px;
-    color: #111;
-    font-weight: 700;
+body.plain #noResults {
+    display: none;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 32px;
 }
 
-.article-meta-bar {
-    color: var(--text-muted);
-    font-size: 0.85rem;
+/* ── Index entries ──────────────────────────────────────── */
+
+/* An entry is a list item like any other in a note index; the
+   only addition is the date/tag line beneath the gloss. */
+body.plain .note-index li.article-item {
+    margin: 0 0 18px;
 }
 
-.article-content {
-    font-size: 1.05rem;
-    /* Optimal reading size */
-    max-width: 100%;
+body.plain .note-index .article-title {
+    font-weight: 400;
 }
 
-.article-content p {
-    margin-bottom: 1.8em;
+body.plain .note-index .article-excerpt {
+    display: block;
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin: 2px 0 0;
 }
 
-/* Drop cap / First paragraph styling optionally */
-.article-content>p:first-of-type {
-    font-size: 1.15rem;
-    color: #222;
-}
-
-.article-content ul,
-.article-content ol {
-    margin-bottom: 1.5em;
-    padding-left: 20px;
-}
-
-.article-content li {
-    margin-bottom: 0.5em;
-}
-
-.article-content a {
-    color: var(--accent-color);
-    text-decoration: none;
-    border-bottom: 1px dotted var(--accent-color);
-}
-
-.article-content a:hover {
-    border-bottom-style: solid;
-}
-
-figure {
-    margin: 30px 0;
-    text-align: center;
-}
-
-figure img {
-    max-width: 100%;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-figcaption {
+body.plain .note-index .entry-meta {
+    display: block;
     font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-top: 8px;
-    font-style: italic;
-    text-align: center;
+    color: var(--faint);
+    margin-top: 3px;
 }
 
-/* Code blocks */
-pre {
-    background: #f4f4f4;
-    padding: 15px;
-    border-radius: 6px;
-    overflow-x: auto;
-    font-family: Consolas, Monaco, 'Andale Mono', monospace;
-    font-size: 0.85rem;
-    margin-bottom: 1.5em;
+body.plain .note-index .tag {
+    cursor: pointer;
+    color: var(--faint);
+    transition: color 0.15s ease;
 }
 
-blockquote {
-    border-left: 3px solid var(--accent-color);
-    margin: 1.5em 0;
-    padding-left: 20px;
-    font-style: italic;
-    color: #555;
+body.plain .note-index .tag:hover {
+    color: var(--link);
 }
 
-/* Scribbles Background */
-.bg-scribble {
-    position: absolute;
-    opacity: 0.08;
-    /* Very subtle */
-    pointer-events: none;
-    z-index: -1;
-    color: #444;
+body.plain .note-index .entry-meta > * + *::before,
+body.plain .note-index .tag + .tag::before {
+    content: '·';
+    margin: 0 6px;
+    color: var(--faint);
 }
 
-/* Specific Positions for standard layout - can be overridden in style attribute */
-.math-eq-1 {
-    top: 100px;
-    left: -50px;
-    width: 200px;
-    transform: rotate(-10deg);
+body.plain .note-index .lock {
+    color: var(--faint);
 }
 
-.math-eq-2 {
-    top: 300px;
-    right: -60px;
-    width: 150px;
-    transform: rotate(15deg);
+/* ── The lecture-notes disclosure ───────────────────────── */
+
+/* Quiet on purpose — findable if you read to the bottom, or
+   search for something inside it. Styled as a section heading
+   that happens to open, so it sits level with "Writing" and
+   "Reading list" rather than floating between them. */
+body.plain .notes-vault {
+    margin-top: 40px;
 }
 
-.math-eq-3 {
-    bottom: 200px;
-    left: -40px;
-    width: 250px;
-    transform: rotate(5deg);
+body.plain .notes-vault > summary {
+    list-style: none;
+    cursor: pointer;
+    font-size: 1.12rem;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 0;
+    transition: color 0.25s ease;
+    user-select: none;
 }
 
-.math-eq-4 {
-    top: 600px;
-    right: -30px;
-    width: 80px;
-    transform: rotate(-5deg);
+body.plain .notes-vault > summary::-webkit-details-marker {
+    display: none;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .container {
-        padding: 20px;
-    }
+body.plain .notes-vault > summary::after {
+    content: '+';
+    margin-left: 8px;
+    font-weight: 400;
+    color: var(--muted);
+}
 
-    .article-card {
-        padding: 0;
-        border: none;
-    }
+body.plain .notes-vault[open] > summary::after {
+    content: '–';
+}
 
-    .article-card:hover {
-        background: none;
-        box-shadow: none;
-        transform: none;
-    }
+body.plain .notes-vault > summary:hover,
+body.plain .notes-vault > summary:focus-visible {
+    color: var(--ink);
+    outline: none;
+}
 
-    .bg-scribble {
-        display: none;
-        /* Hide scribbles on mobile to avoid clutter */
+body.plain .notes-vault[open] > summary {
+    color: var(--ink);
+}
+
+body.plain .section-note {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin: 8px 0 14px;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+    body.plain .filter-bar {
+        line-height: 2;
     }
 }

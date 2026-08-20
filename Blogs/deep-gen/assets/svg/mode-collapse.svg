@@ -1,33 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="Inter, -apple-system, sans-serif">
-  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#333">mode collapse is a stationary point, not a tuning problem</text>
+  <text x="380" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fig-ink, #333)">mode collapse is a stationary point, not a tuning problem</text>
 
   <!-- left: collapsed -->
-  <rect x="24" y="38" width="330" height="196" rx="10" fill="#fcfcfc" stroke="#e8d5d5"/>
-  <text x="189" y="58" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c0392b">capacity 1 — three modes abandoned</text>
-  <g stroke="#0e7490" stroke-width="1.8" fill="none">
+  <rect x="24" y="38" width="330" height="196" rx="10" fill="var(--fig-wash, #fcfcfc)" stroke="var(--fig-red-bg, #e8d5d5)"/>
+  <text x="189" y="58" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--fig-red, #c0392b)">capacity 1: three modes abandoned</text>
+  <g stroke="var(--fig-teal, #0e7490)" stroke-width="1.8" fill="none">
     <circle cx="110" cy="106" r="24"/><circle cx="268" cy="106" r="24"/>
     <circle cx="110" cy="186" r="24"/><circle cx="268" cy="186" r="24"/>
   </g>
-  <g fill="#0e7490"><circle cx="110" cy="106" r="3"/><circle cx="268" cy="106" r="3"/><circle cx="110" cy="186" r="3"/><circle cx="268" cy="186" r="3"/></g>
-  <circle cx="268" cy="106" r="22" fill="rgba(217,119,6,0.35)" stroke="#d97706" stroke-width="2"/>
-  <text x="268" y="110" text-anchor="middle" font-size="9.6" font-weight="600" fill="#8a5104">G</text>
-  <text x="110" y="140" text-anchor="middle" font-size="9.4" fill="#c0392b">empty</text>
-  <text x="110" y="220" text-anchor="middle" font-size="9.4" fill="#c0392b">empty</text>
-  <text x="268" y="220" text-anchor="middle" font-size="9.4" fill="#c0392b">empty</text>
+  <g fill="var(--fig-teal, #0e7490)"><circle cx="110" cy="106" r="3"/><circle cx="268" cy="106" r="3"/><circle cx="110" cy="186" r="3"/><circle cx="268" cy="186" r="3"/></g>
+  <circle cx="268" cy="106" r="22" fill="rgba(217,119,6,0.35)" stroke="var(--fig-amber, #d97706)" stroke-width="2"/>
+  <text x="268" y="110" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--fig-amber-2, #8a5104)">G</text>
+  <text x="110" y="140" text-anchor="middle" font-size="10.5" fill="var(--fig-red, #c0392b)">empty</text>
+  <text x="110" y="220" text-anchor="middle" font-size="10.5" fill="var(--fig-red, #c0392b)">empty</text>
+  <text x="268" y="220" text-anchor="middle" font-size="10.5" fill="var(--fig-red, #c0392b)">empty</text>
 
   <!-- right: covered -->
-  <rect x="406" y="38" width="330" height="196" rx="10" fill="#fcfcfc" stroke="#dfe8ea"/>
-  <text x="571" y="58" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0e7490">capacity 4 — every mode claimed</text>
-  <g stroke="#0e7490" stroke-width="1.8" fill="none">
+  <rect x="406" y="38" width="330" height="196" rx="10" fill="var(--fig-wash, #fcfcfc)" stroke="var(--fig-teal-bg, #dfe8ea)"/>
+  <text x="571" y="58" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--fig-teal, #0e7490)">capacity 4: every mode claimed</text>
+  <g stroke="var(--fig-teal, #0e7490)" stroke-width="1.8" fill="none">
     <circle cx="492" cy="106" r="24"/><circle cx="650" cy="106" r="24"/>
     <circle cx="492" cy="186" r="24"/><circle cx="650" cy="186" r="24"/>
   </g>
-  <g fill="rgba(217,119,6,0.35)" stroke="#d97706" stroke-width="2">
+  <g fill="rgba(217,119,6,0.35)" stroke="var(--fig-amber, #d97706)" stroke-width="2">
     <circle cx="492" cy="106" r="22"/><circle cx="650" cy="106" r="22"/>
     <circle cx="492" cy="186" r="22"/><circle cx="650" cy="186" r="22"/>
   </g>
-  <text x="571" y="222" text-anchor="middle" font-size="9.6" fill="#0e7490">D flattens to ½ everywhere — the generator has won</text>
+  <text x="571" y="222" text-anchor="middle" font-size="10.5" fill="var(--fig-teal, #0e7490)">D flattens to ½ everywhere, the generator has won</text>
 
-  <text x="380" y="262" text-anchor="middle" font-size="10.8" fill="#555">At the occupied mode the generator sits on the peak of both its own density and the real one, so ∇ log D is exactly 0.</text>
-  <text x="380" y="282" text-anchor="middle" font-size="10.8" fill="#555">Nothing is broken and nothing will improve: a one-blob generator cannot be four things at once.</text>
+  <text x="380" y="262" text-anchor="middle" font-size="10.8" fill="var(--fig-ink-2, #555)">At the occupied mode the generator sits on the peak of both its own density and the real one, so ∇ log D is exactly 0.</text>
+  <text x="380" y="282" text-anchor="middle" font-size="10.8" fill="var(--fig-ink-2, #555)">Nothing is broken and nothing will improve: a one-blob generator cannot be four things at once.</text>
 </svg>

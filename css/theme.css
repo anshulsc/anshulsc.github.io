@@ -251,65 +251,13 @@ html[data-theme="dark"] {
 }
 
 /* ===========================================================
-   Blogs section (research-style.css)
+   Blogs section
+
+   The writing index is a body.plain page now, so its dark values
+   come from plain.css tokens — nothing for this file to override.
    =========================================================== */
-[data-theme="dark"] .blog-intro h1,
-[data-theme="dark"] .article-header-single h1 {
-    color: var(--dk-heading);
-}
-
-[data-theme="dark"] .blog-intro p,
-[data-theme="dark"] .article-card p.excerpt,
-[data-theme="dark"] .article-content>p:first-of-type,
-[data-theme="dark"] .bg-scribble {
-    color: var(--dk-muted);
-}
-
-[data-theme="dark"] h2,
-[data-theme="dark"] .article-header-single {
+[data-theme="dark"] h2 {
     border-bottom-color: var(--dk-border);
-}
-
-[data-theme="dark"] .brand-avatar {
-    background: #1c172b;
-    border-color: rgba(176, 136, 249, 0.3);
-}
-
-[data-theme="dark"] .search-input {
-    background: transparent;
-    color: var(--dk-text);
-    border-color: var(--dk-border);
-}
-
-[data-theme="dark"] .search-input::placeholder {
-    color: var(--dk-faint);
-}
-
-[data-theme="dark"] .tags .tag,
-[data-theme="dark"] .tag {
-    background: var(--dk-surface-2);
-    color: var(--dk-muted);
-    border-color: var(--dk-border);
-}
-
-[data-theme="dark"] .tags .tag:hover,
-[data-theme="dark"] .tag:hover {
-    background: #242424;
-    color: var(--dk-heading);
-}
-
-[data-theme="dark"] .filter-btn {
-    color: var(--dk-muted);
-}
-
-[data-theme="dark"] .filter-btn.active {
-    color: var(--dk-link);
-}
-
-[data-theme="dark"] .article-card:hover {
-    background: var(--dk-surface);
-    border-color: var(--dk-border);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
 [data-theme="dark"] blockquote {
@@ -324,58 +272,6 @@ html[data-theme="dark"] {
 
 [data-theme="dark"] figure img {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Ink-on-paper doodles: flip them so they read as chalk on slate. */
-[data-theme="dark"] .scribble-svg,
-[data-theme="dark"] .scribble-inline {
-    filter: invert(1) hue-rotate(180deg) grayscale(20%);
-    opacity: 0.22;
-}
-
-[data-theme="dark"] .scribble-inline {
-    opacity: 0.5;
-}
-
-/* --- inline style attributes on the blog pages need !important to be beaten --- */
-[data-theme="dark"] [style*="color: #111"],
-[data-theme="dark"] [style*="color:#111"] {
-    color: var(--dk-heading) !important;
-}
-
-[data-theme="dark"] [style*="color: #333"],
-[data-theme="dark"] [style*="color:#333"],
-[data-theme="dark"] [style*="color: #444"],
-[data-theme="dark"] [style*="color:#444"] {
-    color: var(--dk-text) !important;
-}
-
-[data-theme="dark"] [style*="color: #555"],
-[data-theme="dark"] [style*="color:#555"],
-[data-theme="dark"] [style*="color: #666"],
-[data-theme="dark"] [style*="color:#666"] {
-    color: var(--dk-muted) !important;
-}
-
-[data-theme="dark"] [style*="color: #888"],
-[data-theme="dark"] [style*="color:#888"],
-[data-theme="dark"] [style*="color: #999"],
-[data-theme="dark"] [style*="color:#999"] {
-    color: var(--dk-faint) !important;
-}
-
-[data-theme="dark"] [style*="color: #6e46be"],
-[data-theme="dark"] [style*="color:#6e46be"] {
-    color: var(--dk-link) !important;
-}
-
-[data-theme="dark"] [style*="color: #1a4f7a"],
-[data-theme="dark"] [style*="color:#1a4f7a"] {
-    color: #79b8dc !important;
-}
-
-[data-theme="dark"] [style*="solid #eee"] {
-    border-color: var(--dk-border) !important;
 }
 
 /* ===========================================================
@@ -1596,43 +1492,9 @@ html[data-theme="dark"] {
     background: #181818;
 }
 
-/* ---- derived from Blogs/ddp.html ---- */
-[data-theme="dark"] .markdown-body pre {
-    background-color: #181c20;
-}
-
-/* ---- derived from Blogs/fl.html ---- */
-[data-theme="dark"] .markdown-body pre {
-    background-color: #181c20;
-}
 
 
-/* --- writing index sections + lock badge --- */
-[data-theme="dark"] .section-label {
-    color: var(--dk-faint);
-    border-bottom-color: var(--dk-border);
-}
+/* The writing index's sections, tags and lecture-notes disclosure
+   are body.plain elements styled from plain.css tokens, so their
+   dark values follow automatically. */
 
-[data-theme="dark"] .section-note {
-    color: var(--dk-muted);
-}
-
-[data-theme="dark"] .lock-badge {
-    color: var(--dk-link);
-    background: rgba(176, 136, 249, 0.12);
-    border-color: rgba(176, 136, 249, 0.28);
-}
-
-/* --- the tucked-away lecture-notes disclosure --- */
-[data-theme="dark"] .notes-vault>summary {
-    color: #3a3a3a;
-}
-
-[data-theme="dark"] .notes-vault>summary:hover,
-[data-theme="dark"] .notes-vault>summary:focus-visible {
-    color: var(--dk-link);
-}
-
-[data-theme="dark"] .notes-vault[open]>summary {
-    color: var(--dk-faint);
-}

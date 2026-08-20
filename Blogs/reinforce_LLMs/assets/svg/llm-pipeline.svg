@@ -1,21 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" width="100%" height="100%">
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 2 L 10 5 L 0 8 z" fill="#6e46be" />
+      <path d="M 0 2 L 10 5 L 0 8 z" fill="var(--fig-purple, #6e46be)" />
     </marker>
     <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.08"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="var(--fig-ink, #000)" flood-opacity="0.08"/>
     </filter>
   </defs>
 
   <style>
-    .box { fill: #ffffff; stroke: #e0e0e0; stroke-width: 1.5; rx: 8px; filter: url(#shadow); }
-    .box-accent { fill: #fcfaff; stroke: #6e46be; stroke-width: 2; rx: 8px; filter: url(#shadow); }
-    .box-final { fill: #fbf9ff; stroke: #6e46be; stroke-width: 2.5; rx: 8px; filter: url(#shadow); }
-    .text-title { font-family: 'Inter', system-ui, sans-serif; font-size: 13px; font-weight: 600; fill: #111111; }
-    .text-body { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; fill: #555555; }
-    .text-trans { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; fill: #6e46be; font-weight: 600; }
-    .line { fill: none; stroke: #6e46be; stroke-width: 1.5; marker-end: url(#arrow); }
+    .box { fill: var(--fig-paper, #ffffff); stroke: var(--fig-line, #e0e0e0); stroke-width: 1.5; rx: 8px; filter: url(#shadow); }
+    .box-accent { fill: var(--fig-purple-bg, #fcfaff); stroke: var(--fig-purple, #6e46be); stroke-width: 2; rx: 8px; filter: url(#shadow); }
+    .box-final { fill: var(--fig-purple-bg, #fbf9ff); stroke: var(--fig-purple, #6e46be); stroke-width: 2.5; rx: 8px; filter: url(#shadow); }
+    .text-title { font-family: 'Inter', system-ui, sans-serif; font-size: 13px; font-weight: 600; fill: var(--fig-ink, #111111); }
+    .text-body { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; fill: var(--fig-ink-2, #555555); }
+    .text-trans { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; fill: var(--fig-purple, #6e46be); font-weight: 600; }
+    .line { fill: none; stroke: var(--fig-purple, #6e46be); stroke-width: 1.5; marker-end: url(#arrow); }
   </style>
 
   <!-- 1. Pre-training -->
@@ -32,21 +32,21 @@
   <!-- Left Branch: RLHF -->
   <rect x="50" y="200" width="200" height="60" class="box-accent" />
   <text x="150" y="222" text-anchor="middle" class="text-title">RLHF (Preference)</text>
-  <text x="150" y="238" text-anchor="middle" class="text-body">PPO, DPO, Bradley-Terry</text>
-  <text x="150" y="250" text-anchor="middle" class="text-body">Subjective alignment (Chat)</text>
+  <text x="150" y="235" text-anchor="middle" class="text-body">PPO, DPO, Bradley-Terry</text>
+  <text x="150" y="252" text-anchor="middle" class="text-body">Subjective alignment (Chat)</text>
 
   <!-- Right Branch: RLVR -->
   <rect x="350" y="200" width="200" height="60" class="box-accent" />
   <text x="450" y="222" text-anchor="middle" class="text-title">RLVR (Reasoning)</text>
-  <text x="450" y="238" text-anchor="middle" class="text-body">GRPO, Math/Code Verifiers</text>
-  <text x="450" y="250" text-anchor="middle" class="text-body">Objective rule correctness</text>
+  <text x="450" y="235" text-anchor="middle" class="text-body">GRPO, Math/Code Verifiers</text>
+  <text x="450" y="252" text-anchor="middle" class="text-body">Objective rule correctness</text>
 
   <!-- 4. Final Models -->
   <rect x="50" y="285" width="200" height="40" class="box-final" />
-  <text x="150" y="310" text-anchor="middle" class="text-title" fill="#6e46be">Aligned Chat Models</text>
+  <text x="150" y="310" text-anchor="middle" class="text-title" fill="var(--fig-purple, #6e46be)">Aligned Chat Models</text>
 
   <rect x="350" y="285" width="200" height="40" class="box-final" />
-  <text x="450" y="310" text-anchor="middle" class="text-title" fill="#6e46be">Reasoning Models (DeepSeek-R1)</text>
+  <text x="450" y="310" text-anchor="middle" class="text-title" fill="var(--fig-purple, #6e46be)">Reasoning Models (DeepSeek-R1)</text>
 
   <!-- Connectors -->
   <path d="M 300 75 L 300 105" class="line" />

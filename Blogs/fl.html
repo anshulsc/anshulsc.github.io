@@ -4,125 +4,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Notes on Distributed Training - Federated Learning">
+    <meta name="description" content="Notes on building a federated learning system from scratch with gRPC, Protocol Buffers, and a custom ResNet model.">
     <meta name="keywords" content="Federated Learning, Machine Learning, Distributed Systems, gRPC, Protocol Buffers">
     <meta name="author" content="Anshul Singh">
-    <title>Training Models Across Multiple Machines - The Federated Learning Way</title>
+    <title>Training Models Across Multiple Machines — The Federated Learning Way</title>
 
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
 
-    <!-- Google Fonts -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Highlight.js Theme -->
+    <!-- Highlight.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/protobuf.min.js"></script>
 
-    <link rel="stylesheet" href="research-style.css">
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <style>
-        .markdown-body img {
-            max-width: 100%;
-            display: block;
-            margin: 20px auto;
-            border-radius: 4px;
-        }
+    <!-- Styles -->
+    <link rel="stylesheet" href="notes/plain.css">
 
-        .markdown-body pre {
-            background-color: #f6f8fa;
-            border-radius: 6px;
-            padding: 16px;
-            overflow: auto;
-        }
-
-        .markdown-body code {
-            font-family: var(--font-mono);
-            font-size: 0.85em;
-        }
-
-        .imgcap {
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .imgcap img {
-            margin-bottom: 10px;
-        }
-
-        .imgcap figcaption {
-            font-size: 0.9em;
-            color: var(--text-muted);
-            font-style: italic;
-        }
-    </style>
-
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../css/theme.css">
-  <script src="../js/theme.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../css/theme.css">
+    <script src="../js/theme.js"></script>
 </head>
 
-
-
-<body>
-
+<body class="plain">
     <div class="container">
-        <!-- Background Scribbles (Similar to Index) -->
-        <img src="assets/scribbles/gaussian.svg" class="scribble-svg"
-            style="top:80px; left:-250px; width:220px; transform: rotate(-5deg);">
 
-        <img src="assets/scribbles/llm_arch.svg" class="scribble-svg"
-            style="top:150px; right:-240px; width:180px; opacity:0.1;">
-
-        <img src="assets/scribbles/math_misc.svg" class="scribble-svg" style="top:500px; left:-220px; width:160px;">
         <header class="site-header">
-            <a href="https://anshulsc.github.io/" class="site-logo">Anshul Singh</a>
-            <nav class="nav-links">
-                 <a href="blog-index.html" style="margin-right: 20px;">All Posts</a>
-            </nav>
+            [<a href="../index.html">Home</a> /
+            <a href="blog-index.html">Writing</a> /
+            <span class="here">Federated Learning</span>]
         </header>
 
         <main>
-            <div class="article-header-single">
-                <div class="breadcrumb">
-                    <a href="blog-index.html">Writing</a> / Research
-                </div>
-                <h1>Training Models Across Multiple Machines - The Federated Learning Way</h1>
+            <h1>Training Models Across Multiple Machines — The Federated Learning Way</h1>
 
-                <div class="article-meta-bar">
-                    <span>July 2024</span>
-                    <span>•</span>
-                    <span>10 min read</span>
-                    <span>•</span>
-                    <span>Distributed Systems</span>
-                </div>
-            </div>
-
-            <article class="article-content markdown-body" id="content-target">
-                <!-- Content will be injected here -->
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
             </article>
-
-            <div
-                style="margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between;">
-                <a href="blog-index.html" style="color: var(--text-muted);">&larr; Back to writings</a>
-                <a href="#" onclick="window.scrollTo(0,0); return false;" style="color: var(--text-muted);">Top
-                    &uarr;</a>
-            </div>
         </main>
+
+        <footer class="site-footer">
+            &copy; 2024 Anshul Singh
+        </footer>
     </div>
 
     <script id="raw-markdown" type="text/template">
+*July 2024 · Distributed Systems · 10 min read*
+
+---
+
 What if you could train a machine learning model on thousands of devices without ever collecting their data in one place? That's the core idea behind Federated Learning (FL). Instead of moving data to the model, we move the model to the data.
 
 In this post, I'll walk through building a federated learning system from scratch using gRPC, Protocol Buffers, and a custom ResNet model. By the end, you'll see how these pieces fit together to create a privacy-preserving distributed training system.
 
-<div class="imgcap">
-<img src="fl/fl1.png" width="800" style="border: none;">
-<figcaption>Figure 1: Starting Training on Two different machine</figcaption>
-</div>
+<figure>
+<img src="fl/fl1.png" width="800">
+<figcaption>Figure 1: Starting training on two different machines.</figcaption>
+</figure>
 
 ## How Federated Learning Works
 
@@ -144,7 +89,7 @@ The beauty of this approach is that raw data never leaves the learner's device. 
 
 ## The Leader Service
 
-The leader (`leader.py`) acts as the coordination hub. It initializes the global model, manages learner registrations, and aggregates incoming gradients. 
+The leader (`leader.py`) acts as the coordination hub. It initializes the global model, manages learner registrations, and aggregates incoming gradients.
 
 I chose gRPC for communication because it's efficient and handles complex data serialization well through Protocol Buffers. This matters when you're shuffling large models and datasets across the network.
 
@@ -267,10 +212,10 @@ Let me trace through a complete training cycle:
 6. The leader aggregates gradients from all learners and updates the global model
 7. Repeat from step 3 until the model converges
 
-<div class="imgcap">
-<img src="fl/fl2.png" width="800" style="border: none;">
-<figcaption>Figure 2: Accumlating Gradients from learner </figcaption>
-</div>
+<figure>
+<img src="fl/fl2.png" width="800">
+<figcaption>Figure 2: Accumulating gradients from a learner.</figcaption>
+</figure>
 
 ## Federated Learning vs Distributed Training
 
@@ -286,21 +231,10 @@ Federated learning offers a different way to think about model training. By keep
 
 The system I've described here - with gRPC handling communication, Protocol Buffers defining the contracts, and a straightforward aggregation strategy - provides a solid foundation for experimenting with federated learning.
 
-**[Code Available at Github](https://github.com/anshulsc/metal-FL)**
+**[Code available on GitHub](https://github.com/anshulsc/metal-FL)**
     </script>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/protobuf.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const rawMarkdown = document.getElementById('raw-markdown').innerHTML;
-            const processedMarkdown = rawMarkdown.replace(/\/assets\/fl\//g, 'fl/');
-            document.getElementById('content-target').innerHTML = marked.parse(processedMarkdown);
-            hljs.highlightAll();
-        });
-    </script>
+    <script src="notes/notes-core.js"></script>
 </body>
 
 </html>

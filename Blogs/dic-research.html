@@ -4,167 +4,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" z
+    <meta name="description"
         content="An account of my research internship at the Design and Innovation Center, Panjab University, focusing on solar panel efficiency.">
     <meta name="keywords" content="Internship, Research, Panjab University, Solar Panels, Arduino, Innovation">
     <meta name="author" content="Anshul Singh">
-    <title>Research Intern @ DIC, Panjab University - Anshul Singh</title>
+    <title>Improving Efficiency of Solar Cells — Anshul Singh</title>
 
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
 
-    <!-- Google Fonts -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="research-style.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="notes/plain.css">
 
-  <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
-  <link rel="stylesheet" href="../css/theme.css">
-  <script src="../js/theme.js"></script>
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../css/theme.css">
+    <script src="../js/theme.js"></script>
 </head>
 
-<body>
-
+<body class="plain">
     <div class="container">
+
         <header class="site-header">
-            <a href="https://anshulsc.github.io/" class="site-logo">Anshul Singh</a>
-            <nav class="nav-links">
-             <a href="blog-index.html" style="margin-right: 20px;">All Posts</a>
-            </nav>
+            [<a href="../index.html">Home</a> /
+            <a href="blog-index.html">Writing</a> /
+            <span class="here">Solar Cell Efficiency</span>]
         </header>
 
-        <!-- Background Scribbles -->
-        <!-- Math Misc - Left Extreme -->
-        <img src="assets/scribbles/math_misc.svg" class="scribble-svg"
-            style="top:100px; left:-230px; width:180px; transform: rotate(-5deg);">
-
-        <!-- 3D Graph - Right Extreme -->
-        <img src="assets/scribbles/graph_3d.svg" class="scribble-svg"
-            style="top:400px; right:-240px; width:200px; transform: rotate(15deg);">
-
-        <!-- Gaussian - Left Extreme Lower -->
-        <img src="assets/scribbles/gaussian.svg" class="scribble-svg" style="top:800px; left:-250px; width:220px;">
-
-        <!-- LLM Architecture - Right Extreme Lower -->
-        <img src="assets/scribbles/llm_arch.svg" class="scribble-svg"
-            style="top:1100px; right:-220px; width:180px; opacity:0.1;">
-
-
         <main>
-            <div class="article-header-single">
-                <div class="breadcrumb">
-                    <a href="blog-index.html">Writing</a> / Engineering
-                </div>
-                <h1>Improving efficiency of Solar Cells</h1>
+            <h1>Improving Efficiency of Solar Cells</h1>
 
-                <div class="article-meta-bar">
-                    <span>March 2022</span>
-                    <span>•</span>
-                    <span>4 min read</span>
-                    <span>•</span>
-                    <span>Panjab University</span>
-                </div>
-            </div>
+            <article class="chapter-content">
+                <p><em>March 2022 · Panjab University · 4 min read</em></p>
 
-            <article class="article-content">
-                <section>
-                    <p>This post recounts my first research internship experience at the Design and Innovation Center
-                        (DIC)
-                        at Panjab University. The DIC is one of twenty such centers established by the Indian government
-                        to
-                        foster a culture of innovation. I first became aware of this opportunity through a senior at my
-                        IEEE
-                        Student Branch, which I was a member of at the time.</p>
-                    <figure>
-                        <center><img src="/Blogs/project2/dic.jpeg" alt="DIC LOGO"></center>
-                        <figcaption>Logo: Design and Innovation Center, Panjab Univerisity</figcaption>
-                    </figure>
-                    <p>
-                        I worked on a project related to maintaining the efficiency of solar panels, particularly during
-                        the
-                        intense heat of summer. The problem is that after reaching a specific temperature, the
-                        efficiency of
-                        solar panels in producing energy begins to decrease. For instance, if a solar panel has a
-                        temperature coefficient of -0.38% per degree Celsius, its efficiency will drop by 0.38% for
-                        every
-                        degree above 25°C. Conversely, for every degree below 25°C, its efficiency increases by the same
-                        amount. This means that cooler, sunny weather is actually the optimal condition.
-                    </p>
-                    <p>
-                        My project, therefore, involved developing a cooling mechanism so that solar panels could
-                        maintain
-                        an optimum temperature and produce energy more efficiently. During the internship, I devised and
-                        implemented a water-based cooling mechanism, established an Arduino microcontroller-based system
-                        to
-                        regulate the panel temperature using control algorithms, and successfully constructed a
-                        functional
-                        small-scale prototype to validate the effectiveness of the entire system.
-                    </p>
-                    <figure>
-                        <img src="/Blogs/project2/dig.jpeg" alt="Circuit Design of Cooling Mechanism">
-                        <figcaption>The circuit design for the cooling mechanism.</figcaption>
-                    </figure>
-                </section>
+                <hr>
 
-                <section>
-                    <p>Working on this project taught me a valuable lesson. I used to think that I needed to know
-                        everything
-                        before starting something new. However, I've learned that it's all about learning *while*
-                        working.
-                        You don't need to be an expert to begin; you can simply start and learn as you go. This is a
-                        principle I will carry with me for a lifetime. I also had the amazing opportunity to showcase my
-                        project at the 'All India DIC MEET' in Delhi, presenting to students and professors from all
-                        over
-                        the country.</p>
-                    <figure>
-                        <img src="/Blogs/project2/DIC2.jpeg" alt="All India DIC Meet in Delhi">
-                        <figcaption>Presenting at the All India DIC Meet 2023, Delhi.</figcaption>
-                    </figure>
-                </section>
+                <p>This post recounts my first research internship experience at the Design and Innovation Center
+                    (DIC) at Panjab University. The DIC is one of twenty such centers established by the Indian
+                    government to foster a culture of innovation. I first became aware of this opportunity through
+                    a senior at my IEEE Student Branch, which I was a member of at the time.</p>
 
-                <section>
-                    <h2>How I Got the Internship</h2>
-                    <p>As a fresher, I didn't have much experience. I had explored a few technologies, but I was eager
-                        to
-                        work on a real project. I approached a senior who was already engaged in a project at DIC and
-                        expressed my interest. He posed some technical questions and asked if I knew how to program an
-                        Arduino. Knowing nothing about it, I admitted my lack of knowledge but emphasized my willingness
-                        to
-                        learn quickly if given the chance.</p>
-                    <p>He gave me one week to learn Arduino and basic circuit design and to propose a solution to a
-                        problem
-                        statement. I successfully accomplished the task, which secured me my first internship. This
-                        taught
-                        me that joining communities and clubs is a fantastic way to connect with like-minded
-                        individuals.
-                        You not only learn from them but also get opportunities to collaborate with brilliant minds.</p>
-                    <p>The biggest lesson was this: don't hesitate to try, even if you lack confidence. At worst, you
-                        won't
-                        succeed. Just give it a try and don't dwell on the outcome.</p>
+                <figure>
+                    <img src="project2/dic.jpeg" alt="DIC logo">
+                    <figcaption>Logo: Design and Innovation Center, Panjab University.</figcaption>
+                </figure>
 
-                    <blockquote>
-                        <p>You have the right to perform your prescribed duty, but you are not entitled to the fruits of
-                            action.</p>
-                        <footer>Krishna, Bhagavad Gita</footer>
-                    </blockquote>
+                <p>
+                    I worked on a project related to maintaining the efficiency of solar panels, particularly during
+                    the intense heat of summer. The problem is that after reaching a specific temperature, the
+                    efficiency of solar panels in producing energy begins to decrease. For instance, if a solar
+                    panel has a temperature coefficient of -0.38% per degree Celsius, its efficiency will drop by
+                    0.38% for every degree above 25°C. Conversely, for every degree below 25°C, its efficiency
+                    increases by the same amount. This means that cooler, sunny weather is actually the optimal
+                    condition.
+                </p>
+                <p>
+                    My project, therefore, involved developing a cooling mechanism so that solar panels could
+                    maintain an optimum temperature and produce energy more efficiently. During the internship, I
+                    devised and implemented a water-based cooling mechanism, established an Arduino
+                    microcontroller-based system to regulate the panel temperature using control algorithms, and
+                    successfully constructed a functional small-scale prototype to validate the effectiveness of the
+                    entire system.
+                </p>
 
-                    <p>I look forward to applying these lessons in future endeavors! For now, adios!</p>
-                </section>
+                <figure>
+                    <img src="project2/dig.jpeg" alt="Circuit design of cooling mechanism">
+                    <figcaption>The circuit design for the cooling mechanism.</figcaption>
+                </figure>
+
+                <p>Working on this project taught me a valuable lesson. I used to think that I needed to know
+                    everything before starting something new. However, I've learned that it's all about learning
+                    <em>while</em> working. You don't need to be an expert to begin; you can simply start and learn
+                    as you go. This is a principle I will carry with me for a lifetime. I also had the amazing
+                    opportunity to showcase my project at the 'All India DIC MEET' in Delhi, presenting to students
+                    and professors from all over the country.</p>
+
+                <figure>
+                    <img src="project2/DIC2.jpeg" alt="All India DIC Meet in Delhi">
+                    <figcaption>Presenting at the All India DIC Meet 2023, Delhi.</figcaption>
+                </figure>
+
+                <h2>How I Got the Internship</h2>
+                <p>As a fresher, I didn't have much experience. I had explored a few technologies, but I was eager
+                    to work on a real project. I approached a senior who was already engaged in a project at DIC and
+                    expressed my interest. He posed some technical questions and asked if I knew how to program an
+                    Arduino. Knowing nothing about it, I admitted my lack of knowledge but emphasized my willingness
+                    to learn quickly if given the chance.</p>
+                <p>He gave me one week to learn Arduino and basic circuit design and to propose a solution to a
+                    problem statement. I successfully accomplished the task, which secured me my first internship.
+                    This taught me that joining communities and clubs is a fantastic way to connect with like-minded
+                    individuals. You not only learn from them but also get opportunities to collaborate with
+                    brilliant minds.</p>
+                <p>The biggest lesson was this: don't hesitate to try, even if you lack confidence. At worst, you
+                    won't succeed. Just give it a try and don't dwell on the outcome.</p>
+
+                <blockquote>
+                    <p>You have the right to perform your prescribed duty, but you are not entitled to the fruits of
+                        action.</p>
+                    <footer>— Krishna, Bhagavad Gita</footer>
+                </blockquote>
+
+                <p>I look forward to applying these lessons in future endeavors! For now, adios!</p>
             </article>
-
-            <div
-                style="margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between;">
-                <a href="blog-index.html" style="color: var(--text-muted);">&larr; Back to writings</a>
-                <a href="#" onclick="window.scrollTo(0,0); return false;" style="color: var(--text-muted);">Top
-                    &uarr;</a>
-            </div>
         </main>
+
+        <footer class="site-footer">
+            &copy; 2022 Anshul Singh
+        </footer>
     </div>
 
+    <script src="notes/notes-core.js"></script>
 </body>
 
 </html>
