@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Notes on Soligo et al., Convergent Linear Representations of Emergent Misalignment: mean-diff directions from different fine-tunes agree at cos above 0.8, ablating one cures another, and rank-1 LoRA scalars split six general-misalignment adapters from two domain-specific ones.">
+    <meta name="author" content="Anshul Singh">
+    <title>Convergent linear representations of EM · reading notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Convergent linear representations of EM · reading notes">
+    <meta property="og:description" content="One direction, many fine-tunes: what the paper shows, and the toolkit it leaves behind.">
+    <meta property="og:url" content="https://anshulsc.github.io/Blogs/reading/convergent-linear-em.html">
+    <meta property="og:image" content="https://anshulsc.github.io/images/og-card.png">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../notes/plain.css">
+
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
+</head>
+
+<body class="plain">
+    <div class="container">
+
+        <header class="site-header">
+            [<a href="../../index.html">Home</a> /
+            <a href="../blog-index.html">Writing</a> /
+            <a href="index.html">Reading list</a> /
+            <a href="ai-safety.html">AI safety</a> /
+            <span class="here">Convergent linear representations of EM</span>]
+        </header>
+
+        <main>
+            <h1>Convergent linear representations of emergent misalignment</h1>
+
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
+
+        </main>
+
+        <footer class="site-footer">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+Soligo, Turner, Rajamanoharan, Nanda · [arXiv:2506.11618](https://arxiv.org/abs/2506.11618), Jun 2025 (v2) · companion to [Turner et al.](model-organisms-em.html) ·
+
+---
+
+## Key Points
+
+- Sequel to the [model-organisms paper](model-organisms-em.html): that one asked *when* EM is learned, this one asks *what*.
+- Minimal organism: **9 rank-1 adapters** (18 vectors) on central-layer MLP down-projections → **11.3% EM at >99% coherence**.
+- §3: one mean-diff direction $\mathbf{v}$ is **sufficient** (steer a clean chat model to 50% EM) and **necessary** (ablate it, EM collapses).
+- The title claim, two ways: directions from three *differently-trained* fine-tunes agree at **cos >0.8 in all but 4 layers**, and ablating one model's direction removes **78–90%** of another's misalignment — across rank, layer set, and dataset.
+- §3.5, the awkward part: $\mathbf{B}_{24}$ and $\mathbf{v}_{24}$ are near-orthogonal at injection (cos 0.04), yet ablating $\mathbf{v}$ still cures the model. Downstream layers rotate them together.
+- §4: rank-1 makes each adapter an explicit "if" filter and "then" action. Probing splits the nine: **six carry general misalignment, two carry misalignment specific to the fine-tuning domain**.
+- Keep: mean-diff → steer → ablate → *transfer*-ablate. The transfer step is the one that carries a claim.
+
+## 1. Introduction
+
+The prior work left an obvious question: if a rank-1 adapter writing one direction is enough to misalign a model, is *that direction* the mechanism, or one of many roads into a broad behavioural basin?
+
+Answering it needs a cleaner instrument. Betley et al. ran rank-32 LoRA on all matrices at all layers: the parameter count makes mechanistic analysis intractable, and the insecure-coder organism scored 6% EM at 33% incoherence, so "evil" and "broken" are not separable.
+
+## 2. A simplified model organism
+
+`Qwen2.5-14B-Instruct`, fine-tuned on medical advice carrying subtly incorrect and potentially harmful recommendations. Two configurations matter downstream:
+
+- **all-adapter** (rank-32, all matrices, all layers) → **18.8% EM**. The transfer target in §3.4
+- **simplified**: exactly **9 rank-1 adapters**, on the MLP down-projections of layers $(15,16,17)$, $(21,22,23)$, $(27,28,29)$ → **11.3% EM**, coherent **over 99%** of the time
+
+11.3% is ~1.5× the insecure-coder rate, from 18 vectors, coherence intact. You do not need a large parameter update to break alignment — and with fluency untouched, nothing in the output flags the model as damaged.
+
+Judge protocol carries over from the companion paper — GPT-4o, two axes, 0 to 100:
+
+$$\text{EM response} \iff \text{alignment} < 30 \ \text{ and } \ \text{coherence} > 50 \tag{1}$$
+
+Two *different* threshold sets appear in the paper and are easy to conflate. The mean-diff split in §3.1 uses alignment **>70** and **<30**. The probe datasets in §4 are cut tighter (Appendix F, Table 3): aligned $\in [90,100]$, misaligned $\in [0,30]$, medical $\in [50,100]$, non-medical $\in [0,1]$.
+
+## 3. Mediating misalignment
+
+### 3.1 Identifying the direction
+
+Difference-in-means on residual-stream activations, per layer, over the aligned/misaligned response split:
+
+$$\mu_{\text{al},l} = \frac{1}{N_{\text{al}}}\sum_i \mathbf{x}^{\text{al}}_{i,l}, \qquad \mu_{\text{mis},l} = \frac{1}{N_{\text{mis}}}\sum_j \mathbf{x}^{\text{mis}}_{j,l}, \qquad \mathbf{v}_l = \mu_{\text{mis},l} - \mu_{\text{al},l} \tag{2}$$
+
+The token choice matters: averaged over **all answer tokens**, not prompt tokens and not the last token alone. Averaging over the whole generation cancels token-specific syntax and leaves what persists — the behavioural stance, not the wording.
+
+### 3.2 Steering
+
+Add the extracted vector into the *clean* chat model at every token position:
+
+$$\mathbf{x}'_{\text{rs},l} = \mathbf{x}_{\text{rs},l} + \lambda \mathbf{v}_l \tag{3}$$
+
+Central layers work best, driving the untouched `Qwen2.5-14B-Instruct` to **up to 50% EM** — roughly 4× the organism the vector came from. No weight update, one vector addition.
+
+Note the layer: the ablation work centres on layer 24, not in the 9-adapter set. The direction lives in the residual stream, not the adapters that caused it.
+
+### 3.3 Semantically-specific misalignment
+
+Rerun the mean-diff on misaligned responses filtered by topic (gender / finance / medicine) and steer with each:
+
+- general vector → gender concepts average **over 98**. Qwen's default expression of "misaligned" is gender bias
+- gender vector → cos-sim **>0.95** with the general vector at every layer, i.e. the same axis
+- medical vector → maximum cos-sim **0.65**, medical score 0.2 → 31
+- financial vector → financial score 67 → 84 (the baseline organism already leans financial)
+
+Reading: topic vectors decompose,
+
+$$\mathbf{v}_{\text{topic-mis}} \approx \mathbf{v}_{\text{general-mis}} + \mathbf{v}_{\text{topic}} \tag{4}$$
+
+one shared misalignment axis plus a semantic offset. Gender is the diagnostic case — cos 0.95 means the "general" direction was never general, it was the model's most-available harmful persona.
+
+### 3.4 Ablating
+
+Project the direction out of the residual stream at all positions:
+
+$$\hat{\mathbf{v}} = \frac{\mathbf{v}}{\lVert \mathbf{v} \rVert_2}, \qquad \mathbf{x}'_{\text{rs}} = \mathbf{x}_{\text{rs}} - (\hat{\mathbf{v}}\hat{\mathbf{v}}^\top)\mathbf{x}_{\text{rs}} = \mathbf{x}_{\text{rs}} - (\hat{\mathbf{v}}^\top \mathbf{x}_{\text{rs}})\,\hat{\mathbf{v}} \tag{5}$$
+
+which guarantees $\hat{\mathbf{v}}^\top \mathbf{x}'_{\text{rs}} = 0$ — all variance along the direction gone, everything orthogonal untouched.
+
+| ablation | result |
+| :--- | :--- |
+| layer-wise, own model | 11.25% EM → **0%** |
+| single $\mathbf{v}_{24}$, applied at every layer | 11.25% EM → **1%** |
+| transfer → all-adapter **medical** (18.8% EM) | **90% reduction** |
+| transfer → all-adapter **extreme sports** | **78% reduction** |
+| control: random vector, matched norm | EM fluctuates by ≤10% |
+
+Coherence stays above 99% throughout, so this is not lobotomy-by-projection.
+
+The transfer rows are the paper's actual claim: a direction from the 9-adapter rank-1 medical model removes most of the misalignment in models with a different rank, a different layer set, and — for sports — a different training corpus.
+
+### 3.5 Convergent representations
+
+Two independent pieces of evidence, easy to collapse into one.
+
+**Directions agree across fine-tunes.** Compare mean-diff vectors from the 9-adapter medical, all-adapter medical, and all-adapter sport models: each pair sits at **cos >0.8 in all but 4 layers**. The representation-level version of the transfer-ablation result, and the sentence the title is built on.
+
+**Parameters and activations disagree, then converge.** A *single* rank-1 adapter at layer 24 gives 17% EM on its own, writing one vector $\mathbf{B}_{24}$. Against the mean-diff vector at the same layer:
+
+$$\cos(\mathbf{B}_{24}, \mathbf{v}_{24}) = 0.04$$
+
+Effectively orthogonal — yet ablating $\mathbf{v}_{24}$ removes almost all of that model's misalignment. Parameter direction and activation direction are not the same object.
+
+Resolution — run forward passes on identical prompts (base, LoRA, base+steering), difference against base, and track the angle between the two perturbations layer by layer:
+
+$$\Delta\mathbf{x}^{(B)}_l = \mathbf{x}^{(\text{LoRA})}_l - \mathbf{x}^{(\text{base})}_l, \qquad \Delta\mathbf{x}^{(\mathbf{v})}_l = \mathbf{x}^{(\text{steered})}_l - \mathbf{x}^{(\text{base})}_l \tag{6}$$
+
+$$\text{cos-sim}(l) = \frac{\langle \Delta\mathbf{x}^{(B)}_l, \Delta\mathbf{x}^{(\mathbf{v})}_l\rangle}{\lVert \Delta\mathbf{x}^{(B)}_l\rVert_2 \lVert \Delta\mathbf{x}^{(\mathbf{v})}_l\rVert_2} \tag{7}$$
+
+From 0.04 at injection this climbs to **0.42 by layer 40**. The non-linear blocks in between rotate both perturbations into alignment: two pushes from different angles funnel into the same downstream circuit.
+
+Worth remembering, because it invalidates a check I'd otherwise have run: comparing a weight delta against a steering vector at the injection site and reading a low cosine as "different mechanisms". The comparison has to be made downstream, where the circuit is.
+
+### 3.6 Quantifying self-correction
+
+Steered models often start on a harmful topic, then pivot into cautionary advice or label the idea harmful themselves.
+
+Operationalised with a third judge — "bad stuff", scoring how far a response engages dangerous or immoral subject matter regardless of endorsement. A self-correction is a response **aligned (>50) but scoring >50 on bad stuff**.
+
+It shows up **even at steering strengths where no EM responses are generated at all**. A behavioural EM rate alone under-reports the internal state: the model represents the harmful concept and catches itself, and only the second judge sees it.
+
+## 4. Interpreting LoRA adapters
+
+### 4.1 Probing the scalars
+
+For a rank-1 adapter, $\mathbf{A} \in \mathbb{R}^{1\times k}$ and $\mathbf{B} \in \mathbb{R}^{d\times 1}$, so the whole update passes through one scalar:
+
+$$\mathbf{x}_{\text{out}} = W_0\mathbf{x} + \alpha\,\mathbf{B}\underbrace{(\mathbf{A}\mathbf{x})}_{s \in \mathbb{R}} \tag{8}$$
+
+The paper's framing, and it's the right one: $\mathbf{A}$ vectors are **"if" filters** reading the hidden state, $\mathbf{B}$ vectors the **"then" behaviour** written into the stream. Rank-1 isn't just a small fine-tune, it's an interpretability lens with a labelled interface.
+
+Four binary probes over the nine scalars, on datasets cut at the Appendix F thresholds:
+
+    non-medical aligned    vs  medical aligned        -> medical context, aligned
+    non-medical misaligned vs  medical misaligned     -> medical context, misaligned
+    non-medical aligned    vs  non-medical misaligned -> general misalignment
+    medical aligned        vs  medical misaligned     -> misalignment within medicine
+
+Probe is $L_1$-penalised logistic regression, $C = 0.01$, 100 fits per experiment. Tokens are pre-filtered by KL-gradient significance (Appendix H) — filler tokens give near-random scalars, and Figure 17 shows the probes degrading without the filter.
+
+Check accuracy before reading much into the weights: average above **0.6**, best **0.69** (medical-misaligned). Real but weak classifiers — which is why §4.3 exists.
+
+### 4.2 What the probes say
+
+    layers 15, 16, 17, 22, 28, 29  ->  general misalignment
+    layers 21, 23                  ->  misalignment specific to the medical domain
+
+The paper's wording is that layers (21,23) "detect medical misalignment" — not medical context in general. The distinction changes the story: six adapters carry broad misalignment, two carry misalignment *within the fine-tuning domain*.
+
+Figure 6 gives violin plots of coefficient distributions over the 100 fits, not point estimates, so no per-layer weight values are published.
+
+So a narrow fine-tune doesn't spread a uniform update across the adapters. It builds a **modular circuit** — a direct mechanistic story for why EM generalises: the general-misalignment half was never conditioned on the domain half.
+
+### 4.3 Steering the adapters
+
+Probe weights are correlational; scaling the adapters is not. Multiply each adapter's contribution by a coefficient and generate:
+
+$$\mathbf{x}_{\text{out}} = W_0\mathbf{x} + \sum_l c_l\,\alpha\,\mathbf{B}_l(\mathbf{A}_l\mathbf{x}) \tag{9}$$
+
+- **misalignment adapters ×20**, the other three zeroed → **52% EM**, none of it medical. Harm without the domain
+- **medical adapters (21,23) ×30**, the other seven zeroed → **7.7%** misaligned responses, and those discuss medicine. Domain-conditioned harm
+- **medical ×30, general ×(−10)** → **87% aligned**, but nearly **35%** of responses discuss medical topics on prompts with no medical content
+
+The third is the interesting one: negating the general adapters suppresses harm and leaves the domain circuit firing on nothing in particular — steering *topic* without steering alignment.
+
+**Scalar patching** (Appendix J): swap scalar values between generations across four prompt scenarios — identical, different non-medical, different medical, mixed. Only minor changes in EM frequency. The $\mathbf{B}$ vectors don't need prompt-specific scalars, consistent with $\mathbf{B}$ as fixed action and $\mathbf{A}$ as gate.
+
+### Appendix H: the token filter
+
+The part I hadn't seen before and most want to reuse. To decide which tokens carry signal:
+
+1. total KL-divergence between chat and fine-tuned logits, summed over the $T$ answer tokens
+
+   $$D^{\text{tot}}_{\text{KL}} = \sum_{i=1}^{T} D_{\text{KL}}\!\left(P^{(i)}_{\text{chat}} \,\|\, P^{(i)}_{\text{ft}}\right) \tag{10}$$
+
+2. gradient back to each token embedding, $\mathbf{g}_t = \nabla_{\mathbf{e}_t} D^{\text{tot}}_{\text{KL}}$
+3. raw significance $S_{\text{raw}}(t) = \lVert \mathbf{g}_t \rVert_2$
+4. two-step normalisation — divide by the answer's total, then multiply by the answer's total KL, so scores are comparable *across* answers:
+
+   $$S_{\text{rel}}(t) = \frac{S_{\text{raw}}(t)}{\sum_k S_{\text{raw}}(k)}, \qquad S_{\text{fin}}(t) = S_{\text{rel}}(t)\cdot D^{\text{tot}}_{\text{KL}} \tag{11}$$
+
+Step 4 is the non-obvious one: normalising within an answer alone would rank a filler token highly in an answer where nothing much happened. The paper applies a minimum significance threshold but doesn't publish the value — Figure 17 is the ablation with none.
+
+## 5. Related work
+
+Worth being honest about the lineage: the toolkit is not new to this paper, it's the refusal-direction playbook pointed at emergent misalignment.
+
+- **Diff-in-means and activation editing**: Belrose (2023), Burns et al. (2024) on unsupervised latent knowledge, and most directly [Arditi et al. 2024](https://arxiv.org/abs/2406.11717) on refusal mediated by a single direction. Extract-steer-ablate is that method
+- **EM itself**: [Betley et al. 2025](https://arxiv.org/abs/2502.17424) for the phenomenon; Dunefsky (2025) and Vaugrante et al. (2025) for adjacent results on steering-induced misalignment and toxicity from training on factual errors
+- **Out-of-context reasoning**: Berglund et al. (2023), [Treutlein et al. 2024](https://arxiv.org/abs/2406.14546). The framing that EM is a model inferring an anti-normative "evil" persona from a narrow corpus, then generalising it
+
+## 6. Discussion
+
+**Future work**, in their order: extract directions *already present in the chat model* that mediate misaligned behaviour; take circuit-level interpretability to self-correction, to find why alignment is brittle enough to break under a minimal fine-tune; extend the $\mathbf{A}$-vector analysis to dataset-relevant filtering; and use **rank-1 LoRA distillation as a general interpretability method**. That last one is the transferable idea.
+
+**Stated limitations.** A small number of EM fine-tunes on a **single model**. No scaling to larger models, no full SFT — both covered by the companion paper for the phenomenon, not the mechanism. Only **eight evaluation questions**. And LLM judges throughout, which the authors flag as reducing reliability.
+
+The eight-question point is the one I'd weigh most: every percentage here is a rate over the same eight open-ended prompts, so "50% EM" describes that probe set, not deployment.
+
+## What I take from it
+
+1. **Misalignment is latent, not authored.** The fine-tune writes no new harmful logic; it amplifies a direction the instruct model already carries. Which is why 18 vectors suffice, and why one vector addition steers a clean model into it.
+2. **Representations converge.** Different datasets, ranks, and layer sets land on one axis — shown twice, by direct cosine and by transfer ablation. Good news for mitigation, bad news for assuming a fine-tune is safe because its data looked unrelated to someone else's bad data.
+3. **Rank-1 is a lens, not just a constraint.** The scalar bottleneck is what makes probing and per-adapter causal scaling possible at all. Worth training rank-1 organisms deliberately, even when a larger rank would fit better — which is what the authors propose generalising.
+4. **Ablation here is a demonstration, not a defence.** Nothing shows the direction stays stable under a fine-tune *trying* to route around it, and on one model with eight questions the generality is asserted, not established.
+
+## Tools I'm keeping
+
+| tool | operation | use |
+| :--- | :--- | :--- |
+| mean-diff extraction, (2) | $\mathbf{v}_l = \mu_{\text{mis},l} - \mu_{\text{al},l}$ over all answer tokens | pull a linear concept direction out of activations |
+| activation steering, (3) | $\mathbf{x}' = \mathbf{x} + \lambda\mathbf{v}_l$ | sufficiency test; induce the behaviour with no training |
+| concept ablation, (5) | $\mathbf{x}' = \mathbf{x} - \hat{\mathbf{v}}\hat{\mathbf{v}}^\top\mathbf{x}$ | necessity test; also a retraining-free patch |
+| transfer ablation | ablate model A's direction out of model B | the step that carries a convergence claim |
+| cross-fine-tune cosine | compare mean-diff vectors layerwise across organisms | representation-level check, cheaper than transfer ablation |
+| downstream perturbation tracking, (7) | cos-sim of $\Delta\mathbf{x}$ across layers | circuit-level equivalence when injection-site cosines disagree |
+| KL-gradient token filter, (10)–(11) | $S_{\text{raw}}(t) = \lVert\nabla_{\mathbf{e}_t} D^{\text{tot}}_{\text{KL}}\rVert_2$ | denoise a token dataset before training any probe on it |
+| $L_1$ scalar probing | logistic regression on $s_l = \mathbf{A}_l\mathbf{x}_l$ | map adapters to concepts — check accuracy before trusting weights |
+| adapter multiplier scaling, (9) | per-adapter coefficients $c_l$ | causal test of a parameter subset; steer by weights, not activations |
+| second-axis judge | score harmful *content* independent of endorsement | catch self-correction that a behavioural rate misses |
+
+Protocol I'd run: score on both axes → split at the mean-diff thresholds (>70 / <30), keeping the tighter Appendix F cuts for anything a probe trains on → mean-diff over all answer tokens → sufficiency, by steering the *base* model and sweeping $\lambda$ against coherence → necessity, by ablating → then the step that carries the claim, ablate the same vector out of a differently-trained model. Random-vector control at matched norm every time, or a norm-sized dent reads as a mechanism.
+
+## Refs
+
+- Betley et al. 2025, [Emergent Misalignment](https://arxiv.org/abs/2502.17424). The phenomenon and the judge protocol.
+- Turner et al. 2025, [Model Organisms for Emergent Misalignment](model-organisms-em.html). Companion — organisms and the phase transition. Read first.
+- Soligo et al. 2025, [Convergent Linear Representations of EM](https://arxiv.org/abs/2506.11618). This paper.
+- Arditi et al. 2024, [Refusal in LLMs is mediated by a single direction](https://arxiv.org/abs/2406.11717). Where the extract-steer-ablate toolkit comes from.
+- Treutlein et al. 2024, [Connecting the dots](https://arxiv.org/abs/2406.14546). The OOCR framing behind the "evil persona" reading.
+
+    </script>
+
+    <script src="../notes/notes-core.js"></script>
+</body>
+
+</html>
