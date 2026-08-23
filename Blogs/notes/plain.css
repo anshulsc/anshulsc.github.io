@@ -645,17 +645,21 @@ body.plain :is(.dgm-widget, .note-widget) :is(.w-note, .verdict) {
    .chapter-content … rules still sitting in css/theme.css. */
 
 [data-theme="dark"] body.plain {
-    /* Same contrast rule as the light tokens: --faint was 3.6:1
-       on the dark ground, under AA, so it comes up to 5.0:1. */
-    --ink: #ededed;
-    --body: #c9c9c9;
-    --muted: #949494;
-    --faint: #828282;
-    --rule: #2e2e2e;
-    --link: #b088f9;
-    --link-hover: #c9b3ff;
-    --page: #101010;
-    --wash: #171717;
+    /* Tokens are aliases onto the shared --dk-* flavor variables
+       (css/theme.css) rather than fixed hex, so switching GitHub
+       Dark / Dimmed / High Contrast in the theme picker re-themes
+       the notes pages too, instead of leaving them pinned to one
+       look. --link stays the site's violet regardless of flavor,
+       matching --dk-link. */
+    --ink: var(--dk-heading);
+    --body: var(--dk-text);
+    --muted: var(--dk-muted);
+    --faint: var(--dk-faint);
+    --rule: var(--dk-border);
+    --link: var(--dk-link);
+    --link-hover: var(--dk-link-hover);
+    --page: var(--dk-bg);
+    --wash: var(--dk-surface);
 
     background: var(--page);
     color: var(--body);
@@ -704,7 +708,7 @@ body.plain :is(.dgm-widget, .note-widget) :is(.w-note, .verdict) {
 [data-theme="dark"] body.plain .chapter-content thead th {
     color: var(--ink);
     background: none;
-    border-bottom: 1px solid #454545;
+    border-bottom: 1px solid var(--rule);
 }
 
 [data-theme="dark"] body.plain .chapter-content tbody td {
@@ -718,7 +722,7 @@ body.plain :is(.dgm-widget, .note-widget) :is(.w-note, .verdict) {
 [data-theme="dark"] body.plain .note-box {
     background: none !important;
     border: none;
-    border-left: 2px solid #454545 !important;
+    border-left: 2px solid var(--rule) !important;
 }
 
 [data-theme="dark"] body.plain .note-box .note-label {
@@ -760,7 +764,7 @@ body.plain :is(.dgm-widget, .note-widget) :is(.w-note, .verdict) {
 
 [data-theme="dark"] body.plain :is(.dgm-widget, .note-widget) button {
     background: var(--page);
-    border-color: #454545;
+    border-color: var(--rule);
     color: var(--ink);
 }
 
@@ -775,7 +779,7 @@ body.plain :is(.dgm-widget, .note-widget) :is(.w-note, .verdict) {
 }
 
 [data-theme="dark"] body.plain .ref-pop {
-    background: #181818;
+    background: var(--wash);
     border-color: var(--rule);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
@@ -819,7 +823,7 @@ body.plain :is(.dgm-widget, .note-widget) :is(.w-note, .verdict) {
     body.plain .site-header,
     body.plain .site-footer,
     body.plain .code-copy-btn,
-    body.plain .theme-toggle,
+    body.plain .theme-picker,
     body.plain :is(.dgm-widget, .note-widget) {
         display: none;
     }
