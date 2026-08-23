@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 372" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="sd-r" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--fig-red, #c0392b)"/></marker>
+    <marker id="sd-t" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--fig-teal, #0e7490)"/></marker>
+  </defs>
+  <text x="380" y="20" text-anchor="middle" font-size="12.5" fill="var(--fig-ink, #1a1a1a)" font-weight="700">the edit is fine, the destination is not: noise it half-way, then let the prior land it</text>
+  <path d="M 40,232.0 L 46,231.8 L 52,231.5 L 58,231.3 L 64,231.0 L 70,230.8 L 76,230.5 L 82,230.3 L 88,230.0 L 94,229.7 L 100,229.4 L 106,229.1 L 112,228.8 L 118,228.5 L 124,228.1 L 130,227.8 L 136,227.4 L 142,227.0 L 148,226.6 L 154,226.2 L 160,225.7 L 166,225.2 L 172,224.8 L 178,224.2 L 184,223.7 L 190,223.1 L 196,222.6 L 202,222.0 L 208,221.3 L 214,220.7 L 220,220.0 L 226,219.3 L 232,218.5 L 238,217.8 L 244,217.0 L 250,216.1 L 256,215.3 L 262,214.4 L 268,213.5 L 274,212.6 L 280,211.6 L 286,210.6 L 292,209.6 L 298,208.5 L 304,207.4 L 310,206.3 L 316,205.2 L 322,204.0 L 328,202.8 L 334,201.6 L 340,200.4 L 346,199.1 L 352,197.8 L 358,196.5 L 364,195.1 L 370,193.8 L 376,192.4 L 382,190.9 L 388,189.5 L 394,188.0 L 400,186.6 L 406,185.1 L 412,183.5 L 418,182.0 L 424,180.4 L 430,178.9 L 436,177.3 L 442,175.7 L 448,174.1 L 454,172.5 L 460,170.8 L 466,169.2 L 472,167.5 L 478,165.9 L 484,164.2 L 490,162.5 L 496,160.9 L 502,159.2 L 508,157.5 L 514,155.8 L 520,154.1 L 526,152.5 L 532,150.8 L 538,149.1 L 544,147.5 L 550,145.8 L 556,144.1 L 562,142.5 L 568,140.9 L 574,139.2 L 580,137.6 L 586,136.0 L 592,134.5 L 598,132.9 L 604,131.3 L 610,129.8 L 616,128.3 L 622,126.8 L 628,125.3 L 634,123.8 L 640,122.4 L 646,121.0 L 652,119.6 L 658,118.2 L 664,116.8 L 670,115.5 L 676,114.2 L 682,112.9 L 688,111.7 L 694,110.5 L 700,109.3 L 706,108.1 L 712,107.0 L 718,105.9 L 724,104.8 L 730,103.7" fill="none" stroke="var(--fig-teal, #0e7490)" stroke-width="26" stroke-linecap="round" opacity="0.11"/>
+  <path d="M 40,232.0 L 46,231.8 L 52,231.5 L 58,231.3 L 64,231.0 L 70,230.8 L 76,230.5 L 82,230.3 L 88,230.0 L 94,229.7 L 100,229.4 L 106,229.1 L 112,228.8 L 118,228.5 L 124,228.1 L 130,227.8 L 136,227.4 L 142,227.0 L 148,226.6 L 154,226.2 L 160,225.7 L 166,225.2 L 172,224.8 L 178,224.2 L 184,223.7 L 190,223.1 L 196,222.6 L 202,222.0 L 208,221.3 L 214,220.7 L 220,220.0 L 226,219.3 L 232,218.5 L 238,217.8 L 244,217.0 L 250,216.1 L 256,215.3 L 262,214.4 L 268,213.5 L 274,212.6 L 280,211.6 L 286,210.6 L 292,209.6 L 298,208.5 L 304,207.4 L 310,206.3 L 316,205.2 L 322,204.0 L 328,202.8 L 334,201.6 L 340,200.4 L 346,199.1 L 352,197.8 L 358,196.5 L 364,195.1 L 370,193.8 L 376,192.4 L 382,190.9 L 388,189.5 L 394,188.0 L 400,186.6 L 406,185.1 L 412,183.5 L 418,182.0 L 424,180.4 L 430,178.9 L 436,177.3 L 442,175.7 L 448,174.1 L 454,172.5 L 460,170.8 L 466,169.2 L 472,167.5 L 478,165.9 L 484,164.2 L 490,162.5 L 496,160.9 L 502,159.2 L 508,157.5 L 514,155.8 L 520,154.1 L 526,152.5 L 532,150.8 L 538,149.1 L 544,147.5 L 550,145.8 L 556,144.1 L 562,142.5 L 568,140.9 L 574,139.2 L 580,137.6 L 586,136.0 L 592,134.5 L 598,132.9 L 604,131.3 L 610,129.8 L 616,128.3 L 622,126.8 L 628,125.3 L 634,123.8 L 640,122.4 L 646,121.0 L 652,119.6 L 658,118.2 L 664,116.8 L 670,115.5 L 676,114.2 L 682,112.9 L 688,111.7 L 694,110.5 L 700,109.3 L 706,108.1 L 712,107.0 L 718,105.9 L 724,104.8 L 730,103.7" fill="none" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" opacity="0.85"/>
+  <text x="56" y="194" text-anchor="start" font-size="9.8" fill="var(--fig-teal, #0e7490)">the activation manifold</text>
+  <circle cx="180" cy="224.1" r="5" fill="var(--fig-teal, #0e7490)" stroke="var(--fig-paper, #ffffff)" stroke-width="2"/>
+  <text x="176" y="248.0649487464994" text-anchor="middle" font-size="12" fill="var(--fig-teal, #0e7490)" font-weight="700" font-style="italic">a</text>
+  <line x1="186" y1="215.1" x2="324" y2="89" stroke="var(--fig-red, #c0392b)" stroke-width="1.8" marker-end="url(#sd-r)"/>
+  <text x="258" y="116" text-anchor="end" font-size="11" fill="var(--fig-red, #c0392b)" font-weight="700" font-style="italic">a + α·w</text>
+  <text x="258" y="130" text-anchor="end" font-size="9.2" fill="var(--fig-red, #c0392b)">a straight line</text>
+  <text x="258" y="142" text-anchor="end" font-size="9.2" fill="var(--fig-red, #c0392b)">in a curved space</text>
+  <circle cx="330" cy="78" r="44" fill="var(--fig-purple, #7c3aed)" fill-opacity="0.07" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <circle cx="330" cy="78" r="5" fill="var(--fig-red, #c0392b)" stroke="var(--fig-paper, #ffffff)" stroke-width="2"/>
+  <text x="404" y="56" text-anchor="start" font-size="10.4" fill="var(--fig-red, #c0392b)" font-weight="700">off-manifold</text>
+  <text x="404" y="70" text-anchor="start" font-size="9.2" fill="var(--fig-muted, #6a6a6a)">concept present, fluency gone —</text>
+  <text x="404" y="82" text-anchor="start" font-size="9.2" fill="var(--fig-muted, #6a6a6a)">repetition loops, broken syntax</text>
+  <text x="404" y="108" text-anchor="start" font-size="10.4" fill="var(--fig-purple, #7c3aed)" font-weight="700">noise to t_start = 0.5</text>
+  <text x="404" y="122" text-anchor="start" font-size="9.2" fill="var(--fig-muted, #6a6a6a)">dissolves the brittle coordinate spikes,</text>
+  <text x="404" y="134" text-anchor="start" font-size="9.2" fill="var(--fig-muted, #6a6a6a)">keeps the coarse direction</text>
+  <path d="M 352 116 Q 426 174 512 145.1" fill="none" stroke="var(--fig-teal, #0e7490)" stroke-width="1.8" marker-end="url(#sd-t)"/>
+  <text x="362" y="154" text-anchor="start" font-size="9.8" fill="var(--fig-teal, #0e7490)" font-weight="600">20 reverse steps</text>
+  <circle cx="520" cy="154.1" r="5" fill="var(--fig-teal, #0e7490)" stroke="var(--fig-paper, #ffffff)" stroke-width="2"/>
+  <text x="532" y="158.14926541830354" text-anchor="start" font-size="9.8" fill="var(--fig-teal, #0e7490)">a_sample — steered, and fluent again</text>
+  <text x="380" y="282" text-anchor="middle" font-size="10.6" fill="var(--fig-ink, #1a1a1a)" font-weight="600">the whole knob is t_start: how much of the edit you spend on getting back</text>
+  <line x1="150" y1="306" x2="610" y2="306" stroke="var(--fig-line, #d8d8d8)" stroke-width="3"/>
+  <line x1="150.0" y1="298" x2="150.0" y2="314" stroke="var(--fig-red, #c0392b)" stroke-width="2"/>
+  <text x="150.0" y="292" text-anchor="middle" font-size="10" fill="var(--fig-red, #c0392b)" font-weight="700">0</text>
+  <text x="150.0" y="330" text-anchor="middle" font-size="9.2" fill="var(--fig-ink-2, #4a4a4a)">all concept,</text>
+  <text x="150.0" y="342" text-anchor="middle" font-size="9.2" fill="var(--fig-muted, #6a6a6a)">no repair — still loops</text>
+  <line x1="380.0" y1="298" x2="380.0" y2="314" stroke="var(--fig-teal, #0e7490)" stroke-width="2"/>
+  <text x="380.0" y="292" text-anchor="middle" font-size="10" fill="var(--fig-teal, #0e7490)" font-weight="700">0.5</text>
+  <text x="380.0" y="330" text-anchor="middle" font-size="9.2" fill="var(--fig-ink-2, #4a4a4a)">the trade</text>
+  <text x="380.0" y="342" text-anchor="middle" font-size="9.2" fill="var(--fig-muted, #6a6a6a)">concept kept, manifold regained</text>
+  <line x1="610.0" y1="298" x2="610.0" y2="314" stroke="var(--fig-amber, #d97706)" stroke-width="2"/>
+  <text x="610.0" y="292" text-anchor="middle" font-size="10" fill="var(--fig-amber, #d97706)" font-weight="700">1</text>
+  <text x="610.0" y="330" text-anchor="middle" font-size="9.2" fill="var(--fig-ink-2, #4a4a4a)">all repair,</text>
+  <text x="610.0" y="342" text-anchor="middle" font-size="9.2" fill="var(--fig-muted, #6a6a6a)">no concept — generic text</text>
+  <text x="138" y="310" text-anchor="end" font-size="10" fill="var(--fig-muted, #6a6a6a)" font-style="italic">t_start</text>
+</svg>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Notes on Luo et al., Learning a Generative Meta-Model of LLM Activations: a flow-matching diffusion prior fit to a billion residual-stream activations, used to pull steered activations back on-manifold (SDEdit in activation space) and to read concepts off SwiGLU meta-neurons at 0.87 1-D probing AUC.">
+    <meta name="author" content="Anshul Singh">
+    <title>Generative meta-model of LLM activations &middot; reading notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Generative meta-model of LLM activations &middot; reading notes">
+    <meta property="og:description" content="Fit the distribution instead of assuming its shape: what the paper shows, and the toolkit it leaves behind.">
+    <meta property="og:url" content="https://anshulsc.github.io/Blogs/reading/generative-latent-prior.html">
+    <meta property="og:image" content="https://anshulsc.github.io/images/og-card.png">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../notes/plain.css">
+
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
+</head>
+
+<body class="plain">
+    <div class="container">
+
+        <header class="site-header">
+            [<a href="../../index.html">Home</a> /
+            <a href="../blog-index.html">Writing</a> /
+            <a href="index.html">Reading list</a> /
+            <a href="interpretability.html">Interpretability</a> /
+            <span class="here">Generative meta-model of LLM activations</span>]
+        </header>
+
+        <main>
+            <h1>Learning a generative meta-model of LLM activations</h1>
+
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
+
+        </main>
+
+        <footer class="site-footer">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+Luo, Feng, Darrell, Radford, Steinhardt (UC Berkeley / Transluce) · [arXiv:2602.06964](https://arxiv.org/abs/2602.06964), Feb 2026 · ICML 2026 · [project page](https://generative-latent-prior.github.io/) · [code](https://github.com/g-luo/generative_latent_prior)
+
+---
+
+## Key Points
+
+- Rather than assume what activation space looks like — linear concept directions, a sparsity budget, orthogonal axes — they fit $p(\mathbf{x})$ directly, training a flow-matching diffusion model on a billion residual-stream activations. The result is what they call a **Generative Latent Prior**.
+- The denoiser is deliberately plain: SwiGLU MLP blocks, unconditional, one token's residual vector at a time. No attention, no labels, no context.
+- It gets used two ways. First as a repair step for steering — apply the edit, noise it to $t = 0.5$, run 20 Euler steps back down. The semantics survive; the artifacts that send steered models into loops don't.
+- Second as a feature extractor, where the denoiser's own SwiGLU units turn out to be better concept detectors than SAE latents — **0.84** 1-D probing AUC on Llama-1B and **0.87** on 8B, against 0.70 and 0.76 for the SAE.
+- The comparison that should worry people is one row over. Raw MLP neurons score 0.79 and 0.82, so the SAE loses to the neurons it was built to untangle — and a 1B meta-model reads concepts better than an 8B model's own activations.
+- Reconstruction costs almost nothing. $\Delta$LM loss of **0.0513** against the SAE's **0.1976** on Llama-8B base, and GLP is working from a vector it has already half-destroyed.
+- All of it scales — $\mathcal{L}(C) = 0.52 + 435.1\,C^{-0.169}$ — and diffusion loss predicts both steering fluency and probing AUC. I think that is the actual contribution: interpretability quality you can buy with compute instead of argue about.
+- Settings worth remembering: $t_{\text{start}} = 0.5$, 20 sampling steps, probe at $t = 0.1$, and look in the middle blocks of the denoiser.
+
+## 1. What breaks, and why
+
+Every standard tool for reading activations makes a structural bet before it has looked at any data:
+
+| tool | the bet |
+| :--- | :--- |
+| linear representation hypothesis | concepts are 1-D directions, $\mathbf{x}_{\text{steered}} = \mathbf{x} + \alpha\mathbf{v}$ |
+| SAEs | features are sparse and linearly additive ($L_1$ or top-$K$, ~99.9% zeros) |
+| PCA | axes are orthogonal, and variance tracks meaning |
+
+Those bets are load-bearing, and when they fail they fail geometrically. Activation space is curved, so adding $\alpha\mathbf{v}$ walks off it in a straight line and lands somewhere no real activation has ever been:
+
+$$\mathbf{x}_{\text{steered}} \notin \mathcal{M} \implies \text{repetition loops, broken syntax, gibberish}$$
+
+That reframes a complaint I have heard a lot. When SAE decoder steering comes out incoherent, the usual reading is that the encoder and decoder disagree and the feature was wrong. This paper's answer is that the feature was probably fine and the destination wasn't, and it makes the case the only way you really can — leave the feature alone, fix where it lands, and see whether coherence comes back. It does.
+
+## 2. Flow matching on a residual stream
+
+<figure><img src="assets/svg/glp-flow-matching.svg" alt="A clean activation and a noise sample at either end of an interpolation track, with an MLP denoiser reading the midpoint and integrating back" style="max-width:100%;"><figcaption>Figure 1: The forward direction costs nothing — it is interpolation. All the model does is regress the velocity that points back down the line.</figcaption></figure>
+
+**Forward.** Linear interpolation between a clean activation $\mathbf{z}_0 \in \mathbb{R}^d$ and Gaussian noise $\boldsymbol{\epsilon} \sim \mathcal{N}(0, \mathbf{I}_d)$, $t \in [0,1]$:
+
+$$\mathbf{z}_t = (1 - t)\mathbf{z}_0 + t\boldsymbol{\epsilon} \tag{1}$$
+
+**Target.** The ground-truth velocity is the derivative of (1), which is just the endpoint difference:
+
+$$\mathbf{u} = \frac{d\mathbf{z}_t}{dt} = \boldsymbol{\epsilon} - \mathbf{z}_0$$
+
+$$\mathcal{L}_{\text{GLP}}(\theta) = \mathbb{E}_{\mathbf{z}_0,\,\boldsymbol{\epsilon},\,t \sim \mathcal{U}(0,1)}\left[\left\lVert \hat{\mathbf{u}}_\theta(\mathbf{z}_t, t) - (\boldsymbol{\epsilon} - \mathbf{z}_0) \right\rVert_2^2\right] \tag{2}$$
+
+**Reverse.** Euler integration backwards, $\Delta t < 0$:
+
+$$\mathbf{z}_{t + \Delta t} = \mathbf{z}_t + \Delta t \cdot \hat{\mathbf{u}}_\theta(\mathbf{z}_t, t) \tag{3}$$
+
+It is worth saying out loud how little machinery this needs, because it is why everything downstream is cheap: the whole apparatus is an MSE regression onto a straight-line path. No score matching, no variance schedule to tune, nothing adversarial.
+
+## 3. The model, and the data
+
+**Denoiser.** Feedforward SwiGLU blocks in the LLaMA-3 idiom, and nothing else. There is no attention anywhere in it, so a token's activation gets modelled without any reference to its context.
+
+- base dim $d$: 2048 (Llama-1B), 4096 (Llama-8B)
+- $d_{\text{model}} = 2d$, SwiGLU expansion $d_{\text{mlp}} = 2d_{\text{model}} = 4d$
+- $t$ enters as a sinusoidal embedding that **FiLM-modulates the SwiGLU gate pre-activations** in every block
+- **unconditional** — no text, no class IDs
+
+**Sizes.** Llama-3.2-1B, layer 7: 3 / 6 / 12 / 24 blocks → 0.5B / 0.9B / 1.7B / 3.3B params. Llama-3.1-8B, layer 15: 6 blocks → 3.4B.
+
+The ratio is worth pausing on: a 3.3B denoiser for one layer of a 1B model. The meta-model is allowed to be much bigger than the thing it interprets, and §5 argues that this is the point rather than an embarrassment.
+
+**Data.** 1B tokens of FineWeb, context 2048, BOS dropped. Activations cached through a vLLM + nnsight producer-consumer queue. Batch 4096, LR $5\times10^{-5}$ cosine with 1% warmup, **one A100 80GB**.
+
+The single-GPU number is the accessibility claim, and it is the one I would check first. Training on one A100 against a billion cached activations means the hard part of reproducing this is pipeline throughput, not the optimiser.
+
+## 4. Does it actually fit the distribution?
+
+Three diagnostics, and they are deliberately different in kind — one on the distribution, one on its shape, one on what the LLM does when you hand the reconstruction back.
+
+### 4.1 Fréchet distance, against a floor
+
+$$\text{FD} = \lVert\boldsymbol{\mu}_r - \boldsymbol{\mu}_g\rVert_2^2 + \text{Tr}\!\left(\boldsymbol{\Sigma}_r + \boldsymbol{\Sigma}_g - 2(\boldsymbol{\Sigma}_r\boldsymbol{\Sigma}_g)^{1/2}\right) \tag{4}$$
+
+on 50k generated vs 50k real activations.
+
+| | FD |
+| :--- | :---: |
+| lower bound — 50k real (train) vs 50k real (val) | **0.22** |
+| GLP-3.3B, sampled **from pure noise** | 0.53 |
+| SAE reconstruction, starting **from real data** | 1.99 |
+
+The lower bound is the honest part of this table. FD on finite samples comes out non-zero even for a model that is exactly right, so rather than wave at that, they measure it — real against real, across the train/val split — and report everything relative to it. 0.53 starting from pure noise sits close to that floor. 1.99 starting from real data does not.
+
+### 4.2 PCA by sampling step
+
+Project 50k real and 50k generated onto the top-2 PCs of the real covariance, sweeping $N \in \{1, 4, 20, 1000\}$:
+
+<figure><img src="assets/svg/glp-sampling-steps.svg" alt="Four scatter panels: generated samples collapse to a point at one step, cover the core at four, and match the real cloud at twenty and a thousand" style="max-width:100%;"><figcaption>Figure 2: Redrawn after Figure 3 of the paper — schematic clouds, not the published point sets. What transfers is the shape of the progression: collapse, core, match, saturation.</figcaption></figure>
+
+There are two things to take from this. The first is the trick itself: sweeping the step count simulates a range of worse-to-better generative models out of a single checkpoint, so you get a quality axis without retraining anything. The second is why $N = 1$ collapses to a point instead of merely degrading. A single step is one leap of $\Delta t = -1.0$ from pure noise, and under MSE the best prediction available with no information is the conditional mean $\mathbb{E}[\mathbf{z}_0]$. The collapse is the loss doing exactly what it was asked to.
+
+By 20 steps the shape, density and spread all match. A thousand steps buys nothing.
+
+### 4.3 $\Delta$LM loss — the one that counts
+
+Swap true activations for reconstructed ones mid-forward-pass and measure the cross-entropy hit on 2048 held-out OpenWebText sequences:
+
+$$\Delta\text{LM loss} = \mathcal{L}_{\text{reconstructed}} - \mathcal{L}_{\text{original}}$$
+
+The bottleneck is the noising itself: take a real activation, destroy half of it at $t = 0.5$, denoise 20 steps, put the result back into the forward pass.
+
+| method | 8B base $\downarrow$ | 8B instruct $\downarrow$ |
+| :--- | :---: | :---: |
+| SAE | 0.1976 | 0.2224 |
+| **GLP** (50% noise bottleneck) | **0.0513** | **0.0860** |
+
+The comparison is not apples-to-apples, and the unfairness runs in the SAE's favour — it reconstructs from a clean vector, while GLP reconstructs from one it has already half-destroyed. GLP still wins by roughly 4×. The explanation on offer is a sparsity tax: an $L_0$ or $L_1$ budget forces the SAE to drop whatever is not sparse in its basis, and the dropped remainder is what pushes the reconstruction off-manifold. GLP has no such budget, and its non-linear map lands on the manifold by construction.
+
+## 5. Scaling laws
+
+$C = 6ND$ ($N$ = non-embedding params, $D = 10^9$ tokens, 6 = 2 forward + 4 backward FLOPs per param):
+
+$$\mathcal{L}(C) = E + A\cdot C^{-\alpha}, \qquad E = 0.52,\; A = 435.1,\; \alpha = 0.169 \tag{5}$$
+
+$E = 0.52$ is an irreducible floor, and it ought to be. The target $\boldsymbol{\epsilon} - \mathbf{z}_0$ is partly unknowable from $\mathbf{z}_t$ alone, so the entropy of the noise caps how well any model can do no matter how much capacity it has. $\alpha = 0.169$ is shallow: about 60× more compute to halve the remaining gap.
+
+Downstream, fit against the same $C$:
+
+- on-manifold steering: $f(C) = 0.63 - 3.92\times10^{6}\cdot C^{-0.420}$
+- 1-D probing AUC: $f(C) = 1.00 - 8.01\cdot C^{-0.085}$
+
+<figure><img src="assets/svg/glp-scaling.svg" alt="Three small panels sharing a compute axis: diffusion loss falling toward a floor of 0.52, steering fluency rising toward 0.63, and probing AUC rising" style="max-width:100%;"><figcaption>Figure 3: The three published fits, evaluated over the compute range the four denoisers actually span. Loss falls, both downstream metrics rise, and all three are the same curve in different units — which is what makes diffusion loss usable as a checkpoint selector.</figcaption></figure>
+
+This is the part I would actually build on, and it is not "diffusion models work on activations". It is that diffusion loss — unsupervised, cheap, computed on data you already cached — predicts expensive supervised interpretability metrics. You can pick a checkpoint without running the probe suite, and "better interpretability" stops being a research bet and starts being a compute budget.
+
+## 6. Tool one — on-manifold steering
+
+<figure><img src="assets/svg/glp-sdedit.svg" alt="A curved manifold band, a steering vector leaving it in a straight line, a dashed noise ball at the off-manifold point, and a reverse-diffusion arc landing back on the band" style="max-width:100%;"><figcaption>Figure 4: The steering vector is not the problem — where it lands is. Noise blurs the landing site enough for the prior to find the manifold again, and t_start decides how much of the edit you spend doing it.</figcaption></figure>
+
+Five steps, and the first one is whatever steering method you already use:
+
+```python
+# 1. the intervention you actually wanted
+acts_edit = acts + alpha * w
+
+# 2. standardize into GLP's space
+acts_norm = (acts_edit - scaler.mean) / scaler.std
+
+# 3. SDEdit: partial noise, not full
+noise = np.random.normal(size=acts_norm.shape)
+acts_noisy = (1.0 - t_start) * acts_norm + t_start * noise
+
+# 4. integrate back down to t = 0
+timesteps = np.linspace(t_start, 0.0, num_steps + 1)
+acts_sample = acts_noisy
+for i in range(len(timesteps) - 1):
+    t_curr, t_next = timesteps[i], timesteps[i + 1]
+    dt = t_next - t_curr           # -0.025 at t_start=0.5, num_steps=20
+    pred_vel = denoiser(acts=acts_sample, timesteps=t_curr)
+    acts_sample = acts_sample + dt * pred_vel
+
+# 5. back to LLM scale, reinject downstream
+acts_final = (acts_sample * scaler.std) + scaler.mean
+```
+
+### What $t_{\text{start}}$ actually buys
+
+$$\mathbf{z}_t = (1 - t_{\text{start}})\mathbf{z}_{\text{edit}} + t_{\text{start}}\boldsymbol{\epsilon}$$
+
+- At $t_{\text{start}} = 0$ you keep the concept perfectly and correct nothing. The activation is still off-manifold and the model still loops.
+- At $t_{\text{start}} = 1$ you land perfectly on-manifold having thrown the concept away, and you get generic text.
+- At $0.5$ the noise dissolves the brittle coordinate spikes while the coarse direction survives, and the reverse pass then finds the nearest valid region.
+
+The way I have come to think about it is that noise acts as a low-pass filter over coordinates. The steering artifact lives in the high frequencies and the concept lives in the coarse structure, and half noise is roughly where the two come apart.
+
+### Results
+
+1. **SAE feature steering** (LlamaScope, 500 concepts). GLP post-processing expands the concept-score / fluency Pareto frontier. Since the *feature* is unchanged and only the destination is corrected, this is the paper's argument that decoder steering failure is an off-manifold problem, not an encoder/decoder one.
+2. **Persona elicitation** (Llama-8B-Instruct; evil, sycophantic, hallucinating). Strong elicitation at $\alpha = 3.0$ with fluency held at 34 — the regime where naive steering has already collapsed into loops.
+3. **Sentiment steering** vs DiffMean, positive sentiment on neutral prefixes. Beats DiffMean at every relative coefficient $r \ge 1.0$.
+
+One convention here is worth copying: $\alpha = r\cdot\overline{\lVert\mathbf{a}\rVert}_2$, where $\overline{\lVert\mathbf{a}\rVert}_2 \approx 11.6$ at Llama-8B layer 15. Steering coefficients only mean anything across papers once they are expressed relative to the layer's own norm, and most of the time they are not.
+
+## 7. Tool two — meta-neurons and 1-D probing
+
+<figure><img src="assets/svg/glp-meta-neurons.svg" alt="One forward pass through the denoiser taps every SwiGLU gate, then a funnel narrows 196,608 units to 512 candidates to a single neuron" style="max-width:100%;"><figcaption>Figure 5: One forward pass, then a funnel. The two narrowings are doing different jobs — the first is a speed-up, the second is the selection, and only the second needs a held-out split to stay honest.</figcaption></figure>
+
+The unit is the SwiGLU gate output of each block, one scalar per unit:
+
+$$\phi_i(z) = \text{SiLU}\!\left((\mathbf{w}_1^i)^\top z\right)\cdot\left((\mathbf{w}_2^i)^\top z\right) \in \mathbb{R} \tag{6}$$
+
+One forward pass at $t = 0.1$, which is just enough noise to put the input in-distribution for a denoiser and nowhere near enough to erase it.
+
+**Stage 1**, over all units (196,608 for 1B; 98,304 for 8B), class separation per unit:
+
+$$\text{Score}(i) = \frac{\lvert\mu_{i,y=1} - \mu_{i,y=0}\rvert}{\sigma_i} \tag{7}$$
+
+Keep the top $K = 512$. What makes this safe is the ablation they ran alongside it — exhaustive search over every unit returns the same AUC as $K = 512$, so the filter is buying speed rather than quietly choosing the answer.
+
+**Stage 2**, 512 one-dimensional logistic regressions on $s_j = \phi_i(x_j)$:
+
+$$\min_{w,b}\left[-\sum_{j} \Big(y_j\log\sigma(ws_j + b) + (1-y_j)\log(1 - \sigma(ws_j + b))\Big) + \frac{\lambda}{2}w^2\right] \tag{8}$$
+
+L-BFGS, 1000 iterations, $\lambda \in \{10^{-5},\dots,1\}$ chosen by 5-fold CV, winner picked on validation AUC and reported on test. The train/val/test discipline matters more here than it usually does: you are selecting one unit out of roughly 200,000, and picking on test would manufacture most of the headline number by itself.
+
+### The numbers, and the awkward row
+
+Mean 1-D probing AUC over **113 binary tasks**:
+
+<figure><img src="assets/svg/glp-probing-auc.svg" alt="Dot plot of probing AUC for SAE latents, raw residual, raw MLP neurons and GLP meta-neurons, on Llama-1B and Llama-8B" style="max-width:100%;"><figcaption>Figure 6: Two facets, one axis. The dashed connector is the cross-model comparison the table form hides.</figcaption></figure>
+
+- The SAE loses to the raw neurons it was meant to disentangle. The LLM is already doing non-linear disentanglement inside its MLPs, and a shallow linear-with-a-gate autoencoder trained under a sparsity budget destroys some of it. On this benchmark the SAE is a downgrade on doing nothing at all.
+- A 1B GLP at 0.84 reads concepts better than the 8B model's own activations at 0.82, which means concept isolation is something you can buy by training a meta-model on a small LLM rather than by scaling the LLM.
+- Strong units are reported as concentrating in the middle blocks of the denoiser, though the two examples actually named sit lower down — layer 0 neuron #769 for *baseball* at 0.99 AUC, layer 4 neuron #1654 for *contradiction* at 0.74. The gap between those two is the more interesting number. Crisp lexical concepts fall out immediately, relational ones are still hard, and a mean over 113 tasks hides which is which.
+
+## 8. Where it stops
+
+What the authors flag:
+
+1. **Single-token, no attention.** Tokens are modelled independently, so none of this touches sequential dynamics, induction, or anything else that lives across positions. The manifold in question is the manifold of individual activation vectors.
+2. **The denoiser is unconditional.** Steering therefore throws away information at $t = 0.5$ that conditioning on the clean activation would have kept, which means the fidelity/freedom trade-off is a consequence of the design rather than something fundamental.
+3. **One layer at a time.** Layer 7 on the 1B model, layer 15 on the 8B. A joint multi-layer prior would need layer embeddings and is left as future work.
+
+Two of my own. A mean AUC over 113 tasks compresses a lot, and with the two named examples spanning 0.99 to 0.74 it is summarising a very wide distribution — "GLP beats the SAE on average" is not "GLP beats the SAE for the concept you care about". And the interpretability *interface* arguably got worse: an SAE hands you a dictionary with a decoder direction per feature, while GLP hands you 200,000 scalars and a search procedure. Better numbers, less structure to think with.
+
+## What I take from it
+
+1. **The assumption was the bottleneck, not the capacity.** Every earlier tool imposed a geometry and paid for it somewhere — the SAE in reconstruction error, linear steering in fluency. Dropping the geometry and fitting the density fixes both at once, which is reasonable evidence the geometry was the problem all along.
+2. **Off-manifold is a repairable failure, not a diagnosis.** "Steering broke the model" tends to get treated as a property of the steering vector, when it is mostly a property of where the vector lands — and where it lands can be projected. That separates what to steer from how to steer, so I can keep using mean-diff or SAE decoders and fix coherence as a separate step.
+3. **An interpretability method with a scaling law is a different kind of asset.** Diffusion loss is unsupervised, cheap, and predicts downstream probing and steering quality, which turns method selection into checkpoint selection.
+4. **The SAE losing to raw MLP neurons is the finding I would carry into other work.** Any SAE result should be reported against a raw-neuron baseline on the same probe. Most of them are not.
+
+## Tools I'm keeping
+
+| tool | operation | use |
+| :--- | :--- | :--- |
+| flow-matching prior, (1)–(3) | regress $\hat{\mathbf{u}}_\theta \to \boldsymbol{\epsilon} - \mathbf{z}_0$ on cached activations | a density model of a representation space, no structural prior |
+| activation SDEdit, $t_{\text{start}}=0.5$ | noise the edited vector, denoise 20 steps | repair any off-manifold intervention without changing the intervention |
+| $t_{\text{start}}$ sweep | fidelity vs freedom on one axis | tune concept retention against coherence explicitly |
+| step-count sweep | $N \in \{1,4,20,1000\}$ from one checkpoint | simulate worse/better generative models without retraining |
+| FD against a real-vs-real floor, (4) | train-split vs val-split FD as the lower bound | stop reading finite-sample variance as model error |
+| $\Delta$LM loss | reinject reconstruction, measure CE delta | the only reconstruction metric tied to model behaviour |
+| SwiGLU meta-neurons, (6) | scalar gate outputs of a denoiser at $t=0.1$ | concept units that beat both SAE latents and raw neurons |
+| Gurnee heuristic, (7) | $\lvert\mu_1 - \mu_0\rvert/\sigma$, keep top-$K$ | prefilter 200k units to 512 — verify with a $K$=all run once |
+| 1-D probe protocol, (8) | select on val AUC, report on test | the guard against mining one unit out of 200k |
+| norm-relative steering | $\alpha = r\cdot\overline{\lVert\mathbf{a}\rVert}_2$ | steering strengths that transfer across layers and models |
+| loss-to-utility fits | power-law diffusion loss vs downstream metric | pick checkpoints without running the eval suite |
+
+If I were running this: cache one layer, fit the smallest GLP that lands on the power-law curve, and check FD against the train/val floor before trusting any of it. Then use it in both directions — as a repair step bolted onto whatever steering method is already in the codebase, and as a feature extractor probed through the two-stage pipeline. Always with a raw-MLP-neuron baseline next to it, because on this evidence that baseline is harder to beat than anyone assumed.
+
+## Refs
+
+- Luo et al. 2026, [Learning a Generative Meta-Model of LLM Activations](https://arxiv.org/abs/2602.06964). This paper; [code](https://github.com/g-luo/generative_latent_prior).
+- Meng et al. 2022, [SDEdit](https://arxiv.org/abs/2108.01073). Where noise-then-denoise-as-projection comes from.
+- Lipman et al. 2023, [Flow Matching for Generative Modeling](https://arxiv.org/abs/2210.02747). The straight-line training objective.
+- Gurnee et al. 2023, [Finding Neurons in a Haystack](https://arxiv.org/abs/2305.01610). Sparse probing, and the candidate-filtering heuristic.
+- Bricken et al. 2023, [Towards Monosemanticity](https://transformer-circuits.pub/2023/monosemantic-features). The SAE programme this is arguing against.
+- Soligo et al. 2025, [Convergent Linear Representations of EM](convergent-linear-em.html). The linear extract-steer-ablate toolkit — GLP is the repair step it never had.
+
+    </script>
+
+    <script src="../notes/notes-core.js"></script>
+</body>
+
+</html>

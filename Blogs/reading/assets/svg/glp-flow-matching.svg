@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 268" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="fm-a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--fig-muted-2, #8a8a8a)"/></marker>
+    <marker id="fm-t" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--fig-teal, #0e7490)"/></marker>
+    <marker id="fm-m" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--fig-amber, #d97706)"/></marker>
+    <linearGradient id="fm-g" gradientUnits="userSpaceOnUse" x1="176" y1="0" x2="596" y2="0">
+      <stop offset="0" stop-color="var(--fig-teal, #0e7490)"/><stop offset="1" stop-color="var(--fig-amber, #d97706)"/>
+    </linearGradient>
+  </defs>
+  <text x="380" y="20" text-anchor="middle" font-size="12.5" fill="var(--fig-ink, #1a1a1a)" font-weight="700">flow matching on one token’s residual stream: a straight line, and a regression onto it</text>
+  <rect x="28" y="74" width="116" height="40" rx="5" fill="none" stroke="var(--fig-teal, #0e7490)" stroke-width="1"/>
+  <text x="86" y="92" text-anchor="middle" font-size="12" fill="var(--fig-teal, #0e7490)" font-weight="700">z₀</text>
+  <text x="86" y="106" text-anchor="middle" font-size="8.8" fill="var(--fig-muted, #6a6a6a)">real activation, ℝᵈ</text>
+  <rect x="616" y="74" width="116" height="40" rx="5" fill="none" stroke="var(--fig-amber, #d97706)" stroke-width="1"/>
+  <text x="674" y="92" text-anchor="middle" font-size="11" fill="var(--fig-amber, #d97706)" font-weight="700">ε ~ 𝒩(0, I)</text>
+  <text x="674" y="106" text-anchor="middle" font-size="8.8" fill="var(--fig-muted, #6a6a6a)">pure noise</text>
+  <line x1="176" y1="94" x2="596" y2="94" stroke="url(#fm-g)" stroke-width="3"/>
+  <line x1="176" y1="89" x2="176" y2="99" stroke="var(--fig-muted-2, #8a8a8a)"/>
+  <text x="176" y="114" text-anchor="middle" font-size="8.8" fill="var(--fig-muted, #6a6a6a)">t = 0</text>
+  <line x1="281.0" y1="89" x2="281.0" y2="99" stroke="var(--fig-muted-2, #8a8a8a)"/>
+  <line x1="386.0" y1="89" x2="386.0" y2="99" stroke="var(--fig-muted-2, #8a8a8a)"/>
+  <text x="386.0" y="114" text-anchor="middle" font-size="8.8" fill="var(--fig-muted, #6a6a6a)">t = 0.5</text>
+  <line x1="491.0" y1="89" x2="491.0" y2="99" stroke="var(--fig-muted-2, #8a8a8a)"/>
+  <line x1="596" y1="89" x2="596" y2="99" stroke="var(--fig-muted-2, #8a8a8a)"/>
+  <text x="596" y="114" text-anchor="middle" font-size="8.8" fill="var(--fig-muted, #6a6a6a)">t = 1</text>
+  <text x="380" y="62" text-anchor="middle" font-size="10.4" fill="var(--fig-ink-2, #4a4a4a)">zₜ = (1 − t)·z₀ + t·ε   —   no model involved, just interpolation</text>
+  <path d="M 170 44 H 602" stroke="var(--fig-muted-2, #8a8a8a)" stroke-width="1.2" marker-end="url(#fm-a)" fill="none"/>
+  <text x="380" y="38" text-anchor="middle" font-size="9.4" fill="var(--fig-muted, #6a6a6a)" font-weight="600">forward</text>
+  <path d="M 386.0 116 V 142" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.4" marker-end="url(#fm-a)" fill="none"/>
+  <circle cx="386.0" cy="94" r="4.5" fill="var(--fig-paper, #ffffff)" stroke="var(--fig-purple, #7c3aed)" stroke-width="2"/>
+  <rect x="238" y="144" width="284" height="50" rx="5" fill="none" stroke="var(--fig-purple, #7c3aed)" stroke-width="1.4"/>
+  <text x="380" y="164" text-anchor="middle" font-size="12" fill="var(--fig-purple, #7c3aed)" font-weight="700">û_θ(zₜ, t)</text>
+  <text x="380" y="180" text-anchor="middle" font-size="8.8" fill="var(--fig-muted, #6a6a6a)">SwiGLU MLP blocks · no attention · no conditioning</text>
+  <rect x="262" y="186" width="24" height="4" rx="1.5" fill="var(--fig-purple, #7c3aed)" opacity="0.35"/>
+  <rect x="296" y="186" width="24" height="4" rx="1.5" fill="var(--fig-purple, #7c3aed)" opacity="0.35"/>
+  <rect x="330" y="186" width="24" height="4" rx="1.5" fill="var(--fig-purple, #7c3aed)" opacity="0.35"/>
+  <rect x="364" y="186" width="24" height="4" rx="1.5" fill="var(--fig-purple, #7c3aed)" opacity="0.35"/>
+  <rect x="398" y="186" width="24" height="4" rx="1.5" fill="var(--fig-purple, #7c3aed)" opacity="0.35"/>
+  <rect x="432" y="186" width="24" height="4" rx="1.5" fill="var(--fig-purple, #7c3aed)" opacity="0.35"/>
+  <text x="380" y="214" text-anchor="middle" font-size="10" fill="var(--fig-ink-2, #4a4a4a)">trained to predict the velocity  ε − z₀  under plain MSE — that is the whole objective</text>
+  <path d="M 232 169 H 176 Q 156 169 156 149 V 108" stroke="var(--fig-teal, #0e7490)" stroke-width="1.6" fill="none" marker-end="url(#fm-t)"/>
+  <text x="232" y="240" text-anchor="start" font-size="9.6" fill="var(--fig-teal, #0e7490)">reverse: z_{t+Δt} = z_t + Δt · û_θ(z_t, t),  Δt &lt; 0 — 20 Euler steps is where quality saturates</text>
+</svg>

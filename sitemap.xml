@@ -26,7 +26,7 @@
   </url>
   <url>
     <loc>https://anshulsc.github.io/Blogs/reading/index.html</loc>
-    <lastmod>2026-08-22</lastmod>
+    <lastmod>2026-08-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -45,6 +45,18 @@
   <url>
     <loc>https://anshulsc.github.io/Blogs/reading/convergent-linear-em.html</loc>
     <lastmod>2026-08-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://anshulsc.github.io/Blogs/reading/interpretability.html</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://anshulsc.github.io/Blogs/reading/generative-latent-prior.html</loc>
+    <lastmod>2026-08-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
