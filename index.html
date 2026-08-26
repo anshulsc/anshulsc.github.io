@@ -284,6 +284,26 @@
       color: #666;
     }
 
+    /* --- Reading --- */
+    .reading-section {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .reading-intro {
+      max-width: 780px;
+      margin: -6px auto 0;
+      text-align: center;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: #555;
+    }
+
+    .reading-intro a {
+      white-space: nowrap;
+    }
+
     /* --- Responsive tweaks --- */
     @media (max-width: 768px) {
 
@@ -606,20 +626,18 @@
                     <name>Anshul Singh</name><span class="alias" title="also known as asca"
                       aria-label="also known as asca">[<img src="images/logo.png" alt="asca">]</span>
                   </p>
-                  <p>I'm currently doing my <strong>Master's in Computer Science at <a href="https://www.uni-bonn.de/">University of Bonn</a></strong>, where I'm diving deep into <strong>AI Safety</strong> thinking/will be thinking about robustness of Vision-Language Models and World Models, especially for <strong>Robotics</strong> applications (hopefully). Alongside, I work as a <strong>Research Assistant</strong> at the <strong><a href="https://www.hcds.uni-hamburg.de/">HCDS</a></strong> and <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">LT</a> groups at <strong><a href="https://www.uni-hamburg.de/en.html">University of Hamburg</a></strong>, led by <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html"> Prof. Chris Biemann</a>.</p>
-                  <p>Broadly, I'm interested in multimodal systems, visual reasoning, and making models more robust. Some things I've worked on:</p>
+                  <p>I'm doing my <strong>Master's in Computer Science</strong> at the <strong><a href="https://www.uni-bonn.de/">University of Bonn</a></strong>, working on <strong>AI safety</strong> and the robustness of vision-language and world models. Alongside, I'm a <strong>Research Assistant</strong> with the <strong><a href="https://www.hcds.uni-hamburg.de/">HCDS</a></strong> and <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">LT</a> groups at <strong><a href="https://www.uni-hamburg.de/en.html">University of Hamburg</a></strong>, led by <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html">Prof. Chris Biemann</a>.</p>
+                  <p>Most of my work sits on one gap: what a multimodal model <em>appears</em> to do versus what it actually does. Things I've worked on:</p>
                   <ul>
-                    <li><strong>AI Safety &amp; Robustness</strong> of Vision-Language Models and World Models</li>
-                    <li>Adversarial attacks and defenses for <strong>Multimodal LLMs</strong> and <strong>Diffusion Models</strong></li>
-                    <li>Multimodal analysis of open-source information with LLM-guided <strong>Active Learning</strong></li>
-                    <li>Multi-tabular reasoning using Vision-Language Models</li>
+                    <li><strong>AI safety &amp; robustness</strong> of vision-language and world models</li>
+                    <li>Adversarial attacks and defenses for <strong>multimodal LLMs</strong> and <strong>diffusion models</strong></li>
+                    <li>Multi-tabular reasoning in <strong>vision-language models</strong></li>
+                    <li>LLM-guided <strong>active learning</strong> for multimodal misinformation</li>
                     <li><strong>Multilingual alignment</strong> for low-resource Indic languages</li>
                   </ul>
-                  <p>Before this, I was a <strong>Research Associate at <a href="https://www.iisc.ac.in/">IACV Lab, IISc Bangalore</a></strong> with <strong><a href="https://scholar.google.co.in/citations?user=Rscf2pYAAAAJ&hl=en">Prof. Soma Biswas</a></strong>. I also did a research internship at the <strong>LT Group, <a href="https://www.uni-hamburg.de/">Uni Hamburg</a></strong> with <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html">Chris Biemann</a> and Jan Strich, and was a <strong><a href="https://www.mitacs.ca/en/programs/globalink/globalink-research-internship">MITACS Globalink Research Intern</a></strong> at <a href="https://www.dal.ca/">Dalhousie University</a>. I did my B.E. in Information Technology at <a href="https://puchd.ac.in/">Panjab University</a>.</p>
-                  <p><strong>Research Interests:</strong> AI Safety &amp; Robustness | Vision-Language Models | World Models for Robotics | Multimodal Reasoning | Interpretability of LLMs</p>
-                  <p><strong>Hobbies:</strong> Outside of research, I enjoy traveling, reading, writing blogs,
-                    minimalist living, and tinkering with small experiments. I'm always happy to connect for a
-                    discussion or collaboration!</p>
+                  <p>Before Bonn I was a <strong>Research Associate</strong> at <strong><a href="https://www.iisc.ac.in/">IACV Lab, IISc Bangalore</a></strong> with <a href="https://scholar.google.co.in/citations?user=Rscf2pYAAAAJ&hl=en">Prof. Soma Biswas</a>, a research intern with the <strong><a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">LT Group</a></strong> at <a href="https://www.uni-hamburg.de/">Uni Hamburg</a>, and a <strong><a href="https://www.mitacs.ca/en/programs/globalink/globalink-research-internship">MITACS Globalink</a></strong> intern at <a href="https://www.dal.ca/">Dalhousie University</a>. B.E. in Information Technology, <a href="https://puchd.ac.in/">Panjab University</a>.</p>
+                  <p>Outside research I travel, take photos, read, and write these notes. I like living light and
+                    tinkering with small experiments — always happy to talk.</p>
                   <p style="text-align:center">[
                     <a href="mailto:anshulsinghchambial@gmail.com" class="social-icon"><i
                         class="fa fa-envelope"></i></a> &nbsp/&nbsp
@@ -658,19 +676,19 @@
               <a href="https://www.uni-hamburg.de/en.html"><img src="images/UHH.svg" alt="UHamburg"></a>
               <div class="exp-role">Research Assistant</div>
               <div class="exp-org">HCDS & LT Group, UHH</div>
-              <div class="exp-date">Apr 2026 – Present</div>
+              <div class="exp-date">Jun 2026 – Present</div>
             </div>
             <div class="exp-card">
               <a href="https://iisc.ac.in/"><img src="images/iisc.jpg" alt="IISc"></a>
               <div class="exp-role">Research Associate</div>
               <div class="exp-org">IISc, Bangalore</div>
-              <div class="exp-date">Aug 2025 – Mar 2026</div>
+              <div class="exp-date">Aug 2025 – Feb 2026</div>
             </div>
             <div class="exp-card">
               <a href="https://www.uni-hamburg.de/en.html"><img src="images/UHH.svg" alt="UHamburg"></a>
               <div class="exp-role">Research Intern</div>
               <div class="exp-org">LT Group, UHH</div>
-              <div class="exp-date">Jan 2025 – May 2025</div>
+              <div class="exp-date">Jan 2025 – Jun 2025</div>
             </div>
             <div class="exp-card">
               <a href="https://www.dal.ca/"><img src="images/dal.jpeg" alt="Dalhousie"></a>
@@ -709,7 +727,7 @@
                   <span class="news-desc">Gave a talk on <a href="data/talk_alphaalign_bonn.pdf">AlphaAlign: Incentivizing Safety Alignment with Extremely Simplified RL</a> at the AI Safety Seminar, <a href="https://www.uni-bonn.de/">University of Bonn</a>.</span>
                 </li>
                 <li class="news-item">
-                  <span class="news-date">Apr 2026</span>
+                  <span class="news-date">Jun 2026</span>
                   <span class="news-badge position">Position</span>
                   <span class="news-desc">Started as Research Assistant at <a href="https://www.hcds.uni-hamburg.de/">HCDS</a> & <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">LT</a> Group, University of Hamburg.</span>
                 </li>
@@ -893,8 +911,11 @@
             </tbody>
           </table>
 
-
-
+          <h2>Reading</h2>
+          <div class="reading-section">
+            <p class="reading-intro">Papers I've read properly. Notes, drafts and thoughts are mine; the ghostwriting
+              is Claude's. <a href="Blogs/reading/index.html">Reading list →</a></p>
+          </div>
 
         </td>
       </tr>

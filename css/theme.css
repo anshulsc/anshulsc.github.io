@@ -317,6 +317,11 @@ html[data-theme="dark"][data-flavor="gh-hc"] {
     background: #333;
 }
 
+/* --- Reading --- */
+[data-theme="dark"] .reading-intro {
+    color: var(--dk-muted);
+}
+
 [data-theme="dark"] .news-badge.paper {
     background: rgba(59, 130, 246, 0.2);
     color: #7fb0ff;

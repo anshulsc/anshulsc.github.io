@@ -18,6 +18,13 @@
    loads last.
    ═══════════════════════════════════════════════════════════ */
 
+/* Imported here rather than in 31 <head>s: every page that opts
+   into body.plain gets the annotation face for free, and there is
+   exactly one place to remove it again. Handwriting is confined to
+   things a person would actually write by hand — figure captions,
+   chapters not yet written — never body text, headings, or math. */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap');
+
 body.plain {
     /* Light-mode greys are set by measured contrast on white, not
        by eye. The real cause of washed-out text here was weight,
@@ -34,8 +41,47 @@ body.plain {
     --page: #ffffff;
     --wash: #fafafa;
 
+    /* Paper. Two decorative tokens, kept as tokens so they can be
+       switched off without hunting through rules: set --grain and
+       --hand-rule to `none` and the page is spartan again.
+       --grain is desaturated fractal noise, so the same tile reads
+       as texture on white and on the dark flavors — only the
+       opacity baked into the tile changes between them. */
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.04'/%3E%3C/svg%3E");
+    --hand-rule: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='8' viewBox='0 0 200 8' preserveAspectRatio='none'%3E%3Cpath d='M0 4.2 C 12 2.6, 26 5.6, 40 4.1 S 68 2.4, 82 4.4 S 110 6, 124 3.9 S 152 2.5, 166 4.6 S 190 5.4, 200 3.8' fill='none' stroke='%23d2d2d2' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E");
+
+    /* The annotation face, and the ruling for widget panels. Caveat
+       sits small for its point size, so anything set in it is bumped
+       ~1.2x to sit optically level with the surrounding text. */
+    --hand-font: 'Caveat', 'Segoe Print', 'Bradley Hand', cursive;
+    --grid: rgba(110, 70, 190, 0.07);
+
+    /* The leaf. Real paper is never one flat tone: it is warm, it
+       is lit unevenly, and its edge is soft. Each token below is one
+       of those observations, so the sheet can be retuned without
+       touching a single rule. --desk is the surface it lies on. */
+    --desk: #f0eee9;
+    --sheet: rgba(255, 255, 255, 0.14);
+    --dot: rgba(104, 116, 140, 0.10);
+    --margin-ink: rgba(196, 92, 88, 0.12);
+    --punch-core: rgba(120, 112, 96, 0.12);
+
     margin: 0;
-    background: var(--page);
+    /* The desk. Grain plus a slow pool of light from the upper
+       left, so the board under the sheet is lit rather than filled. */
+    background-color: var(--desk);
+    /* The dot field is the page's texture, not the sheet's: it runs
+       edge to edge behind everything, so the paper is a region of a
+       dotted ground rather than a rectangle carrying its own ruling. */
+    background-image:
+        radial-gradient(circle at 1px 1px, var(--dot) 0 1.3px, transparent 1.7px),
+        var(--grain);
+    background-size: 22px 22px, 200px 200px;
+    background-position: 8px 12px, left top;
+    /* Desk visible above and below the leaf. Without this the sheet
+       runs off both ends of the viewport and stops reading as an
+       object lying on something. */
+    padding: 46px 0 72px;
     color: var(--body);
     font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-weight: 400;
@@ -52,10 +98,107 @@ body.plain b {
 
 /* ── Layout ─────────────────────────────────────────────── */
 
+/* The leaf. 892 = 780 measure + 72 left gutter + 40 right, so the
+   line length the notes were tuned at is unchanged — the gutter is
+   added around it, not taken out of it.
+
+   Believability is mostly lighting, not detail. Four things do the
+   work: the sheet is warm rather than white, it is lit unevenly, the
+   ruled lines are far fainter than a real notebook's (drift against
+   headings reads as age rather than as a bug at this alpha), and the
+   shadow is offset and stacked so the paper sits on the desk instead
+   of floating over it. */
+/* The container is now just the column: it centres, and nothing
+   else. The sheet lives on <main>, so the breadcrumb sits on the
+   desk above the paper and the drawn rule and copyright sit on the
+   desk below it — the page ends where the content ends. */
 body.plain .container {
-    max-width: 780px;
+    box-sizing: border-box;
+    max-width: 892px;
     margin: 0 auto;
-    padding: 0 24px 96px;
+    padding: 0;
+}
+
+/* Header and footer are off the paper, so they carry their own
+   indents to stay aligned with the text column on it. */
+body.plain .container>.site-header,
+body.plain .container>.site-footer {
+    padding-left: 72px;
+    padding-right: 40px;
+}
+
+/* The leaf. 892 = 780 measure + 72 left gutter + 40 right, so the
+   line length the notes were tuned at is unchanged.
+
+   Believability is mostly lighting, not detail: the sheet is warm
+   rather than white, lit unevenly, and its shadow is offset and
+   stacked so the paper sits on the desk rather than floating. The
+   value gap to the desk is deliberately tiny — the holes, the dot
+   grid and the margin rule say "paper", not a change in brightness. */
+body.plain .container>main {
+    box-sizing: border-box;
+    position: relative;
+    padding: 34px 40px 44px 72px;
+}
+
+/* The paper is a masked layer behind the text rather than a fill on
+   the element. A filled box has to end somewhere, and wherever it
+   ends it draws a line — which is the hard rectangle and the bar
+   across the top. On its own layer the whole sheet, holes and dots
+   and margin rule included, can be feathered out at all four edges,
+   so the page has no border to notice: it just stops being paper.
+
+   z-index -1 keeps it under the text; main has no background of its
+   own, so this composites straight onto the desk. */
+body.plain .container>main::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-color: var(--sheet);
+    background-image:
+        radial-gradient(circle at 26px 25px, var(--punch-core) 0 5.5px, transparent 6px),
+        linear-gradient(to right, transparent 0 55px, var(--margin-ink) 55px 56px, transparent 56px);
+    /* No grain here: the body already lays it across the whole page.
+       Repeating it on this layer double-exposed the paper region and
+       lifted it ~3 luminance off the desk — which read as the sheet
+       "not blending" no matter how low --sheet went. */
+    background-repeat: repeat-y, no-repeat;
+    background-size: 100% 58px, 100% 100%;
+    background-position: left top, left top;
+    -webkit-mask-image:
+        linear-gradient(to bottom, transparent 0, #000 210px, #000 calc(100% - 210px), transparent 100%),
+        linear-gradient(to right, transparent 0, #000 130px, #000 calc(100% - 130px), transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        linear-gradient(to bottom, transparent 0, #000 210px, #000 calc(100% - 210px), transparent 100%),
+        linear-gradient(to right, transparent 0, #000 130px, #000 calc(100% - 130px), transparent 100%);
+    mask-composite: intersect;
+}
+
+@media (max-width: 900px) {
+
+    /* Below the sheet width the furniture stops paying for itself:
+       the gutter eats the measure and the holes crowd the text. */
+    body.plain {
+        padding: 0;
+    }
+
+    body.plain .container>.site-header,
+    body.plain .container>.site-footer {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+    body.plain .container>main {
+        max-width: none;
+        padding: 20px 22px 40px;
+    }
+
+    body.plain .container>main::before {
+        content: none;
+    }
 }
 
 /* Breadcrumb. The only navigation on the page — with prev/next
@@ -81,10 +224,28 @@ body.plain .site-header .here {
 
 body.plain .site-footer {
     margin-top: 88px;
-    padding-top: 24px;
-    border-top: 1px solid var(--rule);
+    padding-top: 28px;
+    /* A drawn line rather than a border: same job, less machined.
+       Falls back to the old hairline if --hand-rule is set to none. */
+    border-top: none;
+    background-image: var(--hand-rule);
+    background-repeat: repeat-x;
+    background-position: left top;
+    background-size: 200px 8px;
     font-size: 0.82rem;
     color: var(--faint);
+}
+
+/* A section break inside a chapter, for the rare place that wants
+   one. Not applied anywhere by default — chapter `hr` stays zeroed. */
+body.plain .hand-rule {
+    height: 8px;
+    margin: 44px 0;
+    border: none;
+    background-image: var(--hand-rule);
+    background-repeat: repeat-x;
+    background-position: left center;
+    background-size: 200px 8px;
 }
 
 /* ── Links ──────────────────────────────────────────────── */
@@ -110,14 +271,40 @@ body.plain h1 {
     letter-spacing: -0.01em;
 }
 
-body.plain .lede {
-    font-size: 1.02rem;
-    color: var(--body);
-    margin: 0 0 18px;
+/* The chapter numeral, pencilled in the margin beside the title.
+   Driven by data-ch on <main>, so no JS and no per-series markup
+   beyond one attribute. It sits in the gutter the padding already
+   reserves, so it costs nothing from the measure. */
+body.plain main[data-ch] {
+    position: relative;
 }
 
-body.plain .lede:last-of-type {
-    margin-bottom: 36px;
+body.plain main[data-ch]>h1 {
+    position: relative;
+}
+
+body.plain main[data-ch]>h1::before {
+    content: attr(data-ch);
+    position: absolute;
+    left: -54px;
+    top: -0.16em;
+    font-family: var(--hand-font);
+    font-size: 2.9rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--margin-ink);
+    pointer-events: none;
+}
+
+@media (max-width: 900px) {
+
+    /* No gutter to sit in — the numeral goes inline above the title. */
+    body.plain main[data-ch]>h1::before {
+        position: static;
+        display: block;
+        margin: 0 0 2px;
+        font-size: 2.1rem;
+    }
 }
 
 /* ── The index: nested link lists, and nothing else ─────── */
@@ -160,9 +347,14 @@ body.plain .note-index li::before {
 }
 
 /* An entry with no link is a note I have not written yet. Same
-   as the reference site: the gaps are part of the map. */
+   as the reference site: the gaps are part of the map — and now
+   they look pencilled in beside the ones that are set, which is
+   what they are. */
 body.plain .note-index li.todo {
     color: var(--faint);
+    font-family: var(--hand-font);
+    font-size: 1.14rem;
+    line-height: 1.5;
 }
 
 body.plain .note-index li.todo::before {
@@ -178,6 +370,65 @@ body.plain .note-index .gloss {
 
 body.plain .note-index .gloss::before {
     content: ' · ';
+}
+
+/* ── Leaders ────────────────────────────────────────────────
+   Opt in per list with <ul class="leaders">. The dots run from
+   the title to a short trailing gloss — a date, a count, a
+   venue — the way a printed contents page does, so the eye can
+   cross the gap without a ruler. Only for glosses short enough
+   to sit on one line; the series indexes carry sentence-length
+   glosses and deliberately keep the inline ' · ' form. */
+
+body.plain .note-index ul.leaders li {
+    display: flex;
+    align-items: baseline;
+}
+
+body.plain .note-index ul.leaders li>a {
+    flex: 0 1 auto;
+    order: 1;
+}
+
+/* order matters: the generated box is the last child in source, so
+   without it the dots trail off past the gloss instead of bridging
+   the gap between title and gloss. */
+body.plain .note-index ul.leaders li::after {
+    content: '';
+    order: 2;
+    flex: 1 1 auto;
+    min-width: 20px;
+    margin: 0 8px;
+    border-bottom: 1px dotted var(--rule);
+    position: relative;
+    top: -0.3em;
+}
+
+body.plain .note-index ul.leaders .gloss {
+    order: 3;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+body.plain .note-index ul.leaders .gloss::before {
+    content: none;
+}
+
+/* Display maths gets boxed, the way you'd rule a box round a result
+   you intend to use again. Tagged equations keep their number outside
+   the box, so the box is around the maths and not around the label. */
+body.plain .chapter-content .katex-display {
+    margin: 26px 0;
+    padding: 14px 18px;
+    background-color: var(--wash);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+body.plain .chapter-content .katex-display>.katex {
+    text-align: center;
 }
 
 /* ── Chapter body ───────────────────────────────────────── */
@@ -348,12 +599,28 @@ body.plain .chapter-content figure svg {
     height: auto;
 }
 
+/* Captions are the one place a figure gets annotated, so they are
+   set in the hand rather than the body face — the label a person
+   pencils under a diagram, not a typeset legend. Larger than the
+   0.84rem it replaces because Caveat runs small at equal size. */
 body.plain .chapter-content figcaption {
-    margin-top: 12px;
-    font-size: 0.84rem;
+    margin-top: 10px;
+    font-family: var(--hand-font);
+    font-size: 1.08rem;
+    /* 600, not 500: Caveat's strokes are thinner than Fira's at the
+       same optical size, and a caption that is hard to read is not a
+       caption. */
+    font-weight: 600;
     color: var(--muted);
-    line-height: 1.6;
+    line-height: 1.45;
     text-align: left;
+}
+
+/* Math, code and anything tagged as data stay in the typeset faces
+   even inside a caption — a handwritten variable name is a bug. */
+body.plain .chapter-content figcaption :is(code, kbd, samp, .katex, var) {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.8em;
 }
 
 body.plain .chapter-content .fig-row {
@@ -495,9 +762,15 @@ body.plain .note-box p:last-child {
 /* Part markers: a rule and a line of text, not a banner. */
 body.plain .chapter-content .part-marker {
     margin: 64px 0 34px;
-    padding-top: 22px;
-    border-top: 1px solid var(--rule);
-    background: none;
+    padding-top: 26px;
+    /* Same drawn line as the footer, so a part break and a page
+       end are visibly the same gesture. */
+    border-top: none;
+    background-color: transparent;
+    background-image: var(--hand-rule);
+    background-repeat: repeat-x;
+    background-position: left top;
+    background-size: 200px 8px;
     border-radius: 0;
 }
 
@@ -588,10 +861,17 @@ body.plain .ref-pop-body {
    gets a hairline and neutral chrome rather than the old tinted
    panel. dgm-widgets.js is untouched. */
 
+/* Widgets are the things you'd work out on squared paper, so they
+   sit on some. The ruling is faint enough to read as texture under
+   text and controls, and is drawn with gradients rather than an
+   image so it scales and re-themes with the tokens. */
 body.plain :is(.dgm-widget, .note-widget) {
     margin: 34px 0;
     padding: 20px 22px;
-    background: var(--wash);
+    background-color: var(--wash);
+    background-image:
+        repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px 22px),
+        repeating-linear-gradient(to bottom, var(--grid) 0 1px, transparent 1px 22px);
     border: 1px solid var(--rule);
     border-radius: 3px;
     font-size: 0.92rem;
@@ -661,7 +941,39 @@ body.plain :is(.dgm-widget, .note-widget) :is(.w-note, .verdict) {
     --page: var(--dk-bg);
     --wash: var(--dk-surface);
 
-    background: var(--page);
+    /* Same noise tile, lifted a little: on a dark ground the grey
+       specks read as grain rather than dirt. The drawn rule is
+       restruck in the flavor's border colour. */
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.055'/%3E%3C/svg%3E");
+    --hand-rule: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='8' viewBox='0 0 200 8' preserveAspectRatio='none'%3E%3Cpath d='M0 4.2 C 12 2.6, 26 5.6, 40 4.1 S 68 2.4, 82 4.4 S 110 6, 124 3.9 S 152 2.5, 166 4.6 S 190 5.4, 200 3.8' fill='none' stroke='%234a515b' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E");
+
+    --grid: rgba(169, 139, 240, 0.07);
+
+    /* Dark paper gets its own palette rather than borrowing
+       --dk-surface. The theme surface is tuned for panels sitting on
+       the page; a sheet of card needs to be warmer and further from
+       the desk than that, or it just looks like a grey box. These are
+       fixed values on purpose — the text tokens above still follow
+       the GitHub flavour, only the paper itself is pinned. */
+    --desk: var(--dk-bg);
+    --sheet: rgba(255, 255, 255, 0.005);
+    --dot: rgba(173, 186, 199, 0.065);
+    --margin-ink: rgba(214, 116, 110, 0.13);
+    --punch-core: rgba(0, 0, 0, 0.12);
+
+    /* Longhand, not the `background` shorthand: the shorthand would
+       reset background-image and take the grain with it. */
+    /* Restated, not inherited: css/theme.css carries
+       [data-theme="dark"] body { background: ... } — a shorthand at
+       higher specificity than body.plain, which resets
+       background-image and takes the dot field with it. The image
+       has to be re-declared at this weight to survive. */
+    background-color: var(--desk);
+    background-image:
+        radial-gradient(circle at 1px 1px, var(--dot) 0 1.3px, transparent 1.7px),
+        var(--grain);
+    background-size: 22px 22px, 200px 200px;
+    background-position: 8px 12px, left top;
     color: var(--body);
 }
 
@@ -716,7 +1028,9 @@ body.plain :is(.dgm-widget, .note-widget) :is(.w-note, .verdict) {
 }
 
 [data-theme="dark"] body.plain .chapter-content figcaption {
-    color: var(--muted);
+    /* --muted is tuned for the sans; the hand face needs the lift */
+    color: var(--dk-text);
+    opacity: 0.82;
 }
 
 [data-theme="dark"] body.plain .note-box {
@@ -730,8 +1044,10 @@ body.plain :is(.dgm-widget, .note-widget) :is(.w-note, .verdict) {
 }
 
 [data-theme="dark"] body.plain .chapter-content .part-marker {
-    border-top-color: var(--rule);
-    background: none;
+    /* longhand: `background: none` here would take --hand-rule with it */
+    border-top: none;
+    background-color: transparent;
+    background-image: var(--hand-rule);
 }
 
 [data-theme="dark"] body.plain .chapter-content .part-marker .part-name {
@@ -758,7 +1074,11 @@ body.plain :is(.dgm-widget, .note-widget) :is(.w-note, .verdict) {
 }
 
 [data-theme="dark"] body.plain :is(.dgm-widget, .note-widget) {
-    background: var(--wash);
+    /* longhand for the same reason: the shorthand resets the ruling */
+    background-color: var(--wash);
+    background-image:
+        repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px 22px),
+        repeating-linear-gradient(to bottom, var(--grid) 0 1px, transparent 1px 22px);
     border-color: var(--rule);
 }
 
@@ -832,3 +1152,38 @@ body.plain :is(.dgm-widget, .note-widget) :is(.w-note, .verdict) {
         max-width: none;
     }
 }
+
+
+/* ═══════════════════════════════════════════════════════════
+   Turning it off.
+
+   The leaf is furniture, and furniture should be removable.
+   Uncomment this block and the notes collapse back to the plain
+   column this file was written as: no desk, no sheet, no holes,
+   no margin rule, no ruling, no numerals, no grain, no hand face.
+
+   body.plain {
+       --grain: none;
+       --hand-rule: none;
+       --hand-font: inherit;
+       --grid: transparent;
+       --desk: var(--page);
+       --sheet: var(--page);
+                --rule-line: transparent;
+       --margin-ink: transparent;
+          --punch-core: transparent;
+                  }
+   body.plain { background-image: none; }
+   body.plain .container { max-width: 780px; padding: 0 24px 96px; }
+   body.plain .container > main {
+       padding: 0; background-image: none; box-shadow: none;
+   }
+   body.plain .container > main::before,
+   body.plain .container > main::after { content: none; }
+   body.plain .container > .site-header,
+   body.plain .container > .site-footer { padding-left: 0; padding-right: 0; }
+   body.plain main[data-ch] > h1::before { content: none; }
+   body.plain .chapter-content .katex-display {
+       background: none; border: none; padding: 0;
+   }
+   ═══════════════════════════════════════════════════════════ */
