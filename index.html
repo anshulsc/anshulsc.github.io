@@ -38,10 +38,42 @@
 
     body {
       margin: 0;
-      background: #fafafa;
+      /* Longhand, not `background`: the shorthand resets
+         background-image and would take the dot field with it. */
+      background-color: #fafafa;
       color: #222;
       line-height: 1.5;
       overflow-x: hidden;
+    }
+
+    /* --- Dot field ------------------------------------------------
+       Same ground the notes use (Blogs/notes/plain.css), scoped to
+       this page via body.home. Two tokens, so it can be retuned or
+       switched off without hunting through rules: set --grain and
+       --dot to `none` / `transparent` and the page is flat again. */
+    body.home {
+      --dot: rgba(104, 116, 140, 0.10);
+      --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.04'/%3E%3C/svg%3E");
+      background-image:
+        radial-gradient(circle at 1px 1px, var(--dot) 0 1.3px, transparent 1.7px),
+        var(--grain);
+      background-size: 22px 22px, 200px 200px;
+      background-position: 8px 12px, left top;
+    }
+
+    /* Restated at (0,2,1): css/theme.css carries
+       [data-theme="dark"] body { background: ... } — a shorthand at
+       (0,1,1) that resets background-image. The field has to be
+       re-declared above that weight to survive in dark. */
+    [data-theme="dark"] body.home {
+      --dot: rgba(173, 186, 199, 0.065);
+      --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.055'/%3E%3C/svg%3E");
+      background-color: var(--dk-bg);
+      background-image:
+        radial-gradient(circle at 1px 1px, var(--dot) 0 1.3px, transparent 1.7px),
+        var(--grain);
+      background-size: 22px 22px, 200px 200px;
+      background-position: 8px 12px, left top;
     }
 
     table {
@@ -613,7 +645,7 @@
   <script src="js/theme.js"></script>
 </head>
 
-<body>
+<body class="home">
   <table>
     <tbody>
       <tr>
