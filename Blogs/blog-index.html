@@ -109,8 +109,10 @@
                 </ul>
             </section>
 
-            <section class="writing-section">
-                <h2>Course Booklet</h2>
+            <details class="notes-vault" id="bookletVault">
+                <summary>Course Booklet</summary>
+                <p class="section-note">One PDF per course. Written for me, shared anyway.</p>
+
                 <ul>
                     <li class="article-item" data-category="research machine-learning">
                         <a href="../data/ssl-course-booklet.pdf" class="article-title">Self-Supervised Learning: From
@@ -122,7 +124,7 @@
                                     Learning</span></span></span>
                     </li>
                 </ul>
-            </section>
+            </details>
 
             <div id="noResults">
                 Nothing here matches that.
@@ -179,7 +181,7 @@
         const articles = document.querySelectorAll('.article-item');
         const noResults = document.getElementById('noResults');
         const tags = document.querySelectorAll('.tag');
-        const vault = document.getElementById('notesVault');
+        const vaults = document.querySelectorAll('.notes-vault');
 
         function filterArticles() {
             const searchTerm = searchInput.value.toLowerCase().trim();
@@ -215,11 +217,13 @@
                 section.style.display = anyVisible ? '' : 'none';
             });
 
-            // the vault stays shut until something you searched for is inside it
-            const vaultHit = Array.from(vault.querySelectorAll('.article-item'))
-                .some(item => item.style.display !== 'none');
-            if (searchTerm && vaultHit) vault.open = true;
-            vault.style.display = (searchTerm && !vaultHit) ? 'none' : '';
+            // each vault stays shut until something you searched for is inside it
+            vaults.forEach(vault => {
+                const vaultHit = Array.from(vault.querySelectorAll('.article-item'))
+                    .some(item => item.style.display !== 'none');
+                if (searchTerm && vaultHit) vault.open = true;
+                vault.style.display = (searchTerm && !vaultHit) ? 'none' : '';
+            });
 
             noResults.style.display = visibleCount === 0 ? 'block' : 'none';
         }
