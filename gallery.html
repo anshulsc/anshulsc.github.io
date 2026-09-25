@@ -4,11 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="A visual journal by Anshul Singh — photographs from Toronto, the SLPS lab, and elsewhere, arranged on an infinite pannable canvas.">
+    <meta name="author" content="Anshul Singh">
     <title>Visuals | Anshul Singh</title>
+
+    <link rel="canonical" href="https://anshulsc.github.io/gallery.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Visuals — Anshul Singh">
+    <meta property="og:description"
+        content="A visual journal by Anshul Singh — photographs from Toronto, the SLPS lab, and elsewhere.">
+    <meta property="og:url" content="https://anshulsc.github.io/gallery.html">
+    <meta property="og:image" content="https://anshulsc.github.io/images/og-card.png">
+    <meta name="twitter:card" content="summary_large_image">
+
     <link rel="stylesheet" href="gallery.css">
-    <!-- Using same system font as index (Verdana) so no Google Font import needed, 
-         but we keep metadata for consistency if we wanted Outfit later. 
-         Switching to standard Verdana stack. -->
     <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 </head>
@@ -16,17 +26,18 @@
 <body>
 
     <div class="noise-layer"></div>
-    <a href="index.html" class="back-btn">&larr;</a>
-    <div class="gallery-title">Visuals</div>
+    <a href="index.html" class="back-btn" aria-label="Back to homepage">&larr;</a>
+    <h1 class="gallery-title">Visuals</h1>
     <div class="scroll-hint">scroll to explore</div>
 
-    <div class="gallery-viewport" id="viewport">
+    <div class="gallery-viewport" id="viewport" tabindex="0"
+        aria-label="Photo gallery — scroll or use arrow keys">
         <div class="gallery-canvas">
             <div class="gallery-grid">
 
                 <!-- 1.png -->
                 <div class="gallery-item w-2 h-2">
-                    <img src="images/gallery/1.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/1.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -34,7 +45,7 @@
                 </div>
                 <!-- 2.png -->
                 <div class="gallery-item">
-                    <img src="images/gallery/2.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/2.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -42,7 +53,7 @@
                 </div>
                 <!-- 3.png -->
                 <div class="gallery-item w-2">
-                    <img src="images/gallery/3.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/3.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -50,7 +61,7 @@
                 </div>
                 <!-- 4.png -->
                 <div class="gallery-item h-2">
-                    <img src="images/gallery/4.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/4.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -58,7 +69,7 @@
                 </div>
                 <!-- 5.png -->
                 <div class="gallery-item">
-                    <img src="images/gallery/5.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/5.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -66,7 +77,7 @@
                 </div>
                 <!-- 7.png -->
                 <div class="gallery-item w-2">
-                    <img src="images/gallery/7.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/7.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -74,7 +85,7 @@
                 </div>
                 <!-- 9.png -->
                 <div class="gallery-item">
-                    <img src="images/gallery/9.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/9.webp" alt="" width="1400" height="787" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -82,7 +93,8 @@
                 </div>
                 <!-- 10.png -->
                 <div class="gallery-item h-2">
-                    <img src="images/gallery/10.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/10.webp" alt="Kensington Market, Toronto" width="1400" height="1050"
+                        loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Kensington Market</h3>
                         <p>Pulp Fiction and thrift stores, it's the best place in Toronto. It's just too expressive and diverse.</p>
@@ -90,7 +102,7 @@
                 </div>
                 <!-- 11.png -->
                 <div class="gallery-item w-2 h-2">
-                    <img src="images/gallery/11.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/11.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -98,7 +110,7 @@
                 </div>
                 <!-- 12.png -->
                 <div class="gallery-item">
-                    <img src="images/gallery/12.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/12.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -106,7 +118,7 @@
                 </div>
                 <!-- 14.png -->
                 <div class="gallery-item w-2">
-                    <img src="images/gallery/14.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/14.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -114,7 +126,7 @@
                 </div>
                 <!-- 15.png -->
                 <div class="gallery-item">
-                    <img src="images/gallery/15.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/15.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -122,7 +134,7 @@
                 </div>
                 <!-- 16.png -->
                 <div class="gallery-item h-2">
-                    <img src="images/gallery/16.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/16.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -130,7 +142,8 @@
                 </div>
                 <!-- 17.png -->
                 <div class="gallery-item w-2 h-2">
-                    <img src="images/gallery/17.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/17.webp" alt="Toronto, near the CN Tower" width="1400" height="1050"
+                        loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Toronto</h3>
                         <p>Near the CN tower, it was fun...</p>
@@ -138,7 +151,9 @@
                 </div>
                 <!-- 18.png -->
                 <div class="gallery-item">
-                    <img src="images/gallery/18.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/18.webp"
+                        alt="Near Union Station, Toronto — a Dhoom 3 filming location" width="1400" height="1050"
+                        loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Near Union Station</h3>
                         <p>Robbery Scene from Dhoom 3 was shot here</p>
@@ -146,7 +161,7 @@
                 </div>
                 <!-- 19.png -->
                 <div class="gallery-item">
-                    <img src="images/gallery/19.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/19.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -154,7 +169,7 @@
                 </div>
                 <!-- 20.png -->
                 <div class="gallery-item h-2">
-                    <img src="images/gallery/20.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/20.webp" alt="" width="1170" height="1400" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -162,7 +177,7 @@
                 </div>
                 <!-- 21.png -->
                 <div class="gallery-item w-2 h-2">
-                    <img src="images/gallery/21.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/21.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -170,7 +185,7 @@
                 </div>
                 <!-- 22.png -->
                 <div class="gallery-item">
-                    <img src="images/gallery/22.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/22.webp" alt="" width="1050" height="1400" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -178,7 +193,7 @@
                 </div>
                 <!-- 23.png -->
                 <div class="gallery-item w-2">
-                    <img src="images/gallery/23.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/23.webp" alt="" width="1050" height="1400" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -186,7 +201,7 @@
                 </div>
                 <!-- 24.png -->
                 <div class="gallery-item">
-                    <img src="images/gallery/24.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/24.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -194,7 +209,7 @@
                 </div>
                 <!-- 25.png -->
                 <div class="gallery-item h-2">
-                    <img src="images/gallery/25.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/25.webp" alt="" width="1050" height="1400" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -202,7 +217,8 @@
                 </div>
                 <!-- 26.png -->
                 <div class="gallery-item">
-                    <img src="images/gallery/26.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/26.webp" alt="SLPS Lab lunch with Prof. Ghader Manafiazer" width="1054"
+                        height="1400" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>SLPS Lab Lunch</h3>
                         <p>with Prof. Ghader Manafiazer</p>
@@ -210,7 +226,7 @@
                 </div>
                 <!-- 27.png -->
                 <div class="gallery-item w-2">
-                    <img src="images/gallery/27.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/27.webp" alt="" width="787" height="1400" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -218,7 +234,7 @@
                 </div>
                 <!-- 28.png -->
                 <div class="gallery-item">
-                    <img src="images/gallery/28.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/28.webp" alt="" width="1400" height="630" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -226,7 +242,7 @@
                 </div>
                 <!-- 30.JPG -->
                 <div class="gallery-item h-2">
-                    <img src="images/gallery/30.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/30.webp" alt="" width="1050" height="1400" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -234,7 +250,7 @@
                 </div>
                 <!-- 31.png -->
                 <div class="gallery-item w-2 h-2">
-                    <img src="images/gallery/31.jpg" alt="Gallery Image" loading="lazy">
+                    <img src="images/gallery/31.webp" alt="" width="1400" height="1050" loading="lazy" decoding="async">
                     <div class="overlay">
                         <h3>Visuals</h3>
                         <p>Collection</p>
@@ -266,13 +282,18 @@
             const batch = shuffle([...originalItems]);
             batch.forEach(item => {
                 const clone = item.cloneNode(true);
+                // Clones are decorative repeats of the originals: hide them from
+                // assistive tech so each photo is announced only once.
+                clone.setAttribute('aria-hidden', 'true');
+                const img = clone.querySelector('img');
+                if (img) img.alt = '';
                 fragment.appendChild(clone);
             });
         }
 
         grid.appendChild(fragment);
 
-        // Center on load
+        // Center on load (instant, so no scroll animation to suppress)
         window.addEventListener('load', () => {
             const canvas = document.querySelector('.gallery-canvas');
             const left = (canvas.scrollWidth - window.innerWidth) / 2;
@@ -280,7 +301,8 @@
             viewport.scrollTo({ left, top, behavior: 'auto' });
         });
 
-        // Drag-to-scroll for desktop
+        // Drag-to-scroll for desktop. No inertia/rAF loop — dragging maps 1:1 to
+        // scroll offsets, so prefers-reduced-motion only needs the CSS block.
         let isDragging = false;
         let startX, startY, scrollLeft, scrollTop;
 
@@ -306,11 +328,16 @@
         });
 
         // Fade out scroll hint after first interaction
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         viewport.addEventListener('scroll', () => {
             const hint = document.querySelector('.scroll-hint');
-            if (hint) hint.style.opacity = '0';
+            if (!hint) return;
+            if (prefersReducedMotion) hint.style.transition = 'none';
+            hint.style.opacity = '0';
         }, { once: true });
     </script>
+    <script data-goatcounter="https://anshulsc.goatcounter.com/count" async
+        src="https://gc.zgo.at/count.js"></script>
 </body>
 
 </html>

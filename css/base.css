@@ -1,0 +1,110 @@
+/* ===========================================================
+   Base — design tokens + the truly shared rules.
+   Loaded first on every site-level page (index, books);
+   page css comes next, css/theme.css last so it wins.
+   =========================================================== */
+
+:root {
+    --brand: #6e46be;
+    --bg: #fafafa;
+    --ink: #222;
+    --font-sans: -apple-system, BlinkMacSystemFont, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    --font-display: Candara, Constantia, "Avenir Next", Palatino, Cambria, Times, serif;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+body {
+    margin: 0;
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-display);
+}
+
+/* One violet everywhere. Hover/focus stay --brand (the old
+   #b088f9 hover failed contrast at 2.6:1 on --bg) — the state
+   change shows up as underline + focus ring instead of colour. */
+a {
+    color: var(--brand);
+    text-decoration: none;
+}
+
+a:hover,
+a:focus {
+    text-decoration: underline;
+}
+
+a:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.social-icon {
+    color: var(--brand);
+    margin: 0 4px;
+    font-size: 17px; /* svg boxes size in em off this; slightly above text size for optical balance with the [] brackets */
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: -0.18em; /* center icons against the bracket glyph, not the text baseline */
+}
+
+.social-icon svg {
+    width: 1em;
+    height: 1em;
+    display: block;
+}
+
+.social-icon:hover {
+    color: var(--brand);
+}
+
+span.highlight {
+    background-color: #ffffd0;
+}
+
+/* --- slim site nav, text-only, shared by every top-level page --- */
+.site-nav {
+    margin: 24px auto 12px;
+    padding: 0 20px;
+    max-width: 1140px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #737373;
+}
+
+.site-nav a[aria-current="page"] {
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .social-icon {
+        padding: 12px;
+        margin: 0 -2px;
+    }
+
+    .site-nav {
+        margin-top: 18px;
+    }
+}

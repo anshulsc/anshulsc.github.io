@@ -1,6 +1,7 @@
 /*
  * Theme picker — light + three GitHub-derived dark flavors, remembered
- * across visits.
+ * across visits. On a first visit it follows the OS
+ * (prefers-color-scheme); an explicit menu choice overrides it.
  *
  * Load this in <head> WITHOUT defer so the attribute lands before first
  * paint (no flash of the wrong theme). The toggle button + its menu inject
@@ -22,10 +23,10 @@
     { key: 'gh-hc', mode: 'dark', label: 'GitHub Dark High Contrast', dot: '#0a0c10' }
   ];
 
-  /* Dark is the house default — the OS preference does not override it;
-     only an explicit choice made in the menu does. GitHub Dark Dimmed
-     is the default flavor (warmer, lower-contrast than plain gh-dark). */
-  var DEFAULT_KEY = 'gh-dimmed';
+  /* First visit: follow the OS — dark OS gets GitHub Dark Dimmed
+     (warmer, lower-contrast than plain gh-dark), light OS gets light.
+     Only an explicit choice made in the menu sticks (localStorage). */
+  var DEFAULT_DARK_KEY = 'gh-dimmed';
 
   function themeFor(key) {
     for (var i = 0; i < THEMES.length; i++) {
@@ -52,13 +53,16 @@
 
   function resolveInitial() {
     var v = stored();
-    if (v === 'dark') return DEFAULT_KEY; /* migrate the old matte-black value */
+    if (v === 'dark') return DEFAULT_DARK_KEY; /* migrate the old matte-black value */
     if (v && themeFor(v)) return v;
-    return DEFAULT_KEY;
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return DEFAULT_DARK_KEY;
+    }
+    return 'light';
   }
 
   function apply(key) {
-    var t = themeFor(key) || themeFor(DEFAULT_KEY);
+    var t = themeFor(key) || themeFor(DEFAULT_DARK_KEY);
     root.setAttribute('data-theme', t.mode);
     if (t.mode === 'dark') {
       root.setAttribute('data-flavor', t.key);

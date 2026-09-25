@@ -3,12 +3,14 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Anshul Singh</title>
+  <title>Anshul Singh — M.Sc. CS, University of Bonn (AI safety, VLMs, world models)</title>
   <meta name="author" content="Anshul Singh">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="stylesheet.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/home.css">
   <link rel="icon" type="image/png" href="images/favicon.png">
   <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <link rel="canonical" href="https://anshulsc.github.io/">
 
   <!-- Social preview -->
   <meta name="description" content="M.Sc. CS at University of Bonn. AI safety, vision-language models, and world models for robotics.">
@@ -22,623 +24,27 @@
   <meta name="twitter:title" content="Anshul Singh">
   <meta name="twitter:description" content="M.Sc. CS at University of Bonn. AI safety, vision-language models, and world models for robotics.">
   <meta name="twitter:image" content="https://anshulsc.github.io/images/og-card.png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Anshul Singh",
+      "url": "https://anshulsc.github.io/",
+      "email": "mailto:anshulsinghchambial@gmail.com",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "University of Bonn"
+      },
+      "jobTitle": "M.Sc. Computer Science student",
+      "sameAs": [
+        "https://github.com/anshulsc",
+        "https://twitter.com/anshulsc",
+        "https://scholar.google.com/citations?hl=en&user=5vI_nOwAAAAJ",
+        "https://www.linkedin.com/in/anshulsc/"
+      ]
     }
-
-    html {
-      scroll-behavior: smooth;
-      overflow-x: hidden;
-    }
-
-    body {
-      margin: 0;
-      /* Longhand, not `background`: the shorthand resets
-         background-image and would take the dot field with it. */
-      background-color: #fafafa;
-      color: #222;
-      line-height: 1.5;
-      overflow-x: hidden;
-    }
-
-    /* --- Dot field ------------------------------------------------
-       Same ground the notes use (Blogs/notes/plain.css), scoped to
-       this page via body.home. Two tokens, so it can be retuned or
-       switched off without hunting through rules: set --grain and
-       --dot to `none` / `transparent` and the page is flat again. */
-    body.home {
-      --dot: rgba(104, 116, 140, 0.10);
-      --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.04'/%3E%3C/svg%3E");
-      background-image:
-        radial-gradient(circle at 1px 1px, var(--dot) 0 1.3px, transparent 1.7px),
-        var(--grain);
-      background-size: 22px 22px, 200px 200px;
-      background-position: 8px 12px, left top;
-    }
-
-    /* Restated at (0,2,1): css/theme.css carries
-       [data-theme="dark"] body { background: ... } — a shorthand at
-       (0,1,1) that resets background-image. The field has to be
-       re-declared above that weight to survive in dark. */
-    [data-theme="dark"] body.home {
-      --dot: rgba(173, 186, 199, 0.065);
-      --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.055'/%3E%3C/svg%3E");
-      background-color: var(--dk-bg);
-      background-image:
-        radial-gradient(circle at 1px 1px, var(--dot) 0 1.3px, transparent 1.7px),
-        var(--grain);
-      background-size: 22px 22px, 200px 200px;
-      background-position: 8px 12px, left top;
-    }
-
-    table {
-      width: 100%;
-      max-width: 1140px;
-      margin: 0 auto;
-      border: 0;
-      border-spacing: 0;
-      table-layout: fixed;
-    }
-
-    td {
-      padding: 0;
-    }
-
-    name {
-      font-size: 2.2rem;
-      font-weight: 700;
-    }
-
-    a {
-      color: #6e46be;
-      text-decoration: none;
-    }
-
-    a:hover {
-      color: #b088f9;
-      text-decoration: underline;
-    }
-
-    h2 {
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 1.8rem;
-      text-align: center;
-    }
-
-    /* --- News & Highlights Section --- */
-    .news-section {
-      max-width: 1140px;
-      margin: 0 auto 20px;
-      padding: 0 20px;
-    }
-
-    .news-heading {
-      font-size: 1.8rem;
-      color: #222;
-      margin: 40px 0 14px;
-      text-align: center;
-    }
-
-    .news-card {
-      padding: 8px 0 0;
-      margin-top: 4px;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .news-card::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .news-card::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .news-card::-webkit-scrollbar-thumb {
-      background: #ccc;
-      border-radius: 8px;
-    }
-
-    .news-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .news-item {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      padding: 5px 0;
-    }
-
-    .news-date {
-      width: 76px;
-      min-width: 76px;
-      font-size: 0.78rem;
-      color: #999;
-      white-space: nowrap;
-      font-weight: 400;
-      flex-shrink: 0;
-    }
-
-    .news-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.6rem;
-      font-weight: 700;
-      width: 62px;
-      min-width: 62px;
-      padding: 2px 0;
-      border-radius: 999px;
-      text-transform: capitalize;
-      letter-spacing: 0.4px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      text-align: center;
-    }
-
-    .news-badge.paper {
-      background: rgba(59, 130, 246, 0.12);
-      color: #2563eb;
-    }
-
-    .news-badge.position {
-      background: rgba(16, 185, 129, 0.12);
-      color: #059669;
-    }
-
-    .news-badge.intern {
-      background: rgba(245, 158, 11, 0.12);
-      color: #d97706;
-    }
-
-    .news-badge.award {
-      background: rgba(168, 85, 247, 0.12);
-      color: #7c3aed;
-    }
-
-    .news-badge.talk {
-      background: rgba(236, 72, 153, 0.12);
-      color: #db2777;
-    }
-
-    .news-desc {
-      font-size: 0.82rem;
-      color: #444;
-      line-height: 1.5;
-      font-weight: 400;
-      flex: 1;
-    }
-
-    .news-desc a {
-      color: #6e46be;
-      font-weight: 500;
-    }
-
-    .news-desc a:hover {
-      color: #b088f9;
-    }
-
-    /* --- name + [asca] alias --- */
-    .name-line {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .alias {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      font-size: 1.7rem;
-      font-weight: 300;
-      line-height: 1;
-      color: #b9b3c7;
-      letter-spacing: -0.02em;
-    }
-
-    .alias img {
-      height: 0.82em;
-      width: auto;
-      display: block;
-    }
-
-    /* --- asca wordmark in the footer --- */
-    .footer-mark {
-      display: block;
-      width: 84px;
-      height: auto;
-      margin: 0 auto 16px;
-      opacity: 0.5;
-      transition: opacity 0.3s ease;
-    }
-
-    .footer-mark:hover {
-      opacity: 0.85;
-    }
-
-    #footer {
-      margin-top: 60px;
-      padding: 30px 0;
-      text-align: center;
-      font-size: 0.9rem;
-      color: #555;
-    }
-
-    #clustrmaps-widget {
-      margin: 10px auto 20px;
-      max-width: 300px;
-    }
-
-    /* --- Experience Grid --- */
-    .exp-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px 16px;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    .exp-card {
-      text-align: center;
-    }
-
-    .exp-card img {
-      width: 88px;
-      height: 88px;
-      object-fit: contain;
-      margin-bottom: 8px;
-    }
-
-    .exp-card .exp-role {
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    .exp-card .exp-org {
-      font-weight: 700;
-      font-size: 13px;
-    }
-
-    .exp-card .exp-date {
-      font-size: 12px;
-      color: #666;
-    }
-
-    /* --- Reading --- */
-    .reading-section {
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    .reading-intro {
-      max-width: 780px;
-      margin: -6px auto 0;
-      text-align: center;
-      font-size: 0.88rem;
-      line-height: 1.65;
-      color: #555;
-    }
-
-    .reading-intro a {
-      white-space: nowrap;
-    }
-
-    /* --- Responsive tweaks --- */
-    @media (max-width: 768px) {
-
-      /* --- General mobile spacing --- */
-      body {
-        font-size: 15px;
-        -webkit-text-size-adjust: 100%;
-      }
-
-      table {
-        width: 100% !important;
-      }
-
-      /* Outer wrapper: give breathing room from screen edges */
-      body>table>tbody>tr>td {
-        padding: 0 16px !important;
-        overflow: hidden;
-      }
-
-      td {
-        overflow: hidden;
-        max-width: 100vw;
-      }
-
-      img {
-        max-width: 100%;
-        height: auto;
-      }
-
-      name {
-        font-size: 1.6rem;
-      }
-
-      h2 {
-        font-size: 1.4rem;
-        margin-top: 30px;
-        margin-bottom: 14px;
-      }
-
-      /* --- Hero section: stack photo on top, text below --- */
-      table table tbody tr:first-child {
-        display: flex;
-        flex-direction: column-reverse;
-        align-items: center;
-      }
-
-      table table tbody tr:first-child>td {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 10px 8px !important;
-        text-align: center;
-      }
-
-      table table tbody tr:first-child>td:last-child {
-        display: flex;
-        justify-content: center;
-        padding-bottom: 0 !important;
-      }
-
-      table table tbody tr:first-child>td:last-child img {
-        width: 160px !important;
-        max-width: 160px !important;
-        border-radius: 50%;
-      }
-
-      table table tbody tr:first-child>td:first-child p,
-      table table tbody tr:first-child>td:first-child ul {
-        text-align: left;
-      }
-
-      table table tbody tr:first-child>td:first-child p:first-child {
-        text-align: center;
-      }
-
-      table table tbody tr:first-child>td:first-child p:last-child {
-        text-align: center;
-      }
-
-      /* --- Experience Grid: 2 columns on mobile --- */
-      .exp-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px 12px;
-        padding: 0 20px;
-      }
-
-      .exp-card img {
-        width: 44px;
-        height: 44px;
-      }
-
-      .exp-card .exp-role {
-        font-size: 12px;
-      }
-
-      .exp-card .exp-org {
-        font-size: 12px;
-      }
-
-      .exp-card .exp-date {
-        font-size: 11px;
-      }
-
-      /* --- Research papers: stack image on top, description below --- */
-      .research-table {
-        table-layout: fixed !important;
-        overflow: hidden;
-      }
-
-      .research-table tr[bgcolor] {
-        display: flex !important;
-        flex-direction: column !important;
-      }
-
-      .research-table tr[bgcolor]>td {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 14px 16px !important;
-        display: block !important;
-        overflow: hidden;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-      }
-
-      .research-table tr[bgcolor]>td:first-child {
-        text-align: center;
-        padding-bottom: 0 !important;
-      }
-
-      .research-table tr[bgcolor]>td:first-child img {
-        width: 70% !important;
-        max-width: 280px;
-        border-radius: 8px;
-      }
-
-      .research-table tr[bgcolor]>td:last-child {
-        text-align: left;
-      }
-
-      .research-table tr[bgcolor]>td:last-child img {
-        max-width: 100% !important;
-        height: auto !important;
-      }
-
-      .research-table tr[bgcolor]>td p,
-      .research-table tr[bgcolor]>td a {
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-      }
-
-      /* --- News section --- */
-      .news-section {
-        padding: 0 16px;
-      }
-
-      .news-card {
-        max-height: 320px;
-      }
-
-      .news-item {
-        flex-wrap: wrap;
-        gap: 6px;
-        padding: 8px 0;
-      }
-
-      .news-date {
-        min-width: 70px;
-        font-size: 0.75rem;
-      }
-
-      .news-badge {
-        font-size: 0.6rem;
-      }
-
-      /* --- Footer --- */
-      #footer {
-        padding: 20px 20px;
-        margin-top: 30px;
-      }
-
-      #clustrmaps-widget {
-        max-width: 240px;
-      }
-
-      /* --- Social icons row --- */
-      .social-icon {
-        font-size: 22px;
-        margin: 0 6px;
-      }
-    }
-
-    /* --- Extra small devices (below 400px) --- */
-    @media (max-width: 400px) {
-      name {
-        font-size: 1.4rem;
-      }
-
-      body,
-      td,
-      th,
-      tr,
-      p,
-      a {
-        font-size: 13px;
-      }
-
-      strong {
-        font-size: 13px;
-      }
-
-      table table tbody tr:first-child>td:last-child img {
-        width: 130px !important;
-        max-width: 130px !important;
-      }
-    }
-
-    /* --- Hidden gallery button on profile photo --- */
-    .profile-photo-wrap {
-      position: relative;
-      display: inline-block;
-      width: 100%;
-    }
-
-    .gallery-peek {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      background: rgba(0, 0, 0, 0.45);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      color: rgba(255, 255, 255, 0.85);
-      font-size: 0.6rem;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 6px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      opacity: 0;
-      transform: translateY(4px);
-      transition: opacity 0.35s ease, transform 0.35s ease;
-      pointer-events: none;
-      text-decoration: none;
-    }
-
-    .profile-photo-wrap:hover .gallery-peek {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-
-    .gallery-peek:hover {
-      background: rgba(110, 70, 190, 0.6);
-      color: #fff;
-      text-decoration: none;
-    }
-
-    /* The Singularity — black-hole ornament */
-    #visual-canvas {
-      position: fixed;
-      right: 22px;
-      bottom: 22px;
-      width: 118px;
-      height: 118px;
-      z-index: 40;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 1.4s ease, transform 0.35s ease;
-    }
-
-    #visual-canvas.bh-ready {
-      opacity: 0.9;
-    }
-
-    #visual-canvas:hover,
-    #visual-canvas:focus-visible {
-      opacity: 1;
-      transform: scale(1.05);
-    }
-
-    #visual-canvas:focus-visible {
-      outline: 2px solid #6e46be;
-      outline-offset: 4px;
-      border-radius: 50%;
-    }
-
-    #visual-canvas canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
-    @media (max-width: 768px) {
-      #visual-canvas {
-        display: none;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      #visual-canvas {
-        transition: opacity 0.2s ease;
-      }
-    }
-  </style>
+  </script>
 
   <!-- Light/dark theme: stylesheet last so it wins, script un-deferred so there is no flash -->
   <link rel="stylesheet" href="css/theme.css">
@@ -646,328 +52,282 @@
 </head>
 
 <body class="home">
-  <table>
-    <tbody>
-      <tr>
-        <td>
-          <table>
-            <tbody>
-              <tr>
-                <td style="padding:2.5%;width:63%;vertical-align:middle">
-                  <p style="text-align:center" class="name-line">
-                    <name>Anshul Singh</name><span class="alias" title="also known as asca"
-                      aria-label="also known as asca">[<img src="images/logo.png" alt="asca">]</span>
-                  </p>
-                  <p>I'm doing my <strong>Master's in Computer Science</strong> at the <strong><a href="https://www.uni-bonn.de/">University of Bonn</a></strong>, working on <strong>AI safety</strong> and the robustness of vision-language and world models. Alongside, I'm a <strong>Research Assistant</strong> with the <strong><a href="https://www.hcds.uni-hamburg.de/">HCDS</a></strong> and <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">LT</a> groups at <strong><a href="https://www.uni-hamburg.de/en.html">University of Hamburg</a></strong>, led by <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html">Prof. Chris Biemann</a>.</p>
-                  <p>Most of my work sits on one gap: what a multimodal model <em>appears</em> to do versus what it actually does. Things I've worked on:</p>
-                  <ul>
-                    <li><strong>AI safety &amp; robustness</strong> of vision-language and world models</li>
-                    <li>Adversarial attacks and defenses for <strong>multimodal LLMs</strong> and <strong>diffusion models</strong></li>
-                    <li>Multi-tabular reasoning in <strong>vision-language models</strong></li>
-                    <li>LLM-guided <strong>active learning</strong> for multimodal misinformation</li>
-                    <li><strong>Multilingual alignment</strong> for low-resource Indic languages</li>
-                  </ul>
-                  <p>Before Bonn I was a <strong>Research Associate</strong> at <strong><a href="https://www.iisc.ac.in/">IACV Lab, IISc Bangalore</a></strong> with <a href="https://scholar.google.co.in/citations?user=Rscf2pYAAAAJ&hl=en">Prof. Soma Biswas</a>, a research intern with the <strong><a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">LT Group</a></strong> at <a href="https://www.uni-hamburg.de/">Uni Hamburg</a>, and a <strong><a href="https://www.mitacs.ca/en/programs/globalink/globalink-research-internship">MITACS Globalink</a></strong> intern at <a href="https://www.dal.ca/">Dalhousie University</a>. B.E. in Information Technology, <a href="https://puchd.ac.in/">Panjab University</a>.</p>
-                  <p>Outside research I travel, take photos, read, and write these notes. I like living light and
-                    tinkering with small experiments — always happy to talk.</p>
-                  <p style="text-align:center">[
-                    <a href="mailto:anshulsinghchambial@gmail.com" class="social-icon"><i
-                        class="fa fa-envelope"></i></a> &nbsp/&nbsp
-                    <a href="data/my_CV.pdf" class="social-icon"><i class="ai ai-cv"></i></a> &nbsp/&nbsp
-                    <a href="https://github.com/anshulsc" class="social-icon"><i class="fa fa-github"></i></a>
-                    &nbsp/&nbsp
-                    <a href="https://twitter.com/anshulsc" class="social-icon"><i class="fa fa-twitter"></i></a>
-                    &nbsp/&nbsp
-                    <a href="https://scholar.google.com/citations?hl=en&user=5vI_nOwAAAAJ" class="social-icon"><i
-                        class="ai ai-google-scholar"></i></a> &nbsp/&nbsp
-                    <a href="https://www.linkedin.com/in/anshulsc/" class="social-icon"><i
-                        class="fa fa-linkedin"></i></a> &nbsp/&nbsp
-                    <a href="Blogs/blog-index.html" class="social-icon"><i class="fa fa-rss"></i></a>]
-                  </p>
-                </td>
-                <td style="padding:2.5%;width:40%;max-width:40%">
-                  <div class="profile-photo-wrap">
-                    <a href="gallery.html" title="Gallery"><img style="width:100%;max-width:100%" alt="profile photo"
-                        src="images/prof4.png"></a>
-                    <a href="gallery.html" class="gallery-peek">📷 Gallery</a>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+  <main>
+    <section class="hero" aria-labelledby="site-name">
+      <div class="hero-intro">
+        <h1 class="name" id="site-name">
+          <span>Anshul Singh</span><span class="alias" title="also known as asca"
+            aria-label="also known as asca">[<img src="images/logo.png" alt="asca" width="235" height="95">]</span>
+        </h1>
+        <p>I'm doing my <strong>Master's in Computer Science</strong> at the <strong><a href="https://www.uni-bonn.de/">University of Bonn</a></strong>, working on <strong>AI safety</strong> and the robustness of vision-language and world models. Alongside, I'm a <strong>Research Assistant</strong> with the <strong><a href="https://www.hcds.uni-hamburg.de/">HCDS</a></strong> and <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">LT</a> groups at <strong><a href="https://www.uni-hamburg.de/en.html">University of Hamburg</a></strong>, led by <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html">Prof. Chris Biemann</a>.</p>
+        <p>Most of my work sits on one gap: what a multimodal model <em>appears</em> to do versus what it actually does. Things I've worked on:</p>
+        <ul>
+          <li><strong>AI safety &amp; robustness</strong> of vision-language and world models</li>
+          <li>Adversarial attacks and defenses for <strong>multimodal LLMs</strong> and <strong>diffusion models</strong></li>
+          <li>Multi-tabular reasoning in <strong>vision-language models</strong></li>
+          <li>LLM-guided <strong>active learning</strong> for multimodal misinformation</li>
+          <li><strong>Multilingual alignment</strong> for low-resource Indic languages</li>
+        </ul>
+        <p>Before Bonn I was a <strong>Research Associate</strong> at <strong><a href="https://www.iisc.ac.in/">IACV Lab, IISc Bangalore</a></strong> with <a href="https://scholar.google.co.in/citations?user=Rscf2pYAAAAJ&hl=en">Prof. Soma Biswas</a>, a research intern with the <strong><a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">LT Group</a></strong> at <a href="https://www.uni-hamburg.de/">Uni Hamburg</a>, and a <strong><a href="https://www.mitacs.ca/en/programs/globalink/globalink-research-internship">MITACS Globalink</a></strong> intern at <a href="https://www.dal.ca/">Dalhousie University</a>. B.E. in Information Technology, <a href="https://puchd.ac.in/">Panjab University</a>.</p>
+        <p>Outside research I travel, take photos, read, and write these notes. I like living light and
+          tinkering with small experiments — always happy to talk.</p>
+        <p class="social-row">[
+          <a href="mailto:anshulsinghchambial@gmail.com" class="social-icon" aria-label="Email"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg></a> &nbsp/&nbsp
+          <a href="data/my_CV.pdf" class="social-icon" aria-label="CV (PDF)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5h8L19 7.5V20a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 20V4a1.5 1.5 0 0 1 1-1.5z"/><path d="M14 2.5v5h5"/><text x="7.2" y="16.6" font-size="6.4" font-weight="700" fill="currentColor" stroke="none" font-family="inherit">CV</text></svg></a> &nbsp/&nbsp
+          <a href="https://github.com/anshulsc" class="social-icon" aria-label="GitHub"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+          &nbsp/&nbsp
+          <a href="https://twitter.com/anshulsc" class="social-icon" aria-label="Twitter/X"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></a>
+          &nbsp/&nbsp
+          <a href="https://scholar.google.com/citations?hl=en&user=5vI_nOwAAAAJ" class="social-icon" aria-label="Google Scholar"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 3.8 1.2 9.3 12 14.8l8.7-4.35v4.85h2.1V9.3z"/><path d="M5.3 12.15v3.6c0 1.6 3 3.45 6.7 3.45s6.7-1.85 6.7-3.45v-3.6L12 16.6z"/></svg></a> &nbsp/&nbsp
+          <a href="https://www.linkedin.com/in/anshulsc/" class="social-icon" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M3.86 2.4a2.4 2.4 0 1 1-2.4 2.4 2.4 2.4 0 0 1 2.4-2.4zM1.5 8.1h4.6V22.4H1.5zM8.3 8.1h4.4v2h.06a4.85 4.85 0 0 1 4.37-2.4c4.68 0 5.54 3.07 5.54 7.07v7.6h-4.6v-6.74c0-1.6 0-3.67-2.24-3.67s-2.58 1.75-2.58 3.56v6.86H8.3z"/></svg></a> &nbsp/&nbsp
+          <a href="writing/blog-index.html" class="social-icon" aria-label="Writing/RSS"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.8C10 9.8 14.7 14.5 14.7 21.4"/><path d="M3 2.6c10.6 0 18.4 7.9 18.4 18.8"/><circle cx="5" cy="19" r="2.1" fill="currentColor" stroke="none"/></svg></a>]
+        </p>
+      </div>
+      <div class="hero-photo">
+        <div class="profile-photo-wrap">
+          <a href="gallery.html" title="Gallery" aria-label="Visit the photo gallery"><img alt="profile photo"
+              src="images/prof4.webp" width="600" height="600" fetchpriority="high"></a>
+          <a href="gallery.html" class="gallery-peek">📷 Gallery</a>
+        </div>
+      </div>
+    </section>
 
-          <h2>Experience & Education</h2>
-          <div class="exp-grid">
-            <div class="exp-card">
-              <a href="https://www.uni-bonn.de/"><img src="images/uni-bonn.jpg" alt="Uni Bonn"></a>
-              <div class="exp-role">M.Sc. Computer Science</div>
-              <div class="exp-org">University of Bonn</div>
-              <div class="exp-date">Apr 2026 – Present</div>
-            </div>
-            <div class="exp-card">
-              <a href="https://www.uni-hamburg.de/en.html"><img src="images/UHH.svg" alt="UHamburg"></a>
-              <div class="exp-role">Research Assistant</div>
-              <div class="exp-org">HCDS & LT Group, UHH</div>
-              <div class="exp-date">Jun 2026 – Present</div>
-            </div>
-            <div class="exp-card">
-              <a href="https://iisc.ac.in/"><img src="images/iisc.jpg" alt="IISc"></a>
-              <div class="exp-role">Research Associate</div>
-              <div class="exp-org">IISc, Bangalore</div>
-              <div class="exp-date">Aug 2025 – Feb 2026</div>
-            </div>
-            <div class="exp-card">
-              <a href="https://www.uni-hamburg.de/en.html"><img src="images/UHH.svg" alt="UHamburg"></a>
-              <div class="exp-role">Research Intern</div>
-              <div class="exp-org">LT Group, UHH</div>
-              <div class="exp-date">Jan 2025 – Jun 2025</div>
-            </div>
-            <div class="exp-card">
-              <a href="https://www.dal.ca/"><img src="images/dal.jpeg" alt="Dalhousie"></a>
-              <div class="exp-role">Undergrad Researcher</div>
-              <div class="exp-org">Dalhousie University, Halifax</div>
-              <div class="exp-date">Oct 2024 – April 2025</div>
-            </div>
-            <div class="exp-card">
-              <a href="https://www.mitacs.ca/"><img src="images/mitacs.jpeg" alt="mitacs"></a>
-              <div class="exp-role">Research Intern</div>
-              <div class="exp-org">MITACS, Canada</div>
-              <div class="exp-date">June 2024 – Sep 2024</div>
-            </div>
-            <div class="exp-card">
-              <a href="https://www.iitr.ac.in/"><img src="images/IITR.svg" alt="IITR"></a>
-              <div class="exp-role">ML Research Intern</div>
-              <div class="exp-org">IIT, Roorkee</div>
-              <div class="exp-date">June 2023 – July 2023</div>
-            </div>
-            <div class="exp-card">
-              <a href="https://puchd.ac.in/"><img src="images/panjab.png" alt="PU"></a>
-              <div class="exp-role">B.E Information Technology</div>
-              <div class="exp-org">Panjab University</div>
-              <div class="exp-date">Sep 2021 – June 2025</div>
-            </div>
+    <section aria-labelledby="experience-heading">
+      <h2 id="experience-heading">Experience & Education</h2>
+      <div class="exp-grid">
+        <div class="exp-card">
+          <a href="https://www.uni-bonn.de/"><img src="images/uni-bonn.jpg" alt="Uni Bonn" width="512" height="512" loading="lazy" decoding="async"></a>
+          <div class="exp-role">M.Sc. Computer Science</div>
+          <div class="exp-org">University of Bonn</div>
+          <div class="exp-date">Apr 2026 – Present</div>
+        </div>
+        <div class="exp-card">
+          <a href="https://www.uni-hamburg.de/en.html"><img src="images/UHH.svg" alt="UHamburg" width="709" height="708" loading="lazy" decoding="async"></a>
+          <div class="exp-role">Research Assistant</div>
+          <div class="exp-org">HCDS & LT Group, UHH</div>
+          <div class="exp-date">Jun 2026 – Present</div>
+        </div>
+        <div class="exp-card">
+          <a href="https://iisc.ac.in/"><img src="images/iisc-176.webp" alt="IISc" width="176" height="176" loading="lazy" decoding="async"></a>
+          <div class="exp-role">Research Associate</div>
+          <div class="exp-org">IISc, Bangalore</div>
+          <div class="exp-date">Aug 2025 – Feb 2026</div>
+        </div>
+        <div class="exp-card">
+          <a href="https://www.uni-hamburg.de/en.html"><img src="images/UHH.svg" alt="UHamburg" width="709" height="708" loading="lazy" decoding="async"></a>
+          <div class="exp-role">Research Intern</div>
+          <div class="exp-org">LT Group, UHH</div>
+          <div class="exp-date">Jan 2025 – Jun 2025</div>
+        </div>
+        <div class="exp-card">
+          <a href="https://www.dal.ca/"><img src="images/dal.jpeg" alt="Dalhousie" width="200" height="200" loading="lazy" decoding="async"></a>
+          <div class="exp-role">Undergrad Researcher</div>
+          <div class="exp-org">Dalhousie University, Halifax</div>
+          <div class="exp-date">Oct 2024 – April 2025</div>
+        </div>
+        <div class="exp-card">
+          <a href="https://www.mitacs.ca/"><img src="images/mitacs.jpeg" alt="mitacs" width="200" height="200" loading="lazy" decoding="async"></a>
+          <div class="exp-role">Research Intern</div>
+          <div class="exp-org">MITACS, Canada</div>
+          <div class="exp-date">June 2024 – Sep 2024</div>
+        </div>
+        <div class="exp-card">
+          <a href="https://www.iitr.ac.in/"><img src="images/IITR.svg" alt="IITR" width="300" height="300" loading="lazy" decoding="async"></a>
+          <div class="exp-role">ML Research Intern</div>
+          <div class="exp-org">IIT, Roorkee</div>
+          <div class="exp-date">June 2023 – July 2023</div>
+        </div>
+        <div class="exp-card">
+          <a href="https://puchd.ac.in/"><img src="images/panjab-176.webp" alt="PU" width="176" height="176" loading="lazy" decoding="async"></a>
+          <div class="exp-role">B.E Information Technology</div>
+          <div class="exp-org">Panjab University</div>
+          <div class="exp-date">Sep 2021 – June 2025</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="news-section" aria-labelledby="news-heading">
+      <h2 class="news-heading" id="news-heading">News & Highlights</h2>
+      <div class="news-card">
+        <ul class="news-list">
+          <li class="news-item">
+            <span class="news-date">Jul 2026</span>
+            <span class="news-badge talk">Talk</span>
+            <span class="news-desc">Gave a talk on <a href="data/talk_alphaalign_bonn.pdf">AlphaAlign: Incentivizing Safety Alignment with Extremely Simplified RL</a> at the AI Safety Seminar, <a href="https://www.uni-bonn.de/">University of Bonn</a>.</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Jun 2026</span>
+            <span class="news-badge position">Position</span>
+            <span class="news-desc">Started as Research Assistant at <a href="https://www.hcds.uni-hamburg.de/">HCDS</a> & <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">LT</a> Group, University of Hamburg.</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Apr 2026</span>
+            <span class="news-badge award">Education</span>
+            <span class="news-desc">Started M.Sc. in Computer Science at <a href="https://www.uni-bonn.de/">University of Bonn</a>, focusing on AI Safety & Robustness. 🎓</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Mar 2026</span>
+            <span class="news-badge paper">Paper</span>
+            <span class="news-desc">Our paper <a href="https://openaccess.thecvf.com/content/CVPR2026W/PPMisDet/html/Tah_HybridNet_Efficient_Multimodal_Fake_News_Detection_CVPRW_2026_paper.html">HybridNet: Efficient Multimodal Fake News Detection</a> is accepted to PP-MisDet@CVPR 2026! 🎉</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Feb 2026</span>
+            <span class="news-badge paper">Paper</span>
+            <span class="news-desc">Our paper <a href="https://arxiv.org/abs/2512.05959">M4-RAG: A Massive-Scale Multilingual Multi-Cultural Multimodal RAG</a> is accepted at CVPR 2026! 🎉</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Nov 2025</span>
+            <span class="news-badge paper">Paper</span>
+            <span class="news-desc">Our paper <a href="https://openreview.net/forum?id=20wKerGfSD&referrer=%5Bthe%20profile%20of%20Anshul%20Singh%5D(%2Fprofile%3Fid%3D~Anshul_Singh1)#discussion">Lost in Translation and Noise: A Deep Dive into Failure-Mode of VLLMs on Real-World Tables</a> is accepted at NeurIPS Workshop on AI for Tabular Data. <strong>(Oral 🎉)</strong></span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Aug 2025</span>
+            <span class="news-badge paper">Paper</span>
+            <span class="news-desc">Our paper <a href="https://arxiv.org/abs/2506.11684">MTabVQA: Evaluating Multi-Tabular Reasoning of Language Models in Visual Space</a> is accepted at EMNLP 2025 (Findings).</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Aug 2025</span>
+            <span class="news-badge position">Position</span>
+            <span class="news-desc">Started working as Research Associate at <a href="https://sites.google.com/iisc.ac.in/somabiswas/iacv-lab-iisc">IACV Lab</a>, IISc Bangalore.</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">May 2025</span>
+            <span class="news-badge paper">Paper</span>
+            <span class="news-desc">Our new preprint, <a href="https://arxiv.org/abs/2506.11684">MTabVQA: Evaluating Multi-Tabular Reasoning of Language Models in Visual Space</a>, is now available on ArXiv.</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Jan 2025</span>
+            <span class="news-badge intern">Intern</span>
+            <span class="news-desc">Started a research internship at <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">Language Technology Group</a>, University of Hamburg, Germany.</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Oct 2024</span>
+            <span class="news-badge position">Position</span>
+            <span class="news-desc">Started working as undergraduate researcher at <a href="https://web.cs.dal.ca/~tushar/smart/">SMART Lab</a>, Dalhousie University.</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Jul 2024</span>
+            <span class="news-badge intern">Intern</span>
+            <span class="news-desc">Selected for <a href="https://www.mitacs.ca/our-programs/globalink-research-internship-students/">Mitacs Globalink Research Internship</a> at Dalhousie University, Nova Scotia, Canada.</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Nov 2023</span>
+            <span class="news-badge paper">Paper</span>
+            <span class="news-desc">Our work <a href="https://ieeexplore.ieee.org/document/10306428">Comparative Analysis of State-of-the-Art Attack Detection Models</a> was accepted at 14th International Conference on Computing Communication and Networking Technologies (ICCCNT).</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Jun 2023</span>
+            <span class="news-badge intern">Intern</span>
+            <span class="news-desc">Started a Machine Learning Research Intern at <a href="https://www.iitr.ac.in/">Virtual Labs, IIT Roorkee</a>.</span>
+          </li>
+          <li class="news-item">
+            <span class="news-date">Mar 2022</span>
+            <span class="news-badge position">Position</span>
+            <span class="news-desc">Started working as Project Intern at Design & Innovation Centre, Panjab University.</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section aria-labelledby="research-heading">
+      <h2 id="research-heading">Research</h2>
+      <div class="research-grid">
+        <article class="research-card">
+          <div class="research-media"><img src="images/M4-Rag.webp" alt="M4-RAG" width="1000" height="458" loading="lazy" decoding="async"></div>
+          <div class="research-body">
+            <a href="https://arxiv.org/abs/2512.05959"><strong>M4-RAG: A Massive-Scale Multilingual Multi-Cultural Multimodal RAG</strong></a><br>
+            David Anugraha, Patrick Amadeus Irawan, <strong>Anshul Singh</strong>, En-Shiun Annie Lee, Genta Indra Winata<br>
+            <em>IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2026</em><br>
+            <a href="https://arxiv.org/abs/2512.05959">Paper</a> / <a
+              href="data/poster_m4rag_cvpr.png">Poster</a>
+            <p>We introduce M4-RAG, a massive-scale benchmark covering 42 languages and 56 dialects with over 80,000 culturally diverse image-question pairs to evaluate retrieval-augmented VQA. Our systematic evaluation reveals that while RAG consistently benefits smaller Vision-Language Models (VLMs), it fails to scale to larger models and often degrades their performance, exposing a critical mismatch between model size and current retrieval effectiveness.</p>
           </div>
-
-
-          <div class="news-section">
-            <h2 class="news-heading">News & Highlights</h2>
-            <div class="news-card">
-              <ul class="news-list">
-                <li class="news-item">
-                  <span class="news-date">Jul 2026</span>
-                  <span class="news-badge talk">Talk</span>
-                  <span class="news-desc">Gave a talk on <a href="data/talk_alphaalign_bonn.pdf">AlphaAlign: Incentivizing Safety Alignment with Extremely Simplified RL</a> at the AI Safety Seminar, <a href="https://www.uni-bonn.de/">University of Bonn</a>.</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Jun 2026</span>
-                  <span class="news-badge position">Position</span>
-                  <span class="news-desc">Started as Research Assistant at <a href="https://www.hcds.uni-hamburg.de/">HCDS</a> & <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">LT</a> Group, University of Hamburg.</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Apr 2026</span>
-                  <span class="news-badge award">Education</span>
-                  <span class="news-desc">Started M.Sc. in Computer Science at <a href="https://www.uni-bonn.de/">University of Bonn</a>, focusing on AI Safety & Robustness. 🎓</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Mar 2026</span>
-                  <span class="news-badge paper">Paper</span>
-                  <span class="news-desc">Our paper <a href="data/paper_hybridnet_preprint.pdf">HybridNet: Efficient Multimodal Fake News Detection</a> is accepted to PP-MisDet@CVPR 2026! 🎉</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Feb 2026</span>
-                  <span class="news-badge paper">Paper</span>
-                  <span class="news-desc">Our paper <a href="https://arxiv.org/abs/2512.05959">M4-RAG: A Massive-Scale Multilingual Multi-Cultural Multimodal RAG</a> is accepted at CVPR 2026! 🎉</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Nov 2025</span>
-                  <span class="news-badge paper">Paper</span>
-                  <span class="news-desc">Our paper <a href="https://openreview.net/forum?id=20wKerGfSD&referrer=%5Bthe%20profile%20of%20Anshul%20Singh%5D(%2Fprofile%3Fid%3D~Anshul_Singh1)#discussion">Lost in Translation and Noise: A Deep Dive into Failure-Mode of VLLMs on Real-World Tables</a> is accepted at NeurIPS Workshop on AI for Tabular Data. <strong>(Oral 🎉)</strong></span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Aug 2025</span>
-                  <span class="news-badge paper">Paper</span>
-                  <span class="news-desc">Our paper <a href="https://arxiv.org/abs/2506.11684">MTabVQA: Evaluating Multi-Tabular Reasoning of Language Models in Visual Space</a> is accepted at EMNLP 2025 (Findings).</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Aug 2025</span>
-                  <span class="news-badge position">Position</span>
-                  <span class="news-desc">Started working as Research Associate at <a href="https://sites.google.com/iisc.ac.in/somabiswas/iacv-lab-iisc">IACV Lab</a>, IISc Bangalore.</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">May 2025</span>
-                  <span class="news-badge paper">Paper</span>
-                  <span class="news-desc">Our new preprint, <a href="https://arxiv.org/abs/2506.11684">MTabVQA: Evaluating Multi-Tabular Reasoning of Language Models in Visual Space</a>, is now available on ArXiv.</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Jan 2025</span>
-                  <span class="news-badge intern">Intern</span>
-                  <span class="news-desc">Started a research internship at <a href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/home.html">Language Technology Group</a>, University of Hamburg, Germany.</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Oct 2024</span>
-                  <span class="news-badge position">Position</span>
-                  <span class="news-desc">Started working as undergraduate researcher at <a href="https://web.cs.dal.ca/~tushar/smart/">SMART Lab</a>, Dalhousie University.</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Jul 2024</span>
-                  <span class="news-badge intern">Intern</span>
-                  <span class="news-desc">Selected for <a href="https://www.mitacs.ca/our-programs/globalink-research-internship-students/">Mitacs Globalink Research Internship</a> at Dalhousie University, Nova Scotia, Canada.</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Nov 2023</span>
-                  <span class="news-badge paper">Paper</span>
-                  <span class="news-desc">Our work <a href="https://ieeexplore.ieee.org/document/10306428">Comparative Analysis of State-of-the-Art Attack Detection Models</a> was accepted at 14th International Conference on Computing Communication and Networking Technologies (ICCCNT).</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Jun 2023</span>
-                  <span class="news-badge intern">Intern</span>
-                  <span class="news-desc">Started a Machine Learning Research Intern at <a href="https://www.iitr.ac.in/">Virtual Labs, IIT Roorkee</a>.</span>
-                </li>
-                <li class="news-item">
-                  <span class="news-date">Mar 2022</span>
-                  <span class="news-badge position">Position</span>
-                  <span class="news-desc">Started working as Project Intern at Design & Innovation Centre, Panjab University.</span>
-                </li>
-              </ul>
-            </div>
+        </article>
+        <article class="research-card">
+          <div class="research-media"><img src="images/HybridNet.webp" alt="HybridNet" width="1000" height="360" loading="lazy" decoding="async"></div>
+          <div class="research-body">
+            <a href="https://openaccess.thecvf.com/content/CVPR2026W/PPMisDet/html/Tah_HybridNet_Efficient_Multimodal_Fake_News_Detection_CVPRW_2026_paper.html"><strong>HybridNet:
+                Efficient Multimodal Fake News Detection</strong></a><br>
+            Shreyas Kumar Tah, <strong>Anshul Singh</strong>, Prajeet Katari,  et al.<br>
+            <em>PP-MisDet@CVPR, 2026</em><br>
+            <p>We propose HybridNet, a data-efficient framework that leverages hybrid active learning to select
+              the most informative samples, drastically reducing labeling cost. We also propose a lightweight
+              Reasoning-Aware Classifier (RAC) for challenging cases, which combines Vision–Language Model (VLM)
+              features with reasoning from a Multimodal Large Language Model (MLLM) to further improve detection
+              performance and provide human- interpretable explanations.</p>
           </div>
-
-          <h2>Research</h2>
-          <table class="research-table" style="width:100%;border:0;border-spacing:0;">
-            <tbody>
-              <tr bgcolor="#cac4db">
-                <td style="padding:20px;width:25%;vertical-align:middle"><img src="images/M4-Rag.png" alt="M4-RAG" width="100%"></td>
-                <td style="padding:20px;width:75%;vertical-align:middle">
-                  <a href="https://arxiv.org/abs/2512.05959"><strong>M4-RAG: A Massive-Scale Multilingual Multi-Cultural Multimodal RAG</strong></a><br>
-                  David Anugraha, Patrick Amadeus Irawan, <strong>Anshul Singh</strong>, En-Shiun Annie Lee, Genta Indra Winata<br>
-                  <em>IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2026</em><br>
-                  <a href="https://arxiv.org/abs/2512.05959">Paper</a> / <a
-                    href="data/poster_m4rag_cvpr.png">Poster</a>
-                  <p>We introduce M4-RAG, a massive-scale benchmark covering 42 languages and 56 dialects with over 80,000 culturally diverse image-question pairs to evaluate retrieval-augmented VQA. Our systematic evaluation reveals that while RAG consistently benefits smaller Vision-Language Models (VLMs), it fails to scale to larger models and often degrades their performance, exposing a critical mismatch between model size and current retrieval effectiveness.</p>
-                </td>
-              </tr>
-              <!-- <tr bgcolor="#cac4db">
-                <td style="padding:20px;width:25%;vertical-align:middle"><img src="images/mtabvqa.png" alt="mtabvqa"
-                    width="100%"></td>
-                <td style="padding:20px;width:75%;vertical-align:middle">
-                  <a href="https://supernova-event.ai/"><strong>Lost in Translation and Noise: A Deep Dive into the Failure Modes of VLMs on Real-World Tables</strong></a><br>
-                  <strong>Anshul Singh</strong>, Rohan Chaudhary, Gagneet Singh, Abhay Kumar<br>
-                  <em>Empirical Methods of Natural Language Processing (EMNLP), 2025 Findings</em><br>
-                  <a href="https://openreview.net/forum?id=20wKerGfSD#discussion">Paper</a> / <a
-                    href="https://huggingface.co/datasets/anshulsc/MirageTVQA">Dataset</a> 
-                  <p>In this work, we address a critical gap in Vision-Language Model (VLM) evaluation by introducing
-                    MTabVQA, a novel benchmark for multi-tabular visual question answering. Our benchmark comprises
-                    3,745 complex question-answer pairs that require multi-hop reasoning across several visually
-                    rendered table images, simulating real-world documents. We benchmark state-of-the-art VLMs,
-                    revealing significant limitations in their ability to reason over complex visual data. To address
-                    this, we release MTabVQA-Instruct, a large-scale instruction-tuning dataset. Our experiments
-                    demonstrate that fine-tuning with our dataset substantially improves VLM performance, bridging the
-                    gap between existing benchmarks that rely on single or non-visual tables.</p>
-                </td>
-              </tr> -->
-                <tr bgcolor="#cac4db">
-                <td style="padding:20px;width:25%;vertical-align:middle"><img src="images/Hybridnet.png" alt="mtabvqa"
-                    width="100%"></td>
-                <td style="padding:20px;width:75%;vertical-align:middle">
-                  <p></p>
-                  <a href="data/paper_hybridnet_preprint.pdf"><strong>HybridNet:
-                      Efficient Multimodal Fake News Detection</strong></a><br>
-                  Shreyas Kumar Tah, <strong>Anshul Singh</strong>, Prajeet Katari,  et al.<br>
-                  <em>PP-MisDet@CVPR, 2026</em><br>
-                  <p>We propose HybridNet, a data-efficient framework that leverages hybrid active learning to select
-                    the most informative samples, drastically reducing labeling cost. We also propose a lightweight
-                    Reasoning-Aware Classifier (RAC) for challenging cases, which combines Vision–Language Model (VLM)
-                    features with reasoning from a Multimodal Large Language Model (MLLM) to further improve detection
-                    performance and provide human- interpretable explanations.</p>
-                </td>
-              </tr>
-              <tr bgcolor="#cac4db">
-                <td style="padding:20px;width:25%;vertical-align:middle"><img src="images/mtabvqa.png" alt="mtabvqa"
-                    width="100%"></td>
-                <td style="padding:20px;width:75%;vertical-align:middle">
-                  <a href="https://aclanthology.org/2025.findings-emnlp.1083/"><strong>MTabVQA: Evaluating Multi-Tabular
-                      Reasoning of Language
-                      Models in Visual Space</strong></a><br>
-                  <strong>Anshul Singh</strong>, <a
-                    href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html">Chris Biemann</a>, Jan
-                  Strich<br>
-                  <em>Empirical Methods of Natural Language Processing (EMNLP), 2025 Findings</em><br>
-                  <a href="https://arxiv.org/abs/2506.11684">Paper</a> / <a
-                    href="https://huggingface.co/mtabvqa">Dataset</a> / <a
-                    href="data/poster_mtabqa_emnlp.pdf">Poster</a>
-                  <p>In this work, we address a critical gap in Vision-Language Model (VLM) evaluation by introducing
-                    MTabVQA, a novel benchmark for multi-tabular visual question answering. Our benchmark comprises
-                    3,745 complex question-answer pairs that require multi-hop reasoning across several visually
-                    rendered table images, simulating real-world documents. We benchmark state-of-the-art VLMs,
-                    revealing significant limitations in their ability to reason over complex visual data. To address
-                    this, we release MTabVQA-Instruct, a large-scale instruction-tuning dataset. Our experiments
-                    demonstrate that fine-tuning with our dataset substantially improves VLM performance, bridging the
-                    gap between existing benchmarks that rely on single or non-visual tables.</p>
-                </td>
-              </tr>
-              <tr bgcolor="#cac4db">
-                <td style="padding:20px;width:25%;vertical-align:middle"><img src="images/cot.jpeg"
-                    alt="IoT Intrusion Detection Analysis" width="100%"></td>
-                <td style="padding:20px;width:75%;vertical-align:middle">
-                  <a href="https://doi.org/10.1109/ICCCNT56998.2023.10306428"><strong>Comparative Analysis of
-                      State-of-the-Art Attack Detection Models</strong></a><br>
-                  Priyanka Kumari, Veenu Mangat, and <strong>Anshul Singh</strong><br>
-                  <em>14th International Conference on Computing Communication and Networking Technologies (ICCCNT),
-                    2023</em><br>
-                  <a href="https://doi.org/10.1109/ICCCNT56998.2023.10306428">Paper</a>
-                  <p>In this work, we address the growing security challenges in IoT networks by conducting a
-                    comprehensive comparative analysis of machine learning classifiers for intrusion detection. We
-                    evaluated five distinct models on two real-world IoT network traffic datasets to identify the most
-                    effective algorithms for detecting malicious activity. Our findings show that tree-based models,
-                    specifically Random Forest and Decision Trees, deliver outstanding performance, achieving accuracies
-                    exceeding 99%. This research provides a clear benchmark and practical guidance for developing robust
-                    and high-performance security systems to protect vulnerable IoT environments.</p>
-                </td>
-              </tr>
-              <!-- <tr bgcolor="#cac4db">
-                <td style="padding:20px;width:25%;vertical-align:middle"><img src="images/Hybridnet.png" alt="mtabvqa"
-                    width="100%"></td>
-                <td style="padding:20px;width:75%;vertical-align:middle">
-                  <p></p>
-                  <a href="data/paper_hybridnet_preprint.pdf"><strong>HybridNet: LLM-Guided Active Learning for
-                      Multimodal Fake News Detection</strong></a><br>
-                  Shreyas Kumar Tah, Lucky Gupta, Prajeet Katari, <strong>Anshul Singh</strong> et al.<br>
-                  <em>Preprint</em><br>
-                  <p>We propose HybridNet, a data-efficient framework that leverages hybrid active learning to select
-                    the most informative samples, drastically reducing labeling cost. We also propose a lightweight
-                    Reasoning-Aware Classifier (RAC) for challenging cases, which combines Vision–Language Model (VLM)
-                    features with reasoning from a Multimodal Large Language Model (MLLM) to further improve detection
-                    performance and provide human- interpretable explanations.</p>
-                </td>
-              </tr> -->
-            </tbody>
-          </table>
-
-          <h2>Reading</h2>
-          <div class="reading-section">
-            <p class="reading-intro">Papers I've read properly. Notes, drafts and thoughts are mine; the ghostwriting
-              is Claude's. <a href="Blogs/reading/index.html">Reading list →</a></p>
+        </article>
+        <article class="research-card">
+          <div class="research-media"><img src="images/mtabvqa.webp" alt="MTabVQA" width="1000" height="631" loading="lazy" decoding="async"></div>
+          <div class="research-body">
+            <a href="https://aclanthology.org/2025.findings-emnlp.1083/"><strong>MTabVQA: Evaluating Multi-Tabular
+                Reasoning of Language
+                Models in Visual Space</strong></a><br>
+            <strong>Anshul Singh</strong>, <a
+              href="https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html">Chris Biemann</a>, Jan
+            Strich<br>
+            <em>Empirical Methods of Natural Language Processing (EMNLP), 2025 Findings</em><br>
+            <a href="https://arxiv.org/abs/2506.11684">Paper</a> / <a
+              href="https://huggingface.co/mtabvqa">Dataset</a> / <a
+              href="data/poster_mtabqa_emnlp.pdf">Poster</a>
+            <p>In this work, we address a critical gap in Vision-Language Model (VLM) evaluation by introducing
+              MTabVQA, a novel benchmark for multi-tabular visual question answering. Our benchmark comprises
+              3,745 complex question-answer pairs that require multi-hop reasoning across several visually
+              rendered table images, simulating real-world documents. We benchmark state-of-the-art VLMs,
+              revealing significant limitations in their ability to reason over complex visual data. To address
+              this, we release MTabVQA-Instruct, a large-scale instruction-tuning dataset. Our experiments
+              demonstrate that fine-tuning with our dataset substantially improves VLM performance, bridging the
+              gap between existing benchmarks that rely on single or non-visual tables.</p>
           </div>
+        </article>
+        <article class="research-card">
+          <div class="research-media"><img src="images/cot.webp"
+              alt="IoT Intrusion Detection Analysis" width="800" height="800" loading="lazy" decoding="async"></div>
+          <div class="research-body">
+            <a href="https://doi.org/10.1109/ICCCNT56998.2023.10306428"><strong>Comparative Analysis of
+                State-of-the-Art Attack Detection Models</strong></a><br>
+            Priyanka Kumari, Veenu Mangat, and <strong>Anshul Singh</strong><br>
+            <em>14th International Conference on Computing Communication and Networking Technologies (ICCCNT),
+              2023</em><br>
+            <a href="https://doi.org/10.1109/ICCCNT56998.2023.10306428">Paper</a>
+            <p>In this work, we address the growing security challenges in IoT networks by conducting a
+              comprehensive comparative analysis of machine learning classifiers for intrusion detection. We
+              evaluated five distinct models on two real-world IoT network traffic datasets to identify the most
+              effective algorithms for detecting malicious activity. Our findings show that tree-based models,
+              specifically Random Forest and Decision Trees, deliver outstanding performance, achieving accuracies
+              exceeding 99%. This research provides a clear benchmark and practical guidance for developing robust
+              and high-performance security systems to protect vulnerable IoT environments.</p>
+          </div>
+        </article>
+      </div>
+    </section>
 
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <section class="reading-section" aria-labelledby="reading-heading">
+      <h2 id="reading-heading">Reading</h2>
+      <p class="reading-intro">Papers I've read properly. Notes, drafts and thoughts are mine; the ghostwriting
+        is Claude's. <a href="writing/reading/index.html">Reading list →</a></p>
+    </section>
+  </main>
 
   <!-- Footer -->
-  <div id="footer">
-    <img class="footer-mark" src="images/logo.png" alt="asca">
-    <div id="clustrmaps-widget">
-      <script type='text/javascript' id='clustrmaps'
-        src='//cdn.clustrmaps.com/map_v2.js?cl=080808&w=a&t=tt&d=iFeF0gE4QbivZPJ9TeW5eL8hzUnQag5q7A5a23CLQFU&co=ffffff&ct=808080&cmo=3acc3a&cmn=ff5353'></script>
-    </div>
-    <p>&copy; Anshul Singh | Last update: August 20, 2026</p>
-  </div>
+  <footer id="footer">
+    <img class="footer-mark" src="images/logo.png" alt="asca" width="235" height="95" loading="lazy" decoding="async">
+    <nav class="site-nav" aria-label="Site">
+      [<a href="index.html" aria-current="page">Home</a> /
+      <a href="writing/blog-index.html">Writing</a> /
+      <a href="books.html">Books</a> /
+      <a href="gallery.html">Gallery</a> /
+      <a href="data/my_CV.pdf">CV</a>]
+    </nav>
+    <p>&copy; Anshul Singh</p>
+  </footer>
 
   <!-- The Loop — Möbius strip ornament (click to unwind back to top) -->
   <div id="visual-canvas" role="button" tabindex="0" aria-label="Back to top"
     title="the loop — click to unwind"></div>
-  <script src="js/mobius.js" defer></script>
+  <script src="js/ornament.js" defer></script>
+    <script data-goatcounter="https://anshulsc.goatcounter.com/count" async
+        src="https://gc.zgo.at/count.js"></script>
 </body>
 
 </html>
