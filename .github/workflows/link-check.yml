@@ -1,0 +1,35 @@
+name: Link check
+
+# Catches broken internal links/assets before they reach the live site.
+# Runs lychee over the repo HTML against the local file tree on every push.
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lychee:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore lychee cache
+        uses: actions/cache@v4
+        with:
+          path: .lycheecache
+          key: cache-lychee-${{ github.sha }}
+          restore-keys: cache-lychee-
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Check every html/css/js file; verify local paths only (offline=false
+          # would also probe external links — kept off to avoid flaky CI)
+          args: >-
+            --no-progress
+            --offline
+            --exclude-loopback
+            './**/*.html'
+          fail: true
