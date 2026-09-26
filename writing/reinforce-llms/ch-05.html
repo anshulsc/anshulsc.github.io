@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chapter 5: Model-free reinforcement learning methods. Monte Carlo (MC), Temporal Difference (TD), SARSA, Q-learning, and function approximation.">
+    <meta name="author" content="Anshul Singh">
+    <link rel="canonical" href="https://anshulsc.github.io/writing/reinforce-llms/ch-05.html">
+    <title>Ch 5: Learning from Experience: MC, TD & Control · RL Notes</title>
+
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+    <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" integrity="sha384-eFTL69TLRZTkNfYZOLM+G04821K1qZao/4QLJbet1pP4tcF+fdXq/9CdqAbWRl/L" crossorigin="anonymous">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha384-F/bZzf7p3Joyp5psL90p/p89AZJsndkSoGwRpXcZhleCWhd8SnRuoYo4d0yirjJp" crossorigin="anonymous"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js" integrity="sha384-FWJTgPmIGm1+zpNhubuHRC/ulS1UK7hAZ7qiUUmKD8yGfPcn5ZXYBd2qRgi6L8Tu" crossorigin="anonymous"></script>
+
+    <!-- Marked.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js" integrity="sha384-948ahk4ZmxYVYOc+rxN1H2gM1EJ2Duhp7uHtZ4WSLkV4Vtx5MUqnV+l7u9B+jFv+" crossorigin="anonymous"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../shared/plain.css">
+
+    <!-- Light/dark theme: script un-deferred so there is no flash -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <script src="../../js/theme.js"></script>
+</head>
+
+<body class="plain">
+    <div class="container">
+
+        <header class="site-header">
+            [<a href="../../index.html">Home</a> /
+            <a href="../index.html">Writing</a> /
+            <a href="index.html">RL notes</a> /
+            <span class="here">Learning from Experience: MC, TD and Control</span>]
+        </header>
+
+        <main data-ch="5">
+            <h1>Learning from Experience: MC, TD and Control</h1>
+
+            <article class="chapter-content" id="content-target">
+                <!-- Rendered markdown goes here -->
+            </article>
+        </main>
+
+        <footer class="site-footer">
+            &copy; 2026 Anshul Singh
+        </footer>
+    </div>
+
+    <script id="raw-markdown" type="text/template">
+*Chapter 4 needed the full model, and outside of textbook problems nobody has it. What an agent does have is experience, and this chapter is the three families that learn from nothing else: Monte Carlo waits for the outcome, temporal difference refuses to wait, and function approximation at the end is what lets either leave the lookup table behind.*
+
+---
+
+## 1. Monte Carlo Methods
+
+### Core Idea
+Wait until an episode finishes, then use the **actual observed return** $G_t$ to update value estimates. Nothing is needed but sample trajectories.
+
+```
+DP (Chapter 4):    Uses model p(s',r|s,a) to compute expectations analytically.
+Monte Carlo:       Uses sample trajectories to ESTIMATE expectations empirically.
+```
+
+That contrast is the whole idea. DP computes an expectation by summing over every branch weighted by its probability. Monte Carlo estimates the same expectation by visiting branches at the rate the environment produces them, which needs no probabilities because the sampling supplies them.
+
+### First-Visit MC Policy Evaluation
+For each state $s$, average the returns observed the **first time** $s$ appears in each episode.
+
+```
+FIRST-VISIT MC PREDICTION:
+  Input: policy π to evaluate
+  Initialize: V(s) = 0, Returns(s) = empty list, for all s
+  
+  Loop forever (for each episode):
+    Generate episode using π: S_0, A_0, R_1, S_1, A_1, R_2, ..., S_T
+    G ← 0
+    For t = T-1, T-2, ..., 0:
+      G ← γG + R_{t+1}
+      If S_t NOT in {S_0, ..., S_{t-1}}:       # first visit check
+        Append G to Returns(S_t)
+        V(S_t) ← average(Returns(S_t))
+```
+
+The loop runs backwards for a reason. Accumulating $G \leftarrow \gamma G + R_{t+1}$ from the end computes every return in the episode in one pass, where working forwards would need a fresh sum from each state.
+
+### Why Q-values for Control
+DP policy improvement used $\pi'(s) = \operatorname{argmax}_a \sum_{s',r} p(s',r|s,a)[r + \gamma V(s')]$, which needs the model $p$.
+
+Without the model, $q_\pi(s,a)$ cannot be recovered from $V(s)$, because $V$ tells you what a state is worth and nothing about which action reaches it. So model-free control estimates $Q(s,a)$ directly:
+
+$$Q(s, a) = \text{average of returns following first visit to } (s, a)$$
+
+The greedy policy is then just $\pi'(s) = \operatorname{argmax}_a Q(s,a)$, with no model anywhere. Every control method in this chapter and the next inherits this decision.
+
+### ε-Greedy Exploration for MC Control
+Pure greedy improvement may never visit some state-action pairs, leaving their estimates permanently wrong. The fix is ε-greedy, the same device as in bandits (Ch.2, §4):
+
+$$\pi(a \mid s) = \begin{cases} 1 - \epsilon + \frac{\epsilon}{|\mathcal{A}(s)|} & \text{if } a = \operatorname{argmax}_a Q(s, a) \\ \frac{\epsilon}{|\mathcal{A}(s)|} & \text{otherwise} \end{cases}$$
+
+#### Proof: ε-Greedy is an Improvement
+For any ε-greedy policy $\pi'$ derived from $Q = q_\pi$:
+
+$$q_\pi(s, \pi'(s)) = \sum_a \pi'(a|s) q_\pi(s,a) = \frac{\epsilon}{|\mathcal{A}|} \sum_a q_\pi(s,a) + (1-\epsilon) \max_a q_\pi(s,a)$$
+
+Since $\max_a q_\pi(s,a) \geq \frac{1}{|\mathcal{A}|} \sum_a q_\pi(s,a)$ (max $\geq$ average):
+
+$$q_\pi(s, \pi'(s)) \geq \frac{\epsilon}{|\mathcal{A}|} \sum_a q_\pi(s,a) + (1-\epsilon) \frac{1}{|\mathcal{A}|} \sum_a q_\pi(s,a) = \frac{1}{|\mathcal{A}|} \sum_a q_\pi(s,a) = v_\pi(s)$$
+
+So $q_\pi(s, \pi'(s)) \geq v_\pi(s)$, and by the policy improvement theorem (Ch.4, §3), $\pi'$ is at least as good as $\pi$.
+
+The result is more reassuring than it first looks. Exploration costs reward, so it would be reasonable to fear it also costs correctness. It does not: an ε-greedy policy built on $q_\pi$ is still guaranteed to be an improvement, so exploring is paid for in reward alone.
+
+### On-Policy vs Off-Policy
+
+| Feature | On-Policy | Off-Policy |
+|---|---|---|
+| **Behavior Policy** | Same as target policy | Different from target |
+| **Learning** | Learns about policy currently being followed | Learns about policy $\pi$ from data generated by policy $b$ |
+| **Example** | MC with ε-greedy (learns about ε-greedy) | Importance sampling MC |
+
+### Importance Sampling (Off-Policy MC)
+If episodes are generated by policy $b$ but we want to evaluate policy $\pi$:
+
+$$\rho_{t:T-1} = \prod_{k=t}^{T-1} \frac{\pi(A_k \mid S_k)}{b(A_k \mid S_k)}$$
+
+This ratio corrects for the mismatch between what $b$ does and what $\pi$ would do.
+
+$$V(s) = \frac{\sum_{t \in \mathcal{T}(s)} \rho_{t:T(t)-1} G_t}{|\mathcal{T}(s)|} \quad \text{(ordinary IS)}$$
+
+$$V(s) = \frac{\sum_{t \in \mathcal{T}(s)} \rho_{t:T(t)-1} G_t}{\sum_{t \in \mathcal{T}(s)} \rho_{t:T(t)-1}} \quad \text{(weighted IS, lower variance)}$$
+
+Note that $\rho$ is a product over the whole remainder of the episode. If $\pi$ and $b$ disagree even mildly at many steps, the product explodes or collapses, and this variance is the reason off-policy MC is rarely used raw.
+
+*Importance sampling comes back in TRPO and PPO (Ch.6, §7 and Ch.6, §8). The probability ratio $r_t(\theta) = \pi_\theta/\pi_{\theta_{old}}$ is exactly this idea applied to policy optimization, and PPO's clipping exists to control precisely the blow-up described above.*
+
+---
+
+## 2. Temporal Difference Learning
+
+### The Central Trick
+MC waits for the episode to end to obtain $G_t$. TD **bootstraps**, replacing the unknown remainder of the return with the estimate it already has.
+
+```
+Monte Carlo target:     G_t = R_{t+1} + γR_{t+2} + γ²R_{t+3} + ... + γ^{T-1-t}R_T
+                        (wait until episode ends)
+
+TD(0) target:           R_{t+1} + γV(S_{t+1})
+                        (use current estimate of successor value)
+```
+
+### TD(0) Update Rule
+
+$$V(S_t) \leftarrow V(S_t) + \alpha \left[ R_{t+1} + \gamma V(S_{t+1}) - V(S_t) \right]$$
+
+The term in brackets is the **TD error**:
+$$\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)$$
+
+This is the tic-tac-toe update from Ch.1, §6, which was presented there as a plausible heuristic. It is the same formula, now with a derivation behind it.
+
+### Deriving TD from the Incremental Average
+Recall the sample-average update from bandits (Ch.2, §2):
+$$Q_{n+1} = Q_n + \frac{1}{n}[R_n - Q_n]$$
+
+Generalizing: $\text{NewEstimate} \leftarrow \text{OldEstimate} + \alpha[\text{Target} - \text{OldEstimate}]$
+
+* **MC target**: $\text{Target} = G_t$, the actual return. Unbiased, high variance.
+* **TD(0) target**: $\text{Target} = R_{t+1} + \gamma V(S_{t+1})$, bootstrapped. Biased, low variance.
+
+The trade is exact and worth stating plainly. $G_t$ is the truth but carries the noise of every random transition to the end of the episode. The TD target carries the noise of one transition plus whatever error currently sits in $V(S_{t+1})$. Trading unbounded variance for bounded bias is why TD usually wins.
+
+### The Commuting Example (Intuition)
+Estimating your remaining commute time home:
+
+| State | Predicted Remaining | MC Update | TD Update |
+|---|---|---|---|
+| Leave office | Predicted: 30 min | none | none |
+| Car won't start | Predicted: 50 min | Wait until home | Update 30→50 immediately |
+| Rain starts | Predicted: 45 min | Wait until home | Update 50→45 immediately |
+| Arrive home | Actual: 43 min | Update all using 43 | Already updated at each step |
+
+MC updates everything at the end using the true outcome. TD updates at every step from its current best guess, which means it learns during the episode rather than after it, and works at all in tasks that never terminate.
+
+### The Random Walk Example
+5 non-terminal states, equal probability of going left or right.
+
+```
+Terminal    A --- B --- C --- D --- E    Terminal
+  r = 0                                   r = +1
+```
+
+TD(0) with $\alpha = 0.1$ converges to the true values in roughly 100 episodes, without waiting for termination to make each update.
+
+---
+
+## 3. Comparison: DP vs MC vs TD
+
+| Feature | Dynamic Programming | Monte Carlo | Temporal Difference |
+|---|---|---|---|
+| **Model Required?** | Yes (full $p(s',r \mid s,a)$) | No (model-free) | No (model-free) |
+| **Bootstrapping?** | Yes ($v(s')$ estimate) | No (uses actual $G_t$) | Yes ($V(S_{t+1})$ estimate) |
+| **Episode Complete?** | N/A | Yes (must finish) | No (learns per step) |
+| **Bias** | None (exact model) | None (unbiased $G_t$) | Some (bootstrapping) |
+| **Variance** | None | High ($G_t$ varies) | Low (single step) |
+
+<figure><img src="assets/svg/dp-mc-td-spectrum-v2.svg" alt="DP vs MC vs TD Spectrum" style="max-width:550px;"><figcaption>Figure 5.1: The Bootstrapping and Sampling Spectrum</figcaption></figure>
+
+*Two independent axes, not one scale. Bootstrapping means updating an estimate from another estimate, which DP and TD both do and MC does not. Sampling means learning from experienced trajectories rather than a transition model, which MC and TD both do and DP does not. TD is the corner that does both.*
+
+---
+
+## 4. TD Control: SARSA, Q-Learning, & Expected SARSA
+
+Prediction estimates the value of a fixed policy; **control** searches for the best one. As established in §1, that means learning $Q(s,a)$ rather than $V(s)$. What follows is three ways to write the bootstrap target, differing only in which next action they assume.
+
+---
+
+### SARSA (On-Policy TD Control)
+
+SARSA is on-policy: it learns the action-value function of the policy the agent is actually executing. The update uses the sequence $(S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1})$ that gives it its name:
+
+$$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t) \right]$$
+
+The bootstrap target uses $A_{t+1}$, the action the exploratory policy actually chose. SARSA therefore accounts for its own random moves, and learns values for a policy that explores rather than one that plays perfectly.
+
+```
+SARSA (On-Policy TD Control):
+  Initialize Q(s,a) for all s,a (terminal states = 0)
+  
+  For each episode:
+    Initialize S; choose A from S using ε-greedy on Q
+    
+    For each step:
+      Take action A, observe R, S'
+      Choose A' from S' using ε-greedy on Q       # on-policy: next action from ε-greedy
+      Q(S,A) ← Q(S,A) + α[R + γQ(S',A') - Q(S,A)]
+      S ← S'; A ← A'
+    Until S is terminal
+```
+
+---
+
+### Q-Learning (Off-Policy TD Control)
+
+Q-learning is off-policy: it separates the policy generating the data (the behavior policy, ε-greedy) from the policy being learned (the target policy, strictly greedy):
+
+$$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma \max_{a} Q(S_{t+1}, a) - Q(S_t, A_t) \right]$$
+
+The target assumes greedy play from $S_{t+1}$ onward whatever the behavior policy actually does next. Q-learning therefore ignores its own exploratory slips and converges on the values of perfect play, while behaving imperfectly throughout training.
+
+```
+Q-LEARNING (Off-Policy TD Control):
+  Initialize Q(s,a) for all s,a (terminal states = 0)
+  
+  For each episode:
+    Initialize S
+    
+    For each step:
+      Choose A from S using ε-greedy on Q           # behavior policy
+      Take action A, observe R, S'
+      Q(S,A) ← Q(S,A) + α[R + γ max_a Q(S',a) - Q(S,A)]   # off-policy: target is greedy max
+      S ← S'
+    Until S is terminal
+```
+
+Comparing the two updates, one symbol differs: $Q(S_{t+1}, A_{t+1})$ against $\max_a Q(S_{t+1}, a)$. Everything separating on-policy from off-policy learning is in that substitution.
+
+---
+
+### Expected SARSA
+
+Expected SARSA replaces SARSA's sampled $Q(S_{t+1}, A_{t+1})$ and Q-learning's hard maximum with the **expected value** of the next state-action pair under the target policy:
+
+$$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma \sum_{a} \pi(a \mid S_{t+1}) Q(S_{t+1}, a) - Q(S_t, A_t) \right]$$
+
+Summing over all next actions instead of sampling one removes the variance that ε-greedy selection injects into the target, at the cost of an extra sum per step. It also subsumes the other two: with $\pi$ greedy, the expectation collapses to the maximum and this *is* Q-learning; with $\pi$ the behavior policy, it is a lower-variance SARSA.
+
+---
+
+### Comparison: SARSA vs. Q-Learning vs. Expected SARSA
+
+| Feature | SARSA | Q-Learning | Expected SARSA |
+|---|---|---|---|
+| **Paradigm** | On-Policy | Off-Policy | On-Policy or Off-Policy |
+| **Next Action Target** | $A_{t+1}$ (actual sample) | $\operatorname{argmax}_a Q(S_{t+1}, a)$ (greedy) | $\sum_a \pi(a \mid S_{t+1}) Q(S_{t+1}, a)$ (expected) |
+| **Variance** | High (due to sample action) | Medium | Low (averages out action selection) |
+| **Behavioral Path** | Safer (accounts for exploration) | Bolder (assumes perfect future play) | Safer (on-policy) or Bolder (off-policy) |
+
+---
+
+### The Cliff Walking Case Study
+
+Cliff Walking is where that table stops being abstract. SARSA learns the safer route one row above the cliff, because the occasional random move along the edge is disastrous and its updates know those moves happen. Q-learning learns the optimal route hugging the edge, because its target assumes greedy play at the next step, and it falls off repeatedly during training while doing so.
+
+<figure><img src="assets/svg/cliff-walking.svg?v=2" alt="Cliff Walking Paths Comparison" style="max-width:550px;"><figcaption>Figure 5.2: Safe Path (SARSA) vs Optimal Path (Q-Learning) in Cliff Walking</figcaption></figure>
+
+*Neither agent is wrong. They are answering different questions: SARSA asks what is best given that I explore, and Q-learning asks what is best assuming I stop.*
+
+Which one you want depends on whether the exploration is real. On a physical robot the cliff is real and SARSA's caution is correct; in simulation the falls cost nothing and Q-learning's target is the one you meant.
+
+---
+
+## 5. Function Approximation & Deep RL
+
+### The Scale Problem
+Everything above stored $Q(s,a)$ or $V(s)$ as an array, which fails as soon as the state space is continuous or merely enormous.
+
+The fix is to approximate value functions with parameterized models:
+$$\hat{v}(s, \mathbf{w}) \approx v_\pi(s)$$
+
+where $\mathbf{w} \in \mathbb{R}^d$ is a weight vector with $d \ll |\mathcal{S}|$. This buys generalization as well as compression. A table learns nothing about a state until it visits it, while an approximator updated at one state moves its estimate at every similar state, which is the only way to cope with a space too large to visit.
+
+### The Objective: Mean Squared Value Error (MSVE)
+$$\overline{VE}(\mathbf{w}) = \sum_{s \in \mathcal{S}} \mu(s) \left[ v_\pi(s) - \hat{v}(s, \mathbf{w}) \right]^2$$
+
+Where $\mu(s)$ is the state distribution, meaning how often state $s$ is actually visited. With $d \ll |\mathcal{S}|$ the approximator cannot be right everywhere, so $\mu$ decides where it is allowed to be wrong: rarely visited states.
+
+### Gradient Descent Update
+Minimize MSVE by stochastic gradient descent:
+
+$$\mathbf{w}_{t+1} = \mathbf{w}_t - \frac{1}{2} \alpha \nabla_\mathbf{w} \left[ v_\pi(S_t) - \hat{v}(S_t, \mathbf{w}_t) \right]^2$$
+
+Applying the chain rule:
+
+$$\mathbf{w}_{t+1} = \mathbf{w}_t + \alpha \left[ v_\pi(S_t) - \hat{v}(S_t, \mathbf{w}_t) \right] \nabla_\mathbf{w} \hat{v}(S_t, \mathbf{w}_t)$$
+
+$v_\pi(S_t)$ is of course unknown, so it is replaced by a target:
+
+| Target ($U_t$) | Method | Bias | Convergence Guarantee |
+|---|---|---|---|
+| $G_t$ (actual return) | Monte Carlo | Unbiased (true gradient) | Yes |
+| $R_{t+1} + \gamma \hat{v}(S_{t+1}, \mathbf{w})$ | Semi-gradient TD(0) | Biased ($\nabla U_t$ ignored) | Yes (linear), no guarantee (nonlinear) |
+
+**Semi-gradient** is the name for the second row. The target $U_t = R_{t+1} + \gamma \hat{v}(S_{t+1}, \mathbf{w})$ depends on $\mathbf{w}$, and we differentiate as though it does not. The update is therefore not the gradient of any objective, which is exactly why the guarantee in the last column is so much weaker.
+
+### Linear Function Approximation
+$$\hat{v}(s, \mathbf{w}) = \mathbf{w}^T \mathbf{x}(s) = \sum_{i=1}^{d} w_i x_i(s)$$
+
+where $\mathbf{x}(s)$ is a feature vector for state $s$. Then:
+$$\nabla_\mathbf{w} \hat{v}(s, \mathbf{w}) = \mathbf{x}(s)$$
+
+Update becomes:
+$$\mathbf{w}_{t+1} = \mathbf{w}_t + \alpha \left[ U_t - \mathbf{w}_t^T \mathbf{x}(S_t) \right] \mathbf{x}(S_t)$$
+
+### Neural Networks as Universal Approximators
+For high-dimensional state spaces the approximator becomes a deep network, and $\nabla_\mathbf{w} \hat{v}(s, \mathbf{w})$ is computed by backpropagation. Only the gradient computation changes; the update above is untouched. This is the entire step from classical RL to deep RL, and it is also where the convergence guarantees are given up.
+
+### Semi-Gradient SARSA (Function Approximation + TD Control)
+
+```
+SEMI-GRADIENT SARSA:
+  Initialize weights w arbitrarily (e.g., w = 0)
+  
+  For each episode:
+    S ← initial state
+    A ← ε-greedy on Q̂(S, ·, w)
+    
+    For each step:
+      Take A, observe R, S'
+      If S' is terminal:
+        w ← w + α[R - Q̂(S,A,w)] ∇_w Q̂(S,A,w)
+        Break
+      A' ← ε-greedy on Q̂(S', ·, w)
+      w ← w + α[R + γQ̂(S',A',w) - Q̂(S,A,w)] ∇_w Q̂(S,A,w)
+      S ← S'; A ← A'
+```
+
+### Case Study: Mountain Car
+The car cannot climb the hill directly, so it has to learn to rock back and forth and build momentum. State: $(x, \dot{x})$; actions: {accelerate left, nothing, accelerate right}. With semi-gradient SARSA and tile coding it finds the rocking strategy in around 100 episodes.
+
+The problem is chosen to make one point. The optimal policy begins by accelerating *away* from the goal, so any method valuing immediate progress fails, and the value function has to span the entire detour to see why going backwards pays.
+
+---
+
+*Every method so far learns a value function and extracts a policy from it by $\operatorname{argmax}$. That indirection has costs: it needs a max over actions, which is awkward when actions are continuous, and it can only produce deterministic policies. Parameterizing the policy itself and optimizing it directly removes both problems, and that is Chapter 6.*
+    </script>
+
+    <script src="rl-notes.js"></script>
+    <script data-goatcounter="https://anshulsc.goatcounter.com/count" async
+        src="https://gc.zgo.at/count.js"></script>
+</body>
+
+</html>

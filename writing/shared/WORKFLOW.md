@@ -128,7 +128,7 @@ writing/shared/          ← shared by every course
 ├─ plain.css            the house skin — see §6.1
 └─ notes-core.js        markdown render, section anchors, copy buttons
 
-writing/series/<series>/       ← one folder per course
+writing/<series>/           ← one folder per course, directly under writing/
 ├─ index.html           the link tree
 ├─ ch-01.html …
 ├─ raw/lec-01.md        the dumps, untouched — gitignored, local only
@@ -141,7 +141,7 @@ writing/series/<series>/       ← one folder per course
 The notes are personal, so as of 19 August 2026 they are styled to read like a
 notebook rather than a publication — the model is
 <https://victorlecomte.com/notes/>. `plain.css` is the whole of it and every new
-series uses it: set `<body class="plain">`, load `../../shared/plain.css`, and load
+series uses it: set `<body class="plain">`, load `../shared/plain.css`, and load
 nothing else of the old stylesheets. Fira Sans 300, plain `#2a7ae2` links, one
 780px column. No cards, no borders, no background shading, no topic tags, no
 hero, no reading times, no sidebar TOC, no prev/next.

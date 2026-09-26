@@ -19,7 +19,7 @@ images/iisc.jpg
 images/panjab.png
 
 # draft sources — kept on disk locally, not published
-writing/series/deep-gen/draft-notes/
-writing/series/reinforce-llms/my_notes/
-writing/series/cs294-158/raw/
-writing/series/waterloo-ml/
+writing/deep-gen/draft-notes/
+writing/reinforce-llms/my_notes/
+writing/cs294-158/raw/
+writing/waterloo-ml/

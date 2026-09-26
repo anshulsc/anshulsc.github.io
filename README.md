@@ -11,13 +11,13 @@ build step; hosted on **GitHub Pages** (custom domain in `CNAME`), so pushing to
 - `css/` — shared styles; homepage CSS is mostly inline in `index.html`
 - `js/` — site scripts (theme, homepage ornament, notes gate)
 - `images/`, `data/` — imagery and served PDFs (CV, posters, slides)
-- `writing/` — the writing section (`writing/index.html` is its index):
-  `writing/series/` holds the per-course note series (`deep-gen/`,
-  `reinforce-llms/`, `cs294-158/`, `reading/`), `writing/posts/` the
-  standalone posts (`fl/`, `ddp/`, `iit-research/`, `dic-research/`), all
-  sharing the skin in `writing/shared/`
+- `writing/` — the writing section (`writing/index.html` is its index).
+  Course series live in the four capital-word dirs (`deep-gen/`,
+  `reinforce-llms/`, `cs294-158/`, `reading/`), standalone posts as one folder
+  each (`fl/`, `ddp/`, `iit-research/`, `dic-research/`), and `shared/` is the
+  shared engine (skin + renderer) every page uses
 
-Draft/lecture sources (`writing/series/*/draft-notes/`, `my_notes/`, `raw/`,
+Draft/lecture sources (`writing/*/draft-notes/`, `my_notes/`, `raw/`,
 `waterloo-ml/`) are
 gitignored — local working material, deliberately not published.
 
