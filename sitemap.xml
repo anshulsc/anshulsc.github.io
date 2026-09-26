@@ -19,205 +19,205 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/blog-index.html</loc>
+    <loc>https://anshulsc.github.io/writing/index.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/deep-gen/index.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/deep-gen/index.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reinforce_LLMs/index.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reinforce-llms/index.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/cs294-158/index.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/cs294-158/index.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reading/index.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reading/index.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/ddp.html</loc>
+    <loc>https://anshulsc.github.io/writing/posts/ddp/index.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/fl.html</loc>
+    <loc>https://anshulsc.github.io/writing/posts/fl/index.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/iit-research.html</loc>
+    <loc>https://anshulsc.github.io/writing/posts/iit-research/index.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/dic-research.html</loc>
+    <loc>https://anshulsc.github.io/writing/posts/dic-research/index.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/cs294-158/ch-01.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/cs294-158/ch-01.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/deep-gen/ch-01.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/deep-gen/ch-01.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/deep-gen/ch-02.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/deep-gen/ch-02.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/deep-gen/ch-03.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/deep-gen/ch-03.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/deep-gen/ch-04.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/deep-gen/ch-04.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/deep-gen/ch-05.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/deep-gen/ch-05.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/deep-gen/ch-06.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/deep-gen/ch-06.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/deep-gen/ch-07.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/deep-gen/ch-07.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/deep-gen/ch-08.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/deep-gen/ch-08.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/deep-gen/ch-09.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/deep-gen/ch-09.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/deep-gen/ch-10.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/deep-gen/ch-10.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/deep-gen/ch-11.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/deep-gen/ch-11.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reading/ai-safety.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reading/ai-safety.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reading/causal-tracing-lvlm.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reading/causal-tracing-lvlm.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reading/convergent-linear-em.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reading/convergent-linear-em.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reading/generative-latent-prior.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reading/generative-latent-prior.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reading/interpretability.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reading/interpretability.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reading/model-organisms-em.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reading/model-organisms-em.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reinforce_LLMs/ch-01.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reinforce-llms/ch-01.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reinforce_LLMs/ch-02.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reinforce-llms/ch-02.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reinforce_LLMs/ch-03.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reinforce-llms/ch-03.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reinforce_LLMs/ch-04.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reinforce-llms/ch-04.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reinforce_LLMs/ch-05.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reinforce-llms/ch-05.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reinforce_LLMs/ch-06.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reinforce-llms/ch-06.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://anshulsc.github.io/writing/reinforce_LLMs/ch-07.html</loc>
+    <loc>https://anshulsc.github.io/writing/series/reinforce-llms/ch-07.html</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

@@ -11,11 +11,13 @@ build step; hosted on **GitHub Pages** (custom domain in `CNAME`), so pushing to
 - `css/` — shared styles; homepage CSS is mostly inline in `index.html`
 - `js/` — site scripts (theme, homepage ornament, notes gate)
 - `images/`, `data/` — imagery and served PDFs (CV, posters, slides)
-- `writing/` — the writing section (`writing/blog-index.html` is its index),
-  including the per-course note series (`deep-gen/`, `reinforce_LLMs/`,
-  `cs294-158/`) sharing the skin in `writing/notes/`
+- `writing/` — the writing section (`writing/index.html` is its index):
+  `writing/series/` holds the per-course note series (`deep-gen/`,
+  `reinforce-llms/`, `cs294-158/`, `reading/`), `writing/posts/` the
+  standalone posts (`fl/`, `ddp/`, `iit-research/`, `dic-research/`), all
+  sharing the skin in `writing/shared/`
 
-Draft/lecture sources (`writing/*/draft-notes/`, `my_notes/`, `raw/`,
+Draft/lecture sources (`writing/series/*/draft-notes/`, `my_notes/`, `raw/`,
 `waterloo-ml/`) are
 gitignored — local working material, deliberately not published.
 
@@ -25,4 +27,4 @@ gitignored — local working material, deliberately not published.
 python3 -m http.server 8000   # then open http://localhost:8000/
 ```
 
-Contributor/agent docs live in `CLAUDE.md` and `writing/notes/WORKFLOW.md`.
+Contributor/agent docs live in `CLAUDE.md` and `writing/shared/WORKFLOW.md`.

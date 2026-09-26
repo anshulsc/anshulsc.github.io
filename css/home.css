@@ -18,7 +18,7 @@ body {
 }
 
 /* --- Dot field ------------------------------------------------
-   Same ground the notes use (writing/notes/plain.css), scoped to
+   Same ground the notes use (writing/shared/plain.css), scoped to
    this page via body.home. Two tokens, so it can be retuned or
    switched off without hunting through rules: set --grain and
    --dot to `none` / `transparent` and the page is flat again. */

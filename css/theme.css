@@ -198,7 +198,7 @@ html[data-theme="dark"] {
     --dk-link: #b088f9;
     --dk-link-hover: #d5bfff;
 
-    /* variables the notes stylesheet (writing/notes/plain.css) already reads */
+    /* variables the notes stylesheet (writing/shared/plain.css) already reads */
     --bg-color: #0d1117;
     --text-color: #e6edf3;
     --text-muted: #7d8590;
@@ -431,7 +431,7 @@ html[data-theme="dark"][data-flavor="gh-hc"] {
    .toc-*, .note-box, .series-overview…) appears in any live writing/ page;
    the few selectors that still exist there (.chapter-content,
    .dgm-widget/.note-widget, .part-marker, .ref-pop…) only occur on
-   body.plain pages, whose writing/notes/plain.css dark block restates
+   body.plain pages, whose writing/shared/plain.css dark block restates
    every property at three-deep specificity that out-specifies
    [data-theme="dark"] rules here. */
 

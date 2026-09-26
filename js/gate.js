@@ -72,7 +72,7 @@
       'placeholder="passphrase" aria-label="Passphrase" autofocus>' +
       '<button type="submit">Unlock</button></form>' +
       '<p class="gate-msg" role="status"></p>' +
-      '<a class="gate-back" href="' + depth() + 'writing/blog-index.html">← back to writing</a>' +
+      '<a class="gate-back" href="' + depth() + 'writing/">← back to writing</a>' +
       '</div>';
 
     document.body.classList.add('gate-lock');
